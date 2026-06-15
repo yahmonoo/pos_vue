@@ -69,6 +69,7 @@
         <v-list-item to="/" title="Home" prepend-icon="mdi-home" />
         <v-list-item to="/product" title="Product" prepend-icon="mdi-package-variant" />
         <v-list-item to="/contact" title="Contact" prepend-icon="mdi-phone" />
+        <v-list-item to="/contact" title="Contact" prepend-icon="mdi-phone" />
       </v-list>
     </v-navigation-drawer>
 

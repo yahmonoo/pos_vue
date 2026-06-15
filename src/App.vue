@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Top Navbar -->
-    <v-app-bar app elevation="2">
+    <v-app-bar app elevation="2" color="#FFE4E1">
       <v-btn icon @click="drawer = !drawer">
         <v-icon icon="mdi-menu" />
       </v-btn>
@@ -11,7 +11,7 @@
           <v-avatar size="36">
             <v-img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" />
           </v-avatar>
-          Shop Name
+          Glow Skin Cosmetics
         </v-toolbar-title>
       </router-link>
 
@@ -22,14 +22,9 @@
 
         <v-btn to="/product" variant="text" class="nav-link d-none d-md-flex"> Product </v-btn>
 
-        <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> Contact </v-btn>
+        <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> About US</v-btn>
 
-                        <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> about </v-btn>
-
-
-                        <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> Contact one </v-btn>
-
-                                                <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> Contact J </v-btn>
+      
 
 
       </div>
@@ -49,7 +44,8 @@
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" class="profile-btn" variant="text">
             <v-avatar size="32" class="mr-2">
-              <v-img src="https://i.pravatar.cc/100" />
+                            <v-img src="https://i.pravatar.cc/100" />
+
             </v-avatar>
 
             <span class="username">Snowy</span>
@@ -77,8 +73,7 @@
       <v-list nav>
         <v-list-item to="/" title="Home" prepend-icon="mdi-home" />
         <v-list-item to="/product" title="Product" prepend-icon="mdi-package-variant" />
-        <v-list-item to="/contact" title="Contact" prepend-icon="mdi-phone" />
-        <v-list-item to="/contact" title="Contact" prepend-icon="mdi-phone" />
+        <v-list-item to="/about" title="About Us" prepend-icon="mdi-phone" />
       </v-list>
     </v-navigation-drawer>
 

@@ -23,6 +23,15 @@
         <v-btn to="/product" variant="text" class="nav-link d-none d-md-flex"> Product </v-btn>
 
         <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> Contact </v-btn>
+
+                        <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> about </v-btn>
+
+
+                        <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> Contact one </v-btn>
+
+                                                <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> Contact J </v-btn>
+
+
       </div>
 
       <v-spacer />

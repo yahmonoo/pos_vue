@@ -21,6 +21,9 @@
         <v-btn to="/home" variant="text" class="nav-link d-none d-md-flex"> Home </v-btn>
 
         <v-btn to="/product" variant="text" class="nav-link d-none d-md-flex"> Product </v-btn>
+        <v-btn to="/product" variant="text" class="nav-link d-none d-md-flex"> Product </v-btn>
+
+         <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> cart</v-btn>
 
         <v-btn to="/about" variant="text" class="nav-link d-none d-md-flex"> About Us</v-btn>
 
@@ -32,8 +35,12 @@
       <v-spacer />
 
       <!-- RIGHT ICONS -->
-      <v-btn icon>
-        <v-icon>mdi-cart</v-icon>
+      <v-btn icon class="mr-4"to="/cart">
+<v-badge :content="cartTotalItems":model-value="cartTotalItems>0"color="pink">
+
+    <v-icon icon="mdi-cart"color="#d78f99"></v-icon>
+
+        </v-badge>
       </v-btn>
 
       <v-btn icon>
@@ -86,16 +93,26 @@
   </v-app>
 </template>
 <script>
+
+import { useCartStore } from '@/store/cartStore';
+
+
 export default {
   data: () => ({
     drawer: false,
   }),
-  props: {},
-  mounted: function () {},
-  methods: {},
-  watch: {},
-  components: {},
+  computed: {
+    cartTotalItems(){
+      const cartStore =useCartStore();
+      if(cartStore.cartTotalItems?.value !== undefined)
+    {
+      return cartStore.cartTotalItems.value;
+    }
+    return cartStore.cartTotalItems || 0;
+    }
+  }
 }
+  
 </script>
 <style scoped>
 .shop-brand {

@@ -1,12 +1,12 @@
 <template>
   <v-app>
     <!-- Top Navbar -->
-    <v-app-bar app elevation="2" color="#FFE4E1">
+    <v-app-bar app elevation="2" color="#FFC0CB">
       <v-btn icon @click="drawer = !drawer">
         <v-icon icon="mdi-menu" />
       </v-btn>
 
-      <router-link to="/" class="text-decoration-none text-white">
+      <router-link to="/" class="text-decoration-none text-black ">
         <v-toolbar-title class="d-flex align-center ">
           <v-avatar size="36">
             <v-img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" />
@@ -18,11 +18,11 @@
       <v-spacer />
       <!-- LEFT SIDE NAV LINKS -->
       <div class="d-flex align-center ml-4">
-        <v-btn to="/" variant="text" class="nav-link d-none d-md-flex"> Home </v-btn>
+        <v-btn to="/home" variant="text" class="nav-link d-none d-md-flex"> Home </v-btn>
 
         <v-btn to="/product" variant="text" class="nav-link d-none d-md-flex"> Product </v-btn>
 
-        <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> About US</v-btn>
+        <v-btn to="/about" variant="text" class="nav-link d-none d-md-flex"> About Us</v-btn>
 
       
 
@@ -71,7 +71,7 @@
     <!-- Sidebar / Drawer -->
     <v-navigation-drawer v-model="drawer" app :temporary="$vuetify.display.smAndDown">
       <v-list nav>
-        <v-list-item to="/" title="Home" prepend-icon="mdi-home" />
+        <v-list-item to="/home" title="Home" prepend-icon="mdi-home" />
         <v-list-item to="/product" title="Product" prepend-icon="mdi-package-variant" />
         <v-list-item to="/about" title="About Us" prepend-icon="mdi-phone" />
       </v-list>

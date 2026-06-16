@@ -6,8 +6,8 @@
         <v-icon icon="mdi-menu" />
       </v-btn>
 
-      <router-link to="/" class="text-decoration-none text-black ">
-        <v-toolbar-title class="d-flex align-center ">
+      <router-link to="/" class="text-decoration-none text-black">
+        <v-toolbar-title class="d-flex align-center">
           <v-avatar size="36">
             <v-img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" />
           </v-avatar>
@@ -18,28 +18,19 @@
       <v-spacer />
       <!-- LEFT SIDE NAV LINKS -->
       <div class="d-flex align-center ml-4">
-        <v-btn to="/home" variant="text" class="nav-link d-none d-md-flex"> Home </v-btn>
+        <v-btn to="/" variant="text" class="nav-link d-none d-md-flex"> Home </v-btn>
 
         <v-btn to="/product" variant="text" class="nav-link d-none d-md-flex"> Product </v-btn>
-        <v-btn to="/product" variant="text" class="nav-link d-none d-md-flex"> Product </v-btn>
-
-         <v-btn to="/contact" variant="text" class="nav-link d-none d-md-flex"> cart</v-btn>
 
         <v-btn to="/about" variant="text" class="nav-link d-none d-md-flex"> About Us</v-btn>
-
-      
-
-
       </div>
 
       <v-spacer />
 
       <!-- RIGHT ICONS -->
-      <v-btn icon class="mr-4"to="/cart">
-<v-badge :content="cartTotalItems":model-value="cartTotalItems>0"color="pink">
-
-    <v-icon icon="mdi-cart"color="#d78f99"></v-icon>
-
+      <v-btn icon class="mr-4" to="/cart">
+        <v-badge :content="cartTotalItems" :model-value="cartTotalItems > 0" color="pink">
+          <v-icon icon="mdi-cart" color="#d78f99"></v-icon>
         </v-badge>
       </v-btn>
 
@@ -51,8 +42,7 @@
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" class="profile-btn" variant="text">
             <v-avatar size="32" class="mr-2">
-                            <v-img src="https://i.pravatar.cc/100" />
-
+              <v-img src="https://i.pravatar.cc/100" />
             </v-avatar>
 
             <span class="username">Snowy</span>
@@ -78,7 +68,7 @@
     <!-- Sidebar / Drawer -->
     <v-navigation-drawer v-model="drawer" app :temporary="$vuetify.display.smAndDown">
       <v-list nav>
-        <v-list-item to="/home" title="Home" prepend-icon="mdi-home" />
+        <v-list-item to="/" title="Home" prepend-icon="mdi-home" />
         <v-list-item to="/product" title="Product" prepend-icon="mdi-package-variant" />
         <v-list-item to="/about" title="About Us" prepend-icon="mdi-phone" />
       </v-list>
@@ -93,26 +83,22 @@
   </v-app>
 </template>
 <script>
-
-import { useCartStore } from '@/store/cartStore';
-
+import { useCartStore } from '@/store/cartStore'
 
 export default {
   data: () => ({
     drawer: false,
   }),
   computed: {
-    cartTotalItems(){
-      const cartStore =useCartStore();
-      if(cartStore.cartTotalItems?.value !== undefined)
-    {
-      return cartStore.cartTotalItems.value;
-    }
-    return cartStore.cartTotalItems || 0;
-    }
-  }
+    cartTotalItems() {
+      const cartStore = useCartStore()
+      if (cartStore.cartTotalItems?.value !== undefined) {
+        return cartStore.cartTotalItems.value
+      }
+      return cartStore.cartTotalItems || 0
+    },
+  },
 }
-  
 </script>
 <style scoped>
 .shop-brand {

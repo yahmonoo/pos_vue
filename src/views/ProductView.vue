@@ -1,100 +1,172 @@
 <template>
   <div>
-    <ProductDetail 
-      v-if="selectedProduct" 
-      :product="selectedProduct" 
+    <ProductDetail
+      v-if="selectedProduct"
+      :product="selectedProduct"
       @back="selectedProduct = null"
       @add-to-cart="handleAddToCartFromDetail"
     />
 
-    <div v-else class="h-screen flex flex-col p-4 bg-[#f3eae8] font-sans text-slate-800 overflow-hidden">
-      
-      <div class="mb-4 shrink-0 flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-rose-100">
+    <div
+      v-else
+      class="h-screen flex flex-col p-4 bg-[#f3eae8] font-sans text-slate-800 overflow-hidden"
+    >
+      <div
+        class="mb-4 shrink-0 flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-rose-100"
+      >
         <div>
           <h1 class="text-lg font-bold text-slate-800 tracking-wide">Cosmetic Counter</h1>
-          <p class="text-[11px] text-slate-500">Total Products: {{ allProducts.length }} Items Available</p>
+          <p class="text-[11px] text-slate-500">
+            Total Products: {{ allProducts.length }} Items Available
+          </p>
         </div>
-        <div class="bg-rose-50 text-rose-600 px-3 py-1 rounded-lg text-xs font-semibold border border-rose-100">
+        <div
+          class="bg-rose-50 text-rose-600 px-3 py-1 rounded-lg text-xs font-semibold border border-rose-100"
+        >
           Viewing: {{ activeCategory }}
         </div>
       </div>
 
       <div class="flex gap-2 overflow-x-auto pb-4 scrollbar-hide shrink-0">
-        <button @click="activeCategory = 'All Items'"
-                :class="activeCategory === 'All Items' ? 'bg-[#d78f99] text-white shadow-md' : 'bg-white text-slate-600 hover:bg-rose-50'"
-                class="px-4 py-2 rounded-xl text-[11px] font-bold border border-rose-100 whitespace-nowrap transition-all duration-200">
+        <button
+          @click="activeCategory = 'All Items'"
+          :class="
+            activeCategory === 'All Items'
+              ? 'bg-[#d78f99] text-white shadow-md'
+              : 'bg-white text-slate-600 hover:bg-rose-50'
+          "
+          class="px-4 py-2 rounded-xl text-[11px] font-bold border border-rose-100 whitespace-nowrap transition-all duration-200"
+        >
           ✨ All Items
         </button>
 
-        <button v-for="cat in categories" :key="cat" 
-                @click="activeCategory = cat"
-                :class="activeCategory === cat ? 'bg-[#d78f99] text-white shadow-md' : 'bg-white text-slate-600 hover:bg-rose-50'"
-                class="px-4 py-2 rounded-xl text-[11px] font-bold border border-rose-100 whitespace-nowrap transition-all duration-200">
+        <button
+          v-for="cat in categories"
+          :key="cat"
+          @click="activeCategory = cat"
+          :class="
+            activeCategory === cat
+              ? 'bg-[#d78f99] text-white shadow-md'
+              : 'bg-white text-slate-600 hover:bg-rose-50'
+          "
+          class="px-4 py-2 rounded-xl text-[11px] font-bold border border-rose-100 whitespace-nowrap transition-all duration-200"
+        >
           {{ cat }}
         </button>
       </div>
 
       <div class="flex-1 overflow-y-auto pr-1 custom-scrollbar">
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-6">
-          
-          <div v-for="item in filteredProducts" :key="item.id" 
-               @click="selectedProduct = item"
-               class="bg-white p-3 rounded-2xl shadow-sm border border-rose-100 flex flex-col justify-between hover:shadow-md transition-all duration-200 group cursor-pointer">
-            
-            <div class="w-full h-32 bg-slate-50 rounded-xl overflow-hidden mb-3 relative border border-rose-50">
-              <img :src="item.image" 
-                   :alt="item.name" 
-                   loading="lazy" 
-                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-              
-              <span class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-xs text-[9px] font-semibold px-2 py-0.5 rounded-md text-slate-600 shadow-xs">
+          <div
+            v-for="item in filteredProducts"
+            :key="item.id"
+            @click="selectedProduct = item"
+            class="bg-white p-3 rounded-2xl shadow-sm border border-rose-100 flex flex-col justify-between hover:shadow-md transition-all duration-200 group cursor-pointer"
+          >
+            <div
+              class="w-full h-32 bg-slate-50 rounded-xl overflow-hidden mb-3 relative border border-rose-50"
+            >
+              <img
+                :src="item.image"
+                :alt="item.name"
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+
+              <span
+                class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-xs text-[9px] font-semibold px-2 py-0.5 rounded-md text-slate-600 shadow-xs"
+              >
                 {{ item.category }}
               </span>
             </div>
 
             <div class="flex flex-col flex-1 justify-between">
               <div>
-                <h4 class="text-[11px] font-bold text-slate-700 leading-snug line-clamp-2 min-h-[32px] mb-1">
+                <h4
+                  class="text-[11px] font-bold text-slate-700 leading-snug line-clamp-2 min-h-[32px] mb-1"
+                >
                   {{ item.name }}
                 </h4>
                 <p class="text-[10px] text-slate-400">ID: {{ item.id }}</p>
               </div>
-              
+
               <div class="pt-2 mt-2 border-t border-rose-50 flex items-center justify-between">
-                <span class="text-xs font-black text-[#db2777]">Ks {{ item.price.toLocaleString() }}</span>
-                <button @click.stop="addToCart(item)" 
-                        class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all border border-rose-100 flex items-center gap-1">
-                        <button @click.stop="addToCart(item)">
-                        <button @click.stop="cartStore.addToCart(item)"class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors">
-                  <i class="fas fa-plus text-[9px]"></i> Add
-                </button>
-                </button>
+                <span class="text-xs font-black text-[#db2777]"
+                  >Ks {{ item.price.toLocaleString() }}</span
+                >
+                <!-- <button
+                  @click.stop="addToCart(item)"
+                  class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all border border-rose-100 flex items-center gap-1"
+                >
+                  <button @click.stop="addToCart(item)">
+                    <button
+                      @click.stop="cartStore.addToCart(item)"
+                      class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors"
+                    >
+                      <i class="fas fa-plus text-[9px]"></i> Add
+                    </button>
+                  </button>
+                </button> -->
+
+                <button
+                  @click.stop="cartStore.addToCart(item)"
+                  class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
+                >
+                  <i class="fas fa-plus text-[9px]"></i>
+                  Add
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import ProductDetail from './ProductDetail.vue';
-import {useCartStore} from '@/store/cartStore';
-const cartStore= useCartStore();
-
+import { ref, computed } from 'vue'
+import ProductDetail from './ProductDetail.vue'
+import { useCartStore } from '@/store/cartStore'
+const cartStore = useCartStore()
 
 const categories = [
-  'Skincare', 'Lipsticks', 'Foundation', 'Eye Makeup', 'Perfumes', 'Cleansers', 'Toners','Serums', 'Moisturizers', 'Sunscreens', 'Face Masks', 'Scrubs', 'Body Lotions', 
-  'Hair Care', 'Nail Polish', 'Makeup Brushes', 'Sponges', 'Eyeliners', 'Mascara', 
-  'Eyeshadows', 'Eyebrow Pencils', 'Concealers', 'Primers', 'Setting Sprays', 
-  'Highlighters', 'Bronzers', 'Blushes', 'Lip Gloss', 'Lip Balm', 'Lip Liners', 
-  'Hair Serums', 'Hair Masks', 'Body Wash', 'Deodorants', 'Bath Bombs'
-];
+  'Skincare',
+  'Lipsticks',
+  'Foundation',
+  'Eye Makeup',
+  'Perfumes',
+  'Cleansers',
+  'Toners',
+  'Serums',
+  'Moisturizers',
+  'Sunscreens',
+  'Face Masks',
+  'Scrubs',
+  'Body Lotions',
+  'Hair Care',
+  'Nail Polish',
+  'Makeup Brushes',
+  'Sponges',
+  'Eyeliners',
+  'Mascara',
+  'Eyeshadows',
+  'Eyebrow Pencils',
+  'Concealers',
+  'Primers',
+  'Setting Sprays',
+  'Highlighters',
+  'Bronzers',
+  'Blushes',
+  'Lip Gloss',
+  'Lip Balm',
+  'Lip Liners',
+  'Hair Serums',
+  'Hair Masks',
+  'Body Wash',
+  'Deodorants',
+  'Bath Bombs',
+]
 
 const cosmeticImages = [
   'https://images.unsplash.com/photo-1608248597481-496100c8c836?w=400&h=400&fit=crop', // Skincare Bottle
@@ -131,63 +203,75 @@ const cosmeticImages = [
   'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400&h=400&fit=crop', // Luxury Bath Bomb
   'https://images.unsplash.com/photo-1628149455678-16f37bc392f4?w=400&h=400&fit=crop', // Spray Bottle Mists
   'https://images.unsplash.com/photo-1610309590059-43c3f91522be?w=400&h=400&fit=crop', // Solid Deodorant stick
-  'https://images.unsplash.com/photo-1512207724313-a4e675ec79ab?w=400&h=400&fit=crop'  // Luxury Premium Makeup Blushes
-];
+  'https://images.unsplash.com/photo-1512207724313-a4e675ec79ab?w=400&h=400&fit=crop', // Luxury Premium Makeup Blushes
+]
 
-const rawProducts = [];
+const rawProducts = []
 categories.forEach((cat, catIndex) => {
   for (let i = 1; i <= 10; i++) {
-    const imageIndex = catIndex % cosmeticImages.length;
-    
+    const imageIndex = catIndex % cosmeticImages.length
+
     rawProducts.push({
-      id: `${cat.substring(0,3).toUpperCase()}-${100 + i}`,
+      id: `${cat.substring(0, 3).toUpperCase()}-${100 + i}`,
       name: `${cat} Premium Model-${i}`,
       category: cat,
-      price: 15000 + (i * 1500),
-      image: cosmeticImages[imageIndex] 
-    });
+      price: 15000 + i * 1500,
+      image: cosmeticImages[imageIndex],
+    })
   }
-});
-
+})
 
 const shuffleArray = (array) => {
-  const arr = [...array];
+  const arr = [...array]
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
-  return arr;
-};
+  return arr
+}
 
-const allProducts = shuffleArray(rawProducts);
+const allProducts = shuffleArray(rawProducts)
 
-const activeCategory = ref('All Items');
-const selectedProduct = ref(null);
-
+const activeCategory = ref('All Items')
+const selectedProduct = ref(null)
 
 const filteredProducts = computed(() => {
   if (activeCategory.value === 'All Items') {
-    return allProducts; 
+    return allProducts
   }
-  return rawProducts.filter(p => p.category === activeCategory.value); 
-});
+  return rawProducts.filter((p) => p.category === activeCategory.value)
+})
 
 const addToCart = (item) => {
-  cartStore.addToCart(item);
-  alert(` ${item.name} to cart!`);
-};
+  cartStore.addToCart(item)
+  alert(` ${item.name} to cart!`)
+}
 
 const handleAddToCartFromDetail = (product) => {
-  addToCart(product);
-  selectedProduct.value = null;
-};
+  addToCart(product)
+  selectedProduct.value = null
+}
 </script>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-.custom-scrollbar::-webkit-scrollbar { width: 5px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: #ecdcd9; border-radius: 10px; }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d78f99; }
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #ecdcd9;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #d78f99;
+}
 </style>

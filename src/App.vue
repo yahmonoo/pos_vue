@@ -32,8 +32,12 @@
       <v-spacer />
 
       <!-- RIGHT ICONS -->
-      <v-btn icon>
-        <v-icon>mdi-cart</v-icon>
+      <v-btn icon class="mr-4"to="/cart">
+<v-badge :content="cartTotalItems":model-value="cartTotalItems>0"color="pink">
+
+    <v-icon icon="mdi-cart"color="#d78f99"></v-icon>
+
+        </v-badge>
       </v-btn>
 
       <v-btn icon>
@@ -86,16 +90,26 @@
   </v-app>
 </template>
 <script>
+
+import { useCartStore } from '@/store/cartStore';
+
+
 export default {
   data: () => ({
     drawer: false,
   }),
-  props: {},
-  mounted: function () {},
-  methods: {},
-  watch: {},
-  components: {},
+  computed: {
+    cartTotalItems(){
+      const cartStore =useCartStore();
+      if(cartStore.cartTotalItems?.value !== undefined)
+    {
+      return cartStore.cartTotalItems.value;
+    }
+    return cartStore.cartTotalItems || 0;
+    }
+  }
 }
+  
 </script>
 <style scoped>
 .shop-brand {

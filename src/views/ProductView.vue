@@ -64,7 +64,11 @@
                 <span class="text-xs font-black text-[#db2777]">Ks {{ item.price.toLocaleString() }}</span>
                 <button @click.stop="addToCart(item)" 
                         class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all border border-rose-100 flex items-center gap-1">
+                        <button @click.stop="addToCart(item)">
+                        <button @click.stop="cartStore.addToCart(item)"class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors">
                   <i class="fas fa-plus text-[9px]"></i> Add
+                </button>
+                </button>
                 </button>
               </div>
             </div>
@@ -80,6 +84,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import ProductDetail from './ProductDetail.vue';
+import {useCartStore} from '@/store/cartStore';
+const cartStore= useCartStore();
 
 
 const categories = [
@@ -166,8 +172,9 @@ const filteredProducts = computed(() => {
   return rawProducts.filter(p => p.category === activeCategory.value); 
 });
 
-const addToCart = (product) => {
-  alert(`Added ${product.name} to cart!`);
+const addToCart = (item) => {
+  cartStore.addToCart(item);
+  alert(` ${item.name} to cart!`);
 };
 
 const handleAddToCartFromDetail = (product) => {

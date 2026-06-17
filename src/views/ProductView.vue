@@ -7,7 +7,7 @@
       @add-to-cart="handleAddToCartFromDetail"
     />
 
-    <div
+    <div>
       v-else
       class="h-screen flex flex-col p-4 bg-[#f3eae8] font-sans text-slate-800 overflow-hidden"
     >

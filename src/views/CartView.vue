@@ -1,104 +1,127 @@
 <template>
-  <v-container class="py-10">
-    <h2 class="text-h5 font-weight-bold mb-6 text-grey-darken-3">🛒 Your Shopping Cart</h2>
+  <v-container fluid class="pa-6" style="background-color: #f3eae8; min-height: 100vh;">
+    <h1 class="headline font-weight-bold grey--text text--darken-3 mb-4">
+      <v-icon color="pink" class="mr-2">mdi-cart</v-icon> Shopping Cart
+    </h1>
 
-    <v-row>
+    <v-row v-if="cartItems.length > 0">
       <v-col cols="12" md="8">
-        <v-card v-if="cartStore.cart.length === 0" class="pa-10 text-center rounded-xl" elevation="1">
-          <v-icon icon="mdi-cart-outline" size="64" color="grey-lighten-1" class="mb-4" />
-          <p class="text-body-1 text-grey-darken-1 mb-4">Your cart is currently empty.</p>
-          <v-btn to="/product" color="#d78f99" class="text-white">Go to Shop</v-btn>
-        </v-card>
+        <v-card v-for="(item, index) in cartItems" :key="index" class="pa-4 mb-3" elevation="1" style="border-radius: 8px;">
+          <v-row align="center">
+            <v-col cols="3" sm="2">
+              <v-img :src="getProductImage(item.imageName)" height="70" contain @error="handleImageError"></v-img>
+            </v-col>
+            
+            <v-col cols="5" sm="5">
+              <div class="subtitle-2 font-weight-bold grey--text text--darken-3 text-truncate">{{ item.name }}</div>
+              <div class="caption pink--text font-weight-bold">Variant: {{ item.chosenVariant }}</div>
+              <div class="body-2 grey--text">Ks {{ item.price.toLocaleString() }}</div>
+            </v-col>
 
-        <v-card v-else class="pa-4 rounded-xl" elevation="1">
-          <v-table>
-            <thead>
-              <tr>
-                <th class="text-left">Product</th>
-                <th class="text-center">Quantity</th>
-                <th class="text-right">Price</th>
-                <th class="text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in cartStore.cart" :key="item.id">
-                <td class="d-flex align-center py-2">
-                  <v-avatar size="50" rounded class="mr-3">
-                    <v-img :src="item.image" />
-                  </v-avatar>
-                  <div>
-                    <div class="font-weight-bold text-body-2">{{ item.name }}</div>
-                    <div class="text-caption text-grey">{{ item.brand }}</div>
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="d-flex align-center justify-center">
-                    <v-btn icon="mdi-minus" size="x-small" variant="text" @click="cartStore.updateQuantity(item.id, item.quantity - 1)" />
-                    <span class="mx-3 text-body-2">{{ item.quantity }}</span>
-                    <v-btn icon="mdi-plus" size="x-small" variant="text" @click="cartStore.updateQuantity(item.id, item.quantity + 1)" />
-                  </div>
-                </td>
-                <td class="text-right font-weight-bold text-body-2">Ks {{ (item.price * item.quantity).toLocaleString() }}</td>
-                <td class="text-center">
-                  <v-btn icon="mdi-delete-outline" color="red-lighten-1" size="small" variant="text" @click="cartStore.updateQuantity(item.id, 0)" />
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
+            <v-col cols="4" sm="3" class="text-center">
+              <div class="d-flex align-center justify-center">
+                <v-btn icon small outlined @click="updateQuantity(index, -1)"><v-icon small>mdi-minus</v-icon></v-btn>
+                <span class="mx-3 font-weight-bold">{{ item.buyQuantity }}</span>
+                <v-btn icon small outlined @click="updateQuantity(index, 1)"><v-icon small>mdi-plus</v-icon></v-btn>
+              </div>
+            </v-col>
+
+            <v-col cols="12" sm="2" class="text-right">
+              <v-btn icon color="red lighten-1" @click="removeItem(index)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="4" v-if="cartStore.cart.length > 0">
-        <v-card class="pa-5 rounded-xl border-rose" elevation="1">
-          <h3 class="text-subtitle-1 font-weight-bold mb-4">Order Summary</h3>
-          <div class="d-flex justify-space-between text-body-2 mb-2">
+      <v-col cols="12" md="4">
+        <v-card class="pa-5 shadow-sm white" style="border-radius: 12px;">
+          <h3 class="title font-weight-bold mb-4 grey--text text--darken-3">Order Summary</h3>
+          <v-divider class="mb-3"></v-divider>
+          
+          <div class="d-flex justify-space-between mb-2 grey--text">
             <span>Total Items:</span>
-            <span class="font-weight-bold">{{ cartStore.cartTotalItems }} items</span>
+            <span class="font-weight-bold">{{ totalItemsCount }} pcs</span>
           </div>
-          <div class="d-flex justify-space-between text-subtitle-1 font-weight-black text-pink-darken-1 mb-6 pt-2 border-top">
-            <span>Total Amount:</span>
-            <span>Ks {{ cartStore.totalAmount.toLocaleString() }}</span>
+          
+          <div class="d-flex justify-space-between mb-4 subtitle-1 font-weight-black pink--text">
+            <span>Total Price:</span>
+            <span>Ks {{ totalPrice.toLocaleString() }}</span>
           </div>
 
-          <v-btn block to="/checkout" color="#d78f99" class="text-white font-weight-bold mb-3 rounded-lg" @click="handleCheckout">
+          <v-btn color="#d78f99" dark block large depressed style="border-radius: 6px;" class="text-none mt-4"@click="goToCheckout">
             Proceed to Checkout
-          </v-btn>
-          <v-btn block to="/product" variant="outlined" color="#d78f99" class="font-weight-bold rounded-lg">
-            Continue Shopping 
           </v-btn>
         </v-card>
       </v-col>
     </v-row>
 
-    <LoginModal v-if="cartStore.showLoginModal" @login-success="handleLoginSuccess" @close="cartStore.showLoginModal = false" />
+    <v-card v-else class="pa-12 text-center" elevation="0" style="background: transparent;">
+      <v-icon size="80" color="grey lighten-1">mdi-cart-outline</v-icon>
+      <p class="grey--text mt-4 subtitle-1">သင့် Cart ထဲမှာ ပစ္စည်းမရှိသေးပါဘူးဗျာ။</p>
+      <v-btn color="#d78f99" dark depressed to="/product" class="mt-2 text-none">
+        Go Shopping
+      </v-btn>
+    </v-card>
   </v-container>
 </template>
 
-<script setup>
-import { useCartStore } from '../store/cartStore';
-import { useRouter } from 'vue-router';
+<script>
+export default {
+  name: 'CartView',
+  data() {
+    return {
+      cartItems: []
+    };
+  },
+  computed: {
+    
+    totalItemsCount() {
+      return this.cartItems.reduce((total, item) => total + (item.buyQuantity || 1), 0);
+    },
+    totalPrice() {
+      return this.cartItems.reduce((total, item) => total + (item.price * (item.buyQuantity || 1)), 0);
+    }
+  },
+  mounted() {
 
-const cartStore = useCartStore();
-const router = useRouter();
-
-const handleCheckout = () => {
-  if (!cartStore.isLoggedIn) {
-    cartStore.showLoginModal = true;
-  } else {
-    alert('ငွေချေမှု အောင်မြင်ပါသည်။ ကျေးဇူးတင်ပါတယ်ဗျာ!');
-    cartStore.clearCart();
-    router.push('/');
+    this.loadCart();
+  },
+  methods: {
+    goToCheckout() {
+        this.$router.push('/checkOut');
+    },
+   
+    loadCart() {
+      this.cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    },
+    getProductImage(name) {
+      if (!name) return '';
+      return new URL(`../assets/products/${name}`, import.meta.url).href;
+    },
+    updateQuantity(index, change) {
+      let item = this.cartItems[index];
+      let newQty = item.buyQuantity + change;
+      if (newQty > 0) {
+        item.buyQuantity = newQty;
+        this.saveCart();
+      }
+    },
+    removeItem(index) {
+      this.cartItems.splice(index, 1);
+      this.saveCart();
+    },
+    saveCart() {
+      localStorage.setItem('cart', JSON.stringify(this.cartItems));
+      window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
+    },
+    handleImageError(event) {
+      if (event && event.target) {
+        event.target.src = 'https://placehold.co/300x300?text=Product';
+      }
+    }
+    
   }
 };
-
-const handleLoginSuccess = (user) => {
-  cartStore.isLoggedIn = true;
-  cartStore.currentUser = user;
-  cartStore.showLoginModal = false;
-  handleCheckout(); 
-};
 </script>
-
-<style scoped>
-.border-rose { border: 1px solid #ffe4e1 !important; }
-</style>

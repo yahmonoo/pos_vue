@@ -13,7 +13,7 @@
           </v-avatar>
           Glow Skin Cosmetics
         </v-toolbar-title>
-      </router-link>
+      </router-link> 
 
       <v-spacer />
       <!-- LEFT SIDE NAV LINKS -->
@@ -29,7 +29,7 @@
 
       <!-- RIGHT ICONS -->
       <v-btn icon class="mr-4" to="/cart">
-        <v-badge :content="cartTotalItems" :model-value="cartTotalItems > 0" color="pink">
+        <v-badge :content="cartCount":value="cartCount"color="pink"overlap>
           <v-icon icon="mdi-cart" color="#d78f99"></v-icon>
         </v-badge>
       </v-btn>
@@ -83,22 +83,49 @@
   </v-app>
 </template>
 <script>
-import { useCartStore } from '@/store/cartStore'
 
 export default {
-  data: () => ({
+  name:'App',
+  data () {
+    return {
     drawer: false,
-  }),
-  computed: {
-    cartTotalItems() {
-      const cartStore = useCartStore()
-      if (cartStore.cartTotalItems?.value !== undefined) {
-        return cartStore.cartTotalItems.value
-      }
-      return cartStore.cartTotalItems || 0
-    },
+    cartCount: 0
+  };
+  
+},
+mounted()
+{
+ this.updateCartGlobalCount();
+ window.addEventListener('cart-local-storage-changed',
+  this.updateCartGlobalCount);
+},
+ beforeDestory()
+ {
+  window.removeEventListener('cart-local-storage-changed',this.updateCartCount);
+ },
+
+methods:
+{
+  updateCartGlobalCount()
+  {
+    const cart=JSON.parse(localStorage.getItem('cart')) || [];
+    this.cartCount=cart.reduce((total,item) =>
+  {
+    return total+(item.buyQuantity || 1);
+  },0);
+  }
   },
-}
+  created(){
+    const savedCart =localStorage.getItem('cart');
+    if(savedCart){
+      this.cart=JSON.parse(savedCart);
+    }else{
+      this.cart=[];
+    }
+
+  }
+};
+  
 </script>
 <style scoped>
 .shop-brand {

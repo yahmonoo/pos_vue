@@ -98,10 +98,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useCartStore } from '@/store/cartStore'
 import homeVideo from '../assets/images/home.mp4'
 
-const cartStore = useCartStore()
 // Popular Products Data
 const popularProducts = ref([
   { name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', qty: 0 ,maxQty:2},

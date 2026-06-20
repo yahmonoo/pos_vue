@@ -1,277 +1,243 @@
 <template>
-  <div>
-    <ProductDetail
-      v-if="selectedProduct"
-      :product="selectedProduct"
-      @back="selectedProduct = null"
-      @add-to-cart="handleAddToCartFromDetail"
-    />
-
-    <div>
-      v-else
-      class="h-screen flex flex-col p-4 bg-[#f3eae8] font-sans text-slate-800 overflow-hidden"
-    >
-      <div
-        class="mb-4 shrink-0 flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-rose-100"
-      >
-        <div>
-          <h1 class="text-lg font-bold text-slate-800 tracking-wide">Cosmetic Counter</h1>
-          <p class="text-[11px] text-slate-500">
-            Total Products: {{ allProducts.length }} Items Available
-          </p>
-        </div>
-        <div
-          class="bg-rose-50 text-rose-600 px-3 py-1 rounded-lg text-xs font-semibold border border-rose-100"
+  <v-row no-gutters style="background-color: #f3eae8; min-height: 100vh;">
+    
+    <v-col cols="12" sm="4" md="3" lg="2" class="white" style="border-right: 1px solid #e0e0e0;">
+      <v-list dense class="pa-0">
+        <v-list-item @click="selectedCategory = 'All'" :class="selectedCategory === 'All' ? 'primary white--text font-weight-bold' : ''">
+          <v-list-item-content>
+            <v-list-item-title>All Products</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-divider></v-divider>
+        <v-list-item 
+          v-for="(cat, index) in categoriesList" 
+          :key="index"
+          @click="selectedCategory = cat"
+          :class="selectedCategory === cat ? 'primary white--text font-weight-bold' : ''"
+          style="border-bottom: 1px solid #f0f0f0;"
         >
-          Viewing: {{ activeCategory }}
-        </div>
-      </div>
+          <v-list-item-content>
+            <v-list-item-title>{{ cat }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-col>
 
-      <div class="flex gap-2 overflow-x-auto pb-4 scrollbar-hide shrink-0">
-        <button
-          @click="activeCategory = 'All Items'"
-          :class="
-            activeCategory === 'All Items'
-              ? 'bg-[#d78f99] text-white shadow-md'
-              : 'bg-white text-slate-600 hover:bg-rose-50'
-          "
-          class="px-4 py-2 rounded-xl text-[11px] font-bold border border-rose-100 whitespace-nowrap transition-all duration-200"
-        >
-          ✨ All Items
-        </button>
-
-        <button
-          v-for="cat in categories"
-          :key="cat"
-          @click="activeCategory = cat"
-          :class="
-            activeCategory === cat
-              ? 'bg-[#d78f99] text-white shadow-md'
-              : 'bg-white text-slate-600 hover:bg-rose-50'
-          "
-          class="px-4 py-2 rounded-xl text-[11px] font-bold border border-rose-100 whitespace-nowrap transition-all duration-200"
-        >
-          {{ cat }}
-        </button>
-      </div>
-
-      <div class="flex-1 overflow-y-auto pr-1 custom-scrollbar">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-6">
-          <div
-            v-for="item in filteredProducts"
-            :key="item.id"
-            @click="selectedProduct = item"
-            class="bg-white p-3 rounded-2xl shadow-sm border border-rose-100 flex flex-col justify-between hover:shadow-md transition-all duration-200 group cursor-pointer"
+    <v-col cols="12" sm="8" md="9" lg="10" class="pa-4">
+      <div class="products-flex-container">
+        
+        <div v-for="product in filteredProducts" :key="product.id" class="product-item-wrapper">
+          <v-card 
+            @click="goToDetail(product.id)"
+            class="custom-product-card" 
+            outlined
           >
-            <div
-              class="w-full h-32 bg-slate-50 rounded-xl overflow-hidden mb-3 relative border border-rose-50"
-            >
-              <img
-                :src="item.image"
-                :alt="item.name"
-                loading="lazy"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            <div class="card-image-box">
+              <img 
+                :src="getProductImage(product.imageName)" 
+                class="pure-product-img"
+                @error="handleImageError"
+                alt="Product Image"
               />
-
-              <span
-                class="absolute bottom-2 left-2 bg-white/90 backdrop-blur-xs text-[9px] font-semibold px-2 py-0.5 rounded-md text-slate-600 shadow-xs"
-              >
-                {{ item.category }}
-              </span>
             </div>
 
-            <div class="flex flex-col flex-1 justify-between">
-              <div>
-                <h4
-                  class="text-[11px] font-bold text-slate-700 leading-snug line-clamp-2 min-h-[32px] mb-1"
+            <div class="card-content-box">
+              <h3 class="product-title" :title="product.name">
+                {{ product.name }}
+              </h3>
+              <p class="product-code">Code: #{{ product.id }}</p>
+              
+              <div class="price-btn-row">
+                <span class="product-price">Ks {{ product.price.toLocaleString() }}</span>
+                
+                <v-btn 
+                  @click.stop="addToCart(product)" 
+                  x-small
+                  color="#d78f99" 
+                  dark 
+                  depressed 
+                  class="text-none px-2 mini-btn"
                 >
-                  {{ item.name }}
-                </h4>
-                <p class="text-[10px] text-slate-400">ID: {{ item.id }}</p>
-              </div>
-
-              <div class="pt-2 mt-2 border-t border-rose-50 flex items-center justify-between">
-                <span class="text-xs font-black text-[#db2777]"
-                  >Ks {{ item.price.toLocaleString() }}</span
-                >
-                <!-- <button
-                  @click.stop="addToCart(item)"
-                  class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all border border-rose-100 flex items-center gap-1"
-                >
-                  <button @click.stop="addToCart(item)">
-                    <button
-                      @click.stop="cartStore.addToCart(item)"
-                      class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors"
-                    >
-                      <i class="fas fa-plus text-[9px]"></i> Add
-                    </button>
-                  </button>
-                </button> -->
-
-                <button
-                  @click.stop="cartStore.addToCart(item)"
-                  class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
-                >
-                  <i class="fas fa-plus text-[9px]"></i>
-                  Add
-                </button>
+                  + Add
+                </v-btn>
               </div>
             </div>
-          </div>
+          </v-card>
         </div>
+
       </div>
-    </div>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
-import ProductDetail from './ProductDetail.vue'
-import { useCartStore } from '@/store/cartStore'
-const cartStore = useCartStore()
-
-const categories = [
-  'Skincare',
-  'Lipsticks',
-  'Foundation',
-  'Eye Makeup',
-  'Perfumes',
-  'Cleansers',
-  'Toners',
-  'Serums',
-  'Moisturizers',
-  'Sunscreens',
-  'Face Masks',
-  'Scrubs',
-  'Body Lotions',
-  'Hair Care',
-  'Nail Polish',
-  'Makeup Brushes',
-  'Sponges',
-  'Eyeliners',
-  'Mascara',
-  'Eyeshadows',
-  'Eyebrow Pencils',
-  'Concealers',
-  'Primers',
-  'Setting Sprays',
-  'Highlighters',
-  'Bronzers',
-  'Blushes',
-  'Lip Gloss',
-  'Lip Balm',
-  'Lip Liners',
-  'Hair Serums',
-  'Hair Masks',
-  'Body Wash',
-  'Deodorants',
-  'Bath Bombs',
-]
-
-const cosmeticImages = [
-  'https://images.unsplash.com/photo-1608248597481-496100c8c836?w=400&h=400&fit=crop', // Skincare Bottle
-  'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&h=400&fit=crop', // Lipstick Luxury
-  'https://images.unsplash.com/photo-1631730359577-38e4755d772b?w=400&h=400&fit=crop', // Foundation Cream
-  'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop', // Palette Makeup
-  'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop', // Perfume Glass
-  'https://images.unsplash.com/photo-1556229010-aa3f7ff66b24?w=400&h=400&fit=crop', // Lotion Cleanser
-  'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=400&h=400&fit=crop', // Skincare Oils
-  'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=400&fit=crop', // Serum Dropper
-  'https://images.unsplash.com/photo-1617897903246-719242758050?w=400&h=400&fit=crop', // Clay Mask Tube
-  'https://images.unsplash.com/photo-1601049676099-e7ed07d825b0?w=400&h=400&fit=crop', // Essential Cream
-  'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop', // Makeup Brushes
-  'https://images.unsplash.com/photo-1619551734325-81aaf323686c?w=400&h=400&fit=crop', // Organic Shampoo
-  'https://images.unsplash.com/photo-1631214503951-366ec34a50f6?w=400&h=400&fit=crop', // Hair Treatment Oil
-  'https://images.unsplash.com/photo-1604654894610-df490651e56c?w=400&h=400&fit=crop', // Red Nail Polish
-  'https://images.unsplash.com/photo-1515688594390-b649af70d282?w=400&h=400&fit=crop', // Eyeshadow Glow
-  'https://images.unsplash.com/photo-1590156546946-ce55a12a6a5d?w=400&h=400&fit=crop', // Soap / Cleanser
-  'https://images.unsplash.com/photo-1626784215021-2e39ccf971cd?w=400&h=400&fit=crop', // Lip gloss
-  'https://images.unsplash.com/photo-1614859324967-bdf461fcf769?w=400&h=400&fit=crop', // Makeup Powder
-  'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&h=400&fit=crop', // Sunscreen Cream
-  'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=400&h=400&fit=crop', // Hair Conditioner
-  'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=400&h=400&fit=crop', // Eyeliner set
-  'https://images.unsplash.com/photo-1591343395902-1adcb454c2e4?w=400&h=400&fit=crop', // Pink Lipsticks
-  'https://images.unsplash.com/photo-1611085583191-a3b1a30a8a0a?w=400&h=400&fit=crop', // Glass Perfume Bottle
-  'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=400&h=400&fit=crop', // Facial Face Mask
-  'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=400&h=400&fit=crop', // Premium Body Wash
-  'https://images.unsplash.com/photo-1605497746444-ac9dbd53a474?w=400&h=400&fit=crop', // Eyebrow pencils
-  'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&h=400&fit=crop', // Concealer Cream
-  'https://images.unsplash.com/photo-1612817288484-6f916006741a?w=400&h=400&fit=crop', // Natural Moisturizer
-  'https://images.unsplash.com/photo-1601612620952-41f99607fec6?w=400&h=400&fit=crop', // Body Scrub Jar
-  'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&h=400&fit=crop', // Skin Toner Liquid
-  'https://images.unsplash.com/photo-1629732047847-50b7ecf0cbf1?w=400&h=400&fit=crop', // Shaving/Cleanser Gel
-  'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400&h=400&fit=crop', // Luxury Bath Bomb
-  'https://images.unsplash.com/photo-1628149455678-16f37bc392f4?w=400&h=400&fit=crop', // Spray Bottle Mists
-  'https://images.unsplash.com/photo-1610309590059-43c3f91522be?w=400&h=400&fit=crop', // Solid Deodorant stick
-  'https://images.unsplash.com/photo-1512207724313-a4e675ec79ab?w=400&h=400&fit=crop', // Luxury Premium Makeup Blushes
-]
-
-const rawProducts = []
-categories.forEach((cat, catIndex) => {
-  for (let i = 1; i <= 10; i++) {
-    const imageIndex = catIndex % cosmeticImages.length
-
-    rawProducts.push({
-      id: `${cat.substring(0, 3).toUpperCase()}-${100 + i}`,
-      name: `${cat} Premium Model-${i}`,
-      category: cat,
-      price: 15000 + i * 1500,
-      image: cosmeticImages[imageIndex],
-    })
+<script>
+export default {
+  name: 'ProductView',
+  data() {
+    return {
+      selectedCategory: 'All',
+      categoriesList: [
+        'Cleanser', 'Concelar', 'Mascara', 'BB Cream', 'Hair Removal', 'Clay Stick',
+        'Eyebrow', 'Lipstick & Lipblam', 'Hair care', 'Fiber', 'Dress', 'Lotion',
+        'Toner & Emulsion', 'Toner', 'Hair color', 'Moisture', 'Shower',
+        'Collagen', 'Suncream', 'Serum', 'Scrub'
+      ],
+      productsList: []
+    };
+  },
+  computed: {
+    filteredProducts() {
+      if (this.selectedCategory === 'All') return this.productsList;
+      return this.productsList.filter(p => p.category === this.selectedCategory);
+    }
+  },
+  mounted() {
+    this.generateProducts();
+  },
+  methods: {
+    generateProducts() {
+      this.productsList = [
+        { id: 201, name: "Lancome Tonique Douceur", category: "Toner", price: 32000, imageName: "product-1.jpg" },
+        { id: 202, name: "Media Cream Foundation", category: "Concelar", price: 48000, imageName: "product-2.png" },
+        { id: 203, name: "Red Earth Nude Wear Powder", category: "BB Cream", price: 42000, imageName: "product-3.webp" },
+        { id: 204, name: "Blackrouge Eye Stamp", category: "Mascara", price: 19900, imageName: "product-4.webp" },
+        { id: 205, name: "Matte Velvet Lip Balm Romand", category: "Lipstick & Lipblam", price: 28500, imageName: "product-5.jpg" },
+        { id: 206, name: "Perfect Eyebrow Pencil 02", category: "Eyebrow", price: 8500, imageName: "product-6.webp" },
+        { id: 207, name: "Smooth Hair Repair Treatment", category: "Hair care", price: 18500, imageName: "product-7.webp" },
+        { id: 208, name: "Organic Fiber Diet Drink", category: "Fiber", price: 29000, imageName: "product-8.webp" },
+        { id: 209, name: "Whitening Body Milk Lotion", category: "Lotion", price: 16500, imageName: "product-9.avif" },
+        { id: 210, name: "Cuta Pro Gentle Cleanser", category: "Clay Stick", price: 33000, imageName: "product-10.webp" },
+        { id: 211, name: "Centella Skin1004 Probio-cica Bakuchio", category: "Toner", price: 45000, imageName: "product-11.webp" },
+        { id: 212, name: "Medicube salmon DNA collagen", category: "Collagen", price: 48000, imageName: "product-12.webp" },
+        { id: 213, name: "Rice Water", category: "Scrub", price: 12000, imageName: "product-13.webp" },
+        { id: 214, name: "Centella skin1004", category: "Cleanser", price: 35000, imageName: "product-14.webp" },
+        { id: 215, name: "3CE lip tint ", category: "Lipstick & Lipblam", price: 48000, imageName: "product-15.png" },
+        { id: 216, name: "Yoonskin serum", category: "Serum", price: 49000, imageName: "product-16.jpg" },
+        { id: 217, name: "SomeByMi hair care", category: "Hair care", price: 43000, imageName: "product-17.avif" },
+        { id: 218, name: "Loreal shower", category: "Shower", price: 18600, imageName: "product-18.jpg" },
+        { id: 219, name: "VITA-C moisture", category: "Moisture", price: 56000, imageName: "product-19.webp" },
+        { id: 220, name: "Pantene shampoo", category: "Shampoo", price: 23000, imageName: "product-20.avif" }
+      ];
+    },
+    getProductImage(name) {
+      return new URL(`../assets/products/${name}`, import.meta.url).href;
+    },
+    goToDetail(productId) {
+      this.$router.push({ 
+        path: '/product-detail', 
+        query: { id: productId } 
+      });
+    },
+    addToCart(product) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.push({ ...product, chosenVariant: 'Default', buyQuantity: 1 });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
+      alert(`${product.name} added  to cart။`);
+    },
+    handleImageError(event) {
+      if (event && event.target) {
+        event.target.src = 'https://placehold.co/300x300?text=Product';
+      }
+    }
   }
-})
-
-const shuffleArray = (array) => {
-  const arr = [...array]
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
-  }
-  return arr
-}
-
-const allProducts = shuffleArray(rawProducts)
-
-const activeCategory = ref('All Items')
-const selectedProduct = ref(null)
-
-const filteredProducts = computed(() => {
-  if (activeCategory.value === 'All Items') {
-    return allProducts
-  }
-  return rawProducts.filter((p) => p.category === activeCategory.value)
-})
-
-const addToCart = (item) => {
-  cartStore.addToCart(item)
-  alert(` ${item.name} to cart!`)
-}
-
-const handleAddToCartFromDetail = (product) => {
-  addToCart(product)
-  selectedProduct.value = null
-}
+};
 </script>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.products-flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+.product-item-wrapper {
+  width: 20%; 
+  padding: 8px;
+  display: flex;
 }
-.custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
+
+@media (max-width: 600px) {
+  .product-item-wrapper {
+    width: 50%;
+    padding: 4px;
+  }
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+
+.custom-product-card {
+  background-color: white !important;
+  border: 1px solid #eef0f3 !important;
+  border-radius: 16px !important; 
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transition: transform 0.2s ease;
+  cursor: pointer;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #ecdcd9;
-  border-radius: 10px;
+
+.custom-product-card:hover {
+  transform: translateY(-3px);
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #d78f99;
+
+.card-image-box {
+  width: 100%;
+  aspect-ratio: 1 / 1; 
+  background-color: #f7f7f7; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px; 
+  overflow: hidden;
+}
+
+.pure-product-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; 
+  display: block;
+}
+
+.card-content-box {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: white;
+}
+
+.product-title {
+  font-size: 13px !important;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0px 0px 3px 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-code {
+  font-size: 11px !important;
+  color: #95a5a6;
+  margin: 0px 0px 10px 0px !important;
+}
+
+.price-btn-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+.product-price {
+  font-size: 13px !important;
+  font-weight: 700;
+  color: #d78f99; 
+}
+
+.mini-btn {
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  height: 24px !important;
+  text-transform: none !important;
 }
 </style>

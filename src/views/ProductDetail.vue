@@ -1,152 +1,179 @@
 <template>
-  <div class="h-screen flex flex-col bg-[#f3eae8] font-sans text-slate-800 overflow-y-auto p-4 sm:p-6">
+  <v-container fluid class="pa-6" style="background-color: #f3eae8; min-height: 100vh;">
     
-    <div class="mb-6 shrink-0 flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-rose-100">
-      <button @click="$emit('back')" 
-              class="bg-rose-50 hover:bg-[#d78f99] text-[#d78f99] hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition-all border border-rose-100 flex items-center gap-2">
-        <i class="fas fa-arrow-left"></i> Back to Counter
-      </button>
-      <div>
-        <h1 class="text-base font-bold text-slate-800">Product Details</h1>
-        <p class="text-[10px] text-slate-400">Viewing detailed specifications</p>
-      </div>
-    </div>
+    <v-btn text color="grey darken-2" class="mb-4 text-none" @click="$router.push('/product')">
+      <v-icon left>mdi-arrow-left</v-icon> Back to Products
+    </v-btn>
 
-    <div class="bg-white rounded-3xl p-6 shadow-sm border border-rose-100 max-w-4xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-      
-      <div class="w-full h-72 sm:h-96 bg-slate-50 rounded-2xl overflow-hidden border border-rose-50 relative group shadow-xs">
-        <img :src="product.image" 
-             :alt="product.name" 
-             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102">
-        <span class="absolute top-4 left-4 bg-[#d78f99] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-xs">
-          {{ product.category }}
-        </span>
-      </div>
-
-      <div class="flex flex-col justify-between">
-        <div>
-          <div class="border-b border-rose-50 pb-4 mb-4">
-            <span class="text-[10px] uppercase tracking-wider text-rose-500 font-bold bg-rose-50 px-2 py-0.5 rounded">
-              {{ currentDetails.badge }}
-            </span>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-800 mt-2 mb-1 leading-tight">{{ product.name }}</h2>
-            <p class="text-xs text-slate-400 font-mono">Product Serial: {{ product.id }}</p>
+    <v-card v-if="product" class="pa-6" elevation="1" style="border-radius: 12px; background-color: white;">
+      <v-row>
+        
+        <v-col cols="12" md="5">
+          <div class="detail-image-box-container">
+            <img 
+              :src="currentDisplayImage" 
+              class="detail-pure-product-img" 
+              @error="handleImageError"
+              alt="Product Image"
+            />
           </div>
+        </v-col>
 
-          <div class="mb-6 bg-rose-50/50 p-4 rounded-xl border border-rose-100/50">
-            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Retail Price</p>
-            <p class="text-2xl font-black text-[#db2777] mt-1">Ks {{ product.price.toLocaleString() }}</p>
+        <v-col cols="12" md="7" class="pl-md-8">
+          <h1 class="headline font-weight-bold grey--text text--darken-3 mb-2">{{ product.name }}</h1>
+          
+          <p class="subtitle-1 font-weight-black pink--text mb-4">Ks {{ currentDisplayPrice.toLocaleString() }}</p>
+          
+          <div class="body-2 grey--text mb-2">Selected Color/Size: <strong class="pink--text">{{ selectedVariant }}</strong></div>
+
+          <div class="mb-6">
+            <v-btn
+              v-for="vOption in variantOptions"
+              :key="vOption.name"
+              outlined
+              small
+              :color="selectedVariant === vOption.name ? 'pink darken-1' : 'grey'"
+              :class="selectedVariant === vOption.name ? 'pink--text font-weight-bold' : 'grey--text'"
+              class="mr-2 mb-2 text-none"
+              @click="changeVariant(vOption)"
+            >
+              {{ vOption.name }}
+            </v-btn>
           </div>
 
           <div class="mb-6">
-            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Product Highlights</h4>
-            <ul class="text-xs text-slate-600 space-y-2">
-              <li v-for="(highlight, index) in currentDetails.highlights" :key="index" class="flex items-start gap-2">
-                <i class="fas fa-check-circle text-[#d78f99] mt-0.5"></i>
-                <span>{{ highlight }}</span>
-              </li>
-            </ul>
-          </div>
-
-          <div class="flex gap-4 items-center text-xs mb-6">
-            <div class="bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full inline-block animate-pulse"></span> In Stock
+            <div class="body-2 grey--text mb-2">Quantity to buy:</div>
+            <div class="d-flex align-center">
+              <v-btn outlined small :disabled="quantity <= 1" @click="quantity--"><v-icon>mdi-minus</v-icon></v-btn>
+              <div class="mx-4 font-weight-bold">{{ quantity }}</div>
+              <v-btn outlined small @click="quantity++"><v-icon>mdi-plus</v-icon></v-btn>
             </div>
-            <span class="text-slate-400">Available Qty: <strong class="text-slate-700 font-bold">24 Items</strong></span>
           </div>
-        </div>
 
-        <div class="grid grid-cols-1 gap-2 pt-4 border-t border-rose-50">
-          <button @click="$emit('add-to-cart', product)"
-                  class="w-full bg-[#d78f99] hover:bg-[#c27c86] text-white py-3 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2">
-            <i class="fas fa-shopping-bag"></i> Add Item to Cart Order
-          </button>
-        </div>
-      </div>
+          <v-btn color="#d78f99" dark large depressed class="text-none" @click="addToCart">
+            <v-icon left>mdi-cart-plus</v-icon> Add to Cart
+          </v-btn>
+        </v-col>
 
-    </div>
-  </div>
+      </v-row>
+    </v-card>
+
+    <v-card v-else class="pa-6 text-center">
+      <v-progress-circular indeterminate color="pink"></v-progress-circular>
+      <p class="grey--text mt-2">Product data loading or not found...</p>
+    </v-card>
+  </v-container>
 </template>
 
-<script setup>
-import { computed } from 'vue';
-const props = defineProps({
-  product: {
-    type: Object,
-    required: true
-  }
-});
+<script>
+export default {
+  name: 'ProductDetail',
+  data() {
+    return {
+      product: null,
+      selectedVariant: '',
+      currentImageName: '',
+      currentDisplayPrice: 0,
+      quantity: 1,
+      variantOptions: []
+    };
+  },
+  computed: {
 
-defineEmits(['back', 'add-to-cart']);
+    currentDisplayImage() {
+      if (!this.currentImageName) return '';
+      return new URL(`../assets/products/${this.currentImageName}`, import.meta.url).href;
+    }
+  },
+  mounted() {
+    this.loadProduct();
+  },
+  methods: {
+    loadProduct() {
 
-const categoryDetailsMap = {
-  'Skincare': {
-    badge: 'Deep Hydration',
-    highlights: [
-      'Formulated with Hyaluronic acid and organic nourishing ingredients.','Dermatologically tested and 100% suitable for all sensitive skin types.',
-      'Restores skin moisture barrier and protects from environmental damage.'
-    ]
-  },
-  'Lipsticks': {
-    badge: 'Matte & Long-Wear',
-    highlights: [
-      'High-pigment formula that stays perfectly vibrant for up to 12 hours.',
-      'Enriched with Vitamin E and Jojoba oil to prevent lip drying.',
-      'Smudge-proof, waterproof, and smooth velvet texture finish.'
-    ]
-  },
-  'Foundation': {
-    badge: 'Flawless Coverage',
-    highlights: [
-      'Full coverage with a lightweight, breathable second-skin feel.',
-      'Oil-control formula that maintains a fresh satin finish all day.',
-      'SPF 30 protection against harmful UV rays and photo-aging.'
-    ]
-  },
-  'Eye Makeup': {
-    badge: 'High Definition Eyes',
-    highlights: [
-      'Intense color payoff with minimal fallout or creasing.',
-      'Ophthalmologist-tested and safe for contact lens wearers.',
-      'Blends effortlessly for both everyday look and party glam.'
-    ]
-  },
-  'Perfumes': {
-    badge: 'Long-Lasting Luxury Scent',
-    highlights: [
-      'Exquisite premium oil blend that lasts elegantly throughout the day.',
-      'Top notes of fresh blossom with a luxurious warm woody base.',
-      'Perfect signature fragrance for everyday elegance and luxury events.'
-    ]
-  },
-  'Hair Care': {
-    badge: 'Nourish & Repair',
-    highlights: [
-      'Deeply repairs damaged hair cuticles and prevents split ends.',
-      'Sulfate-free formula that retains natural hair oils and shine.',
-      'Boosts hair volume and leaves a refreshing professional salon scent.'
-    ]
-  },
-  'Nail Polish': {
-    badge: 'Gel Shine Finish',
-    highlights: [
-      'Quick-drying formula with an ultra-glossy professional gel finish.',
-      'Long-lasting chip-resistant technology that protects for weeks.',
-      'Non-toxic ingredients that keep natural nails strong and healthy.'
-    ]
+      const productId = this.$route.query.id;
+
+      const allProducts = [
+        { id: 201, name: "Lancome Tonique Douceur", category: "Toner", price: 32000, imageName: "product-1.jpg" },
+        { id: 202, name: "Media Cream Foundation", category: "Concelar", price: 48000, imageName: "product-2.png" },
+        { id: 203, name: "Red Earth Nude Wear Powder", category: "BB Cream", price: 42000, imageName: "product-3.webp" },
+        { id: 204, name: "Blackrouge Eye Stamp", category: "Mascara", price: 19900, imageName: "product-4.webp" },
+        { id: 205, name: "Matte Velvet Lip Balm Romand", category: "Lipstick & Lipblam", price: 28500, imageName: "product-5.jpg" },
+        { id: 206, name: "Perfect Eyebrow Pencil 02", category: "Eyebrow", price: 8500, imageName: "product-6.webp" },
+        { id: 207, name: "Smooth Hair Repair Treatment", category: "Hair care", price: 18500, imageName: "product-7.webp" },
+        { id: 208, name: "Organic Fiber Diet Drink", category: "Fiber", price: 29000, imageName: "product-8.webp" },
+        { id: 209, name: "Whitening Body Milk Lotion", category: "Lotion", price: 16500, imageName: "product-9.avif" },
+        { id: 210, name: "Cuta Pro Gentle Cleanser", category: "Clay Stick", price: 33000, imageName: "product-10.webp" }
+      ];
+
+      const found = allProducts.find(p => p.id == productId);
+      if (found) {
+        this.product = found;
+        
+        if (found.category === 'Lipstick & Lipblam') {
+          this.variantOptions = [
+            { name: '06', imageName: 'lipstick-06.webp', price: found.price },
+            { name: '07', imageName: 'lipstick-07.webp', price: found.price },
+            { name: '09', imageName: 'lipstick-09.webp', price: found.price },
+            { name: '10', imageName: 'lipstick-10.webp', price: found.price }
+          ];
+        } else {
+          this.variantOptions = [
+            { name: '250ml', imageName: found.imageName, price: found.price },
+            { name: '100ml', imageName: found.imageName, price: found.price - 10000 }
+          ];
+        }
+
+        this.selectedVariant = this.variantOptions[0].name;
+        this.currentImageName = this.variantOptions[0].imageName;
+        this.currentDisplayPrice = this.variantOptions[0].price;
+      }
+    },
+    changeVariant(vOption) {
+      this.selectedVariant = vOption.name;
+      this.currentImageName = vOption.imageName; 
+      this.currentDisplayPrice = vOption.price;   
+    },
+    addToCart() {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.push({ 
+        ...this.product, 
+        imageName: this.currentImageName, 
+        price: this.currentDisplayPrice,
+        chosenVariant: this.selectedVariant, 
+        buyQuantity: this.quantity 
+      });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
+      alert(`${this.product.name} (${this.selectedVariant}) added to cart`);
+    },
+    handleImageError(event) {
+      if (event && event.target) {
+        event.target.src = 'https://placehold.co/300x300?text=Glow+Skin';
+      }
+    }
   }
 };
-
-const defaultDetails = {
-  badge: 'Premium Cosmetics',
-  highlights: [
-    'Made with high-quality, professional-grade aesthetic ingredients.',
-    'Dermatologically safe, cruelty-free, and eco-friendly packaging.',
-    'Guaranteed long-lasting results designed for all premium beauty needs.'
-  ]
-};
-
-const currentDetails = computed(() => {
-  return categoryDetailsMap[props.product.category] || defaultDetails;
-});
 </script>
+
+<style scoped>
+.detail-image-box-container {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: #ffffff;
+  border: 1px solid #eef2f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.detail-pure-product-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; 
+  display: block;
+}
+</style>

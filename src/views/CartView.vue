@@ -50,7 +50,7 @@
             <span>Ks {{ totalPrice.toLocaleString() }}</span>
           </div>
 
-          <v-btn color="#d78f99" dark block large depressed style="border-radius: 6px;" class="text-none mt-4"@click="goToCheckout">
+          <v-btn color="#d78f99" dark block large depressed style="border-radius: 6px;" class="text-none mt-4" @click="goToCheckout">
             Proceed to Checkout
           </v-btn>
         </v-card>
@@ -76,36 +76,49 @@ export default {
     };
   },
   computed: {
-    
     totalItemsCount() {
-      return this.cartItems.reduce((total, item) => total + (item.buyQuantity || 1), 0);
+      return this.cartItems.reduce((total, item) => total + (parseInt(item.buyQuantity) || 1), 0);
     },
     totalPrice() {
-      return this.cartItems.reduce((total, item) => total + (item.price * (item.buyQuantity || 1)), 0);
+      return this.cartItems.reduce((total, item) => total + (item.price * (parseInt(item.buyQuantity) || 1)), 0);
     }
   },
   mounted() {
-
     this.loadCart();
   },
   methods: {
     goToCheckout() {
-        this.$router.push('/checkOut');
+      this.$router.push('/checkOut');
     },
-   
     loadCart() {
-      this.cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+      const items = JSON.parse(localStorage.getItem('cart')) || [];
+      this.cartItems = items.map(item => ({
+        ...item,
+        buyQuantity: item.buyQuantity ? parseInt(item.buyQuantity) : 1
+      }));
     },
     getProductImage(name) {
       if (!name) return '';
-      return new URL(`../assets/products/${name}`, import.meta.url).href;
-    },
+      const path1 = new URL(`../assets/images/${name}`, import.meta.url).href;
+      const path2 = new URL(`../assets/products/${name}`, import.meta.url).href;
+      return path1 || path2;
+    }, // 💡 ဤနေရာတွင် ကော်မာ (,) နှင့် တွန့်ကွင်း ပိတ်ရန် ကျန်ခဲ့သည်ကို ပြင်ဆင်ထားပါသည်
+    
     updateQuantity(index, change) {
-      let item = this.cartItems[index];
-      let newQty = item.buyQuantity + change;
+      let currentQty = parseInt(this.cartItems[index].buyQuantity) || 1;
+      let newQty = currentQty + change;
+      
       if (newQty > 0) {
-        item.buyQuantity = newQty;
+        this.cartItems[index] = {
+          ...this.cartItems[index],
+          buyQuantity: newQty
+        };
+        this.cartItems = [...this.cartItems];
         this.saveCart();
+      } else {
+        if (confirm("ဒီပစ္စည်းကို Cart ထဲကနေ ဖယ်ထုတ်ချင်တာ သေချာပါသလား?")) {
+          this.removeItem(index);
+        }
       }
     },
     removeItem(index) {
@@ -121,7 +134,6 @@ export default {
         event.target.src = 'https://placehold.co/300x300?text=Product';
       }
     }
-    
   }
 };
 </script>

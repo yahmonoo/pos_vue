@@ -1,10 +1,16 @@
 <template>
-  <div class="main-content">
+  <!-- <HomeDetailView
+    v-if="selectedProduct"
+    :product="selectedProduct"
+    @back="selectedProduct = null"
+    @add-to-cart="handleAddToCartFromDetail"
+  /> -->
+  
+  <div oclass="main-content">
     <section class="banner">
       <div class="video-box">
-        <video controls autoplay muted loop playsinline preload="auto">
+        <video controls autoplay :muted="true" loop playsinline preload="auto">
           <source :src="homeVideo" type="video/mp4" />
-          <!-- <source src="/home.mp4" type="video/mp4" /> -->
         </video>
       </div>
     </section>
@@ -14,20 +20,22 @@
         <h2>Popular Products</h2>
       </div>
       <div class="card-container">
-        <div v-for="(product, index) in popularProducts" :key="'popular-' + index" class="card">
-          <img :src="getImageUrl(product.img)" :alt="product.name" />
+        <div v-for="(product, index) in popularProducts" :key="'popular-' + index" class="card" @click="openDetail(product)">
+          <div class="image-box">
+            <img :src="getImageUrl(product.img)" :alt="product.name" />
+            <div class="product-desc" v-if="product.description">
+              <p>{{ product.description }}</p>
+            </div>
+          </div>
           <h3>{{ product.name }}</h3>
+          <p class="product-code">Code: #{{ product.id }}</p>
           <div class="add-btn">
-           <span class="price-container">{{ product.price .toLocaleString()}}MMK</span>
-           <button class="add-to-cart-btn" @click="addToCart(product)">
-          + Add
-          </button>
+            <span class="price-container">{{ product.price.toLocaleString() }}MMK</span>
+            <button class="add-to-cart-btn" @click.stop="addToCart(product)">
+              + Add
+            </button>
           </div>
         </div>
-
-        <a href="#" class="more-card">
-          <span>&gt;</span>
-        </a>
       </div>
     </section>
 
@@ -36,17 +44,18 @@
         <h2>Discount Products</h2>
       </div>
       <div class="card-container">
-        <div v-for="(product, index) in discountProducts" :key="'discount-' + index" class="card">
+        <div v-for="(product, index) in discountProducts" :key="'discount-' + product.name + index" class="card" @click="openDetail(product)">
           <span class="discount-badge">{{ product.discount }}</span>
           <img :src="getImageUrl(product.img)" :alt="product.name" />
           <h3>{{ product.name }}</h3>
+          <p class="product-code">Code: #{{ product.id }}</p>
           <div class="price-container">
             <span class="new-price">{{ product.newPrice.toLocaleString() }}MMK</span>
             <span class="old-price">{{ product.oldPrice.toLocaleString() }}MMK</span>
           </div>
           <div class="add-btn-dis">
-            <button class="add-to-cart-btn" @click="addToCart(product)">
-              +Add
+            <button class="add-to-cart-btn" @click.stop="addToCart(product)">
+              + Add
             </button>
           </div>
         </div>
@@ -58,20 +67,19 @@
         <h2>Best Seller Products</h2>
       </div>
       <div class="card-container">
-        <div v-for="(product, index) in bestsellerProducts"
-          :key="'bestseller-' + index"
-          class="card">
+        <div v-for="(product, index) in bestsellerProducts" :key="'bestseller-' + index" class="card" @click="openDetail(product)">
           <img :src="getImageUrl(product.img)" :alt="product.name" />
           <h3>{{ product.name }}</h3>
+          <p class="product-code">Code: #{{ product.id }}</p>
           <div class="add-btn">
-           <span class="price-container">{{ product.price.toLocaleString() }}MMK</span>
-           <button class="add-to-cart-btn" @click="addToCart(product)">
-          + Add
-          </button>
+            <span class="price-container">{{ product.price.toLocaleString() }}MMK</span>
+            <button class="add-to-cart-btn" @click.stop="addToCart(product)">
+              + Add
+            </button>
+          </div>
         </div>
       </div>
-      </div>
-  </section>
+    </section>
   
     <footer id="contact-section">
       <div class="footer-content">
@@ -93,118 +101,103 @@
         <p class="copyright">© 2026 Cosmetics POS. All rights reserved.</p>
       </div>
     </footer>
-      </div>
+  </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import homeVideo from '../assets/images/home.mp4'
+<script>
+import homeVideo from '../assets/images/co.mp4'
+import HomeDetailView from './HomeDetailView.vue'
 
-// Popular Products Data
-const popularProducts = ref([
-  { name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', qty: 0 ,maxQty:2},
-  { name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', qty: 0,maxQty:7},
-  { name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', qty: 0 ,maxQty:12 },
-  { name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', qty: 0 ,maxQty:13},
-  { name: 'YSL Glow Cushion', price: 93000, img: 'foun.jpg', qty: 0 ,maxQty:3},
-  { name: 'Chanel coco perfume(30ml)', price: 230000, img: 'coco.webp', qty: 0,maxQty:5 },
-  { name: 'Anua 70+ Toner', price: 65500, img: 'anua.webp', qty: 0,maxQty:11 },
-  { name: 'CeraVe Moisture Cream', price: 84000, img: 'carave.avif', qty: 0 ,maxQty:10},
-  { name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp', qty: 0 ,maxQty:7},
-  { name: 'COSRX essence', price: 6900, img: 'cosrx.jpg', qty: 0 ,maxQty:5},
-  { name: 'Kiro Waterproof Eyeliner', price: 7000, img: 'eye.jpg', qty: 0 ,maxQty:9},
-])
+export default {
+  name: 'HomeView',
+  components: {
+    HomeDetailView
+  },
+  props: {
+    cart: {
+      type: Array,
+      required: true
+    }
+  },
+  data() {
+    return {
+      homeVideo: homeVideo,
+      selectedProduct: null,
 
-// Discount Products Data
-const discountProducts = ref([
-  {
-    name: 'Romand Zero Matte Lipstick',
-    oldPrice: 29000,
-    newPrice: 26100,
-    discount: '10% OFF',
-    img: 'r0.webp',
-    qty: 0,
-    maxQty: 22,
-  },
-  {
-    name: 'Dior Eyeshadow palette',
-    oldPrice: 130000,
-    newPrice: 65000,
-    discount: '50% OFF',
-    img: 'de.jpg',
-    qty: 0,
-    maxQty: 5,
-  },
-  {
-    name: 'Innisfree Facial Foam',
-    oldPrice: 30000,
-    newPrice: 27000,
-    discount: '10% OFF',
-    img: 'inn.jpg',
-    qty: 0,
-    maxQty: 15,
-  },
-  {
-    name: 'Black Rouge Airfit Velvet Tint',
-    oldPrice: 41900,
-    newPrice: 29330,
-    discount: '30% OFF',
-    img: 'br.jpg',
-    qty: 0,
-    maxQty: 25,
-  },
-  {
-    name: 'Loreal Intense Volume Matte',
-    oldPrice: 40000,
-    newPrice: 26000,
-    discount: '35% OFF',
-    img: 'lo.jpg',
-    qty: 0,
-    maxQty: 15,
-  },
-  {
-    name: 'Loreal Shampoo',
-    oldPrice: 25000,
-    newPrice: 23750,
-    discount: '5% OFF',
-    img: 'sh.jpg',
-    qty: 0,
-    maxQty: 14,
-  },
-])
+      // Popular Products Data
+      popularProducts: [
+        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', qty: 0, maxQty: 2, category: 'Lipsticks',description:'Natural Lipstick' },
+        { id: 102, name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', qty: 0, maxQty: 7, category: 'Skincare' },
+        { id: 103, name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', qty: 0, maxQty: 12, category: 'serum' },
+        { id: 104, name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', qty: 0, maxQty: 13 },
+        { id: 105, name: 'YSL Glow Cushion', price: 93000, img: 'foun.jpg', qty: 0, maxQty: 3 },
+        { id: 106, name: 'Chanel coco perfume(30ml)', price: 230000, img: 'coco.webp', qty: 0, maxQty: 5 },
+        { id: 107, name: 'Anua 70+ Toner', price: 65500, img: 'anua.webp', qty: 0, maxQty: 11 },
+        { id: 108, name: 'CeraVe Moisture Cream', price: 84000, img: 'carave.avif', qty: 0, maxQty: 10 },
+        { id: 109, name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp', qty: 0, maxQty: 7 },
+        { id: 110, name: 'COSRX essence', price: 69000, img: 'cosrx.jpg', qty: 0, maxQty: 5 }, // 6900 မှ 69000 သို့ ပြင်ဆင်ထားပါသည်
+        { id: 111, name: 'Kiro Waterproof Eyeliner', price: 7000, img: 'eye.jpg', qty: 0, maxQty: 9 }
+      ],
 
-const bestsellerProducts = ref([
-  { name: '345 relief cream', price: 58000, img: '345.jpg', qty: 0, maxQty: 11 },
-  {
-    name: 'Skin1004 Tone Brightening Ampoule',
-    price: 56000,
-    img: 'sk1004.jpg',
-    qty: 0,
-    maxQty: 25,
-  },
-  { name: 'Anua Niacinamide serum', price: 82000, img: 'an.jpg', qty: 0, maxQty: 5 },
-  { name: 'Laneige lip Sleeping mask', price: 44000, img: 'la.jpg', qty: 0, maxQty: 13 },
-  { name: 'Medicube Collegen Night Warping Mask', price: 98000, img: 'nw.jpg', qty: 0, maxQty: 7 },
-  { name: 'Axis-Y Dark Spot Glow Serum', price: 44000, img: 'axis.jpg', qty: 0, maxQty: 11 },
-])
-const getImageUrl = (name) => {
-  return new URL(`../assets/images/${name}`, import.meta.url).href
-}
+      // Discount Products Data
+      discountProducts: [
+        { id: 112, name: 'Romand Zero Matte Lipstick', oldPrice: 29000, newPrice: 26100, price: 26100, discount: '10% OFF', img: 'r0.webp', qty: 0, maxQty: 22, category: 'Lipstick' },
+        { id: 113, name: 'Dior Eyeshadow palette', oldPrice: 130000, newPrice: 65000, price: 65000, discount: '50% OFF', img: 'de.jpg', qty: 0, maxQty: 5, category: 'Eyeshadow' },
+        { id: 114, name: 'Innisfree Facial Foam', oldPrice: 30000, newPrice: 27000, price: 27000, discount: '10% OFF', img: 'inn.jpg', qty: 0, maxQty: 15 },
+        { id: 115, name: 'Black Rouge Airfit Velvet Tint', oldPrice: 41900, newPrice: 29330, price: 29330, discount: '30% OFF', img: 'br.jpg', qty: 0, maxQty: 25 },
+        { id: 116, name: 'Loreal Intense Volume Matte', oldPrice: 40000, newPrice: 26000, price: 26000, discount: '35% OFF', img: 'lo.jpg', qty: 0, maxQty: 15 },
+        { id: 117, name: 'Loreal Shampoo', oldPrice: 25000, newPrice: 23750, price: 23750, discount: '5% OFF', img: 'sh.jpg', qty: 0, maxQty: 14 }
+      ],
 
-const cart = ref([])
-const addToCart = (product) => {
-  if (product.maxQty && product.qty >= product.maxQty) {
-    alert('Cannot increase stock. The Stock is already at the maximum quantity');
-    return;
-  }
-  product.qty++
-  if (typeof cartStore.addToCart === 'function') {
-    cartStore.addToCart(product)
-  } else if (typeof cartStore.addItem === 'function') {
-    cartStore.addItem(product)
+      // Best Seller Products Data
+      bestsellerProducts: [
+        { id: 118, name: '345 relief cream', price: 58000, img: '345.jpg', qty: 0, maxQty: 11 },
+        { id: 119, name: 'Skin1004 Tone Brightening Ampoule', price: 56000, img: 'sk1004.jpg', qty: 0, maxQty: 25, category: 'Cream' },
+        { id: 120, name: 'Anua Niacinamide serum', price: 82000, img: 'an.jpg', qty: 0, maxQty: 5, category: 'serum' },
+        { id: 121, name: 'Laneige lip Sleeping mask', price: 44000, img: 'la.jpg', qty: 0, maxQty: 13 },
+        { id: 122, name: 'Medicube Collegen Night Warping Mask', price: 98000, img: 'nw.jpg', qty: 0, maxQty: 7 },
+        { id: 123, name: 'Axis-Y Dark Spot Glow Serum', price: 44000, img: 'axis.jpg', qty: 0, maxQty: 11 }
+      ]
+    }
+  },
+  computed: {
+  },
+
+  methods: {
+    getImageUrl(name) {
+      return new URL(`../assets/images/${name}`, import.meta.url).href
+    },
+
+    openDetail(product) {
+      this.$router.push({
+       path:'/home-detail',
+       query:{id:product.id}
+      });
+    },
+     
+    addToCart(product) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      
+      const targetPrice = product.price || product.newPrice;
+      cart.push({ 
+        ...product, 
+        imageName: product.img,
+        price: targetPrice,
+        chosenVariant: product.category === 'Lipstick' || product.category === 'Lipsticks' ? '06' : 'Standard', 
+        buyQuantity: 1 
+      });
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
+      
+      alert(`${product.name} added to cart။`);
+    },
+    handleAddToCartFromDetail(productDataFromDetail) {
+      this.addToCart(productDataFromDetail);
+      this.selectedProduct = null; 
+    } 
   }
 }
- 
 </script>
 
 <style scoped>
@@ -301,6 +294,8 @@ body {
   border: 1px solid #f0f0f0;
   flex: 0 0 220px;
   position: relative;
+  text-decoration: none;
+  cursor: pointer;
 }
 .card img {
   height: 250px;
@@ -315,26 +310,6 @@ body {
   font-weight: 600;
   white-space: normal;
   text-align: center;
-}
-
-/* .card p { 
-  font-size: 1.1rem;
-  color: #8a2be2;
-  font-weight: bold;
-  margin-bottom: 10px;
-}*/
-.more-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex: 0 0 50px;
-  background: #ffb6c1;
-  border-radius: 12px;
-  color: #4a154b;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background 0.3s;
 }
 
 .card button:hover {
@@ -361,7 +336,7 @@ body {
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
-  color:#db2777;
+  color: #db2777;
   font-weight: bold;
   font-size: 15px;
 }
@@ -369,7 +344,7 @@ body {
 .new-price {
   font-size: 15px;
   font-weight: bold;
-  color:#db2777;
+  color: #db2777;
 }
 
 .old-price {
@@ -380,7 +355,7 @@ body {
 
 .add-btn-dis {
   display: flex;
-  justify-content:center;
+  justify-content: center;
   width: 100%;
   align-items: center;
   margin-top: auto;
@@ -389,19 +364,13 @@ body {
 
 .add-btn {
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
   width: 100%;
   align-items: center;
   margin-top: auto;
-  padding-top:0 8px;
-  margin-top: auto;
+  padding-top: 8px;
 }
 
-.product-price{
-  font-weight: bold;
-  color: #e91ee9;
-  font-size: 14px;
-}
 .add-to-cart-btn {
   background-color: #fff5f7;
   color: #d81b60;
@@ -449,14 +418,12 @@ footer {
 }
 
 .social-links a {
-  color:#1e293b;
+  color: #1e293b;
   text-decoration: none;
-  background-color:#fce7f3;
+  background-color: #fce7f3;
   padding: 15px 10px;
   border-radius: 12px;
   text-align: center;
-  margin-left:0;
-  margin-right:0;
 }
 
 .social-links a:hover {
@@ -474,6 +441,11 @@ footer {
 .footer-content .copyright {
   font-size: 15px;
   color: #000000;
+}
+.product-code {
+  font-size: 11px !important;
+  color: #95a5a6;
+  margin: 5px 0px 10px 0px !important;
 }
 
 @media (max-width: 768px) {

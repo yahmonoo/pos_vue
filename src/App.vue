@@ -99,7 +99,7 @@ mounted()
  window.addEventListener('cart-local-storage-changed',
   this.updateCartGlobalCount);
 },
- beforeDestory()
+ beforeUnmount()
  {
   window.removeEventListener('cart-local-storage-changed',this.updateCartCount);
  },
@@ -115,17 +115,19 @@ methods:
   },0);
   }
   },
-  created(){
-    const savedCart =localStorage.getItem('cart');
-    if(savedCart){
-      this.cart=JSON.parse(savedCart);
-    }else{
-      this.cart=[];
-    }
-
+  // created(){
+  //   const savedCart =localStorage.getItem('cart');
+  //   if(savedCart){
+  //     this.cart=JSON.parse(savedCart);
+  //   }else{
+  //     this.cart=[];
+  //   }
+created() {
+    // အကယ်၍ local storage ထဲမှာ cart ရှိရင် ကောင်တာ တန်းတွက်ဖို့
+    this.updateCartGlobalCount();
   }
 };
-  
+
 </script>
 <style scoped>
 .shop-brand {

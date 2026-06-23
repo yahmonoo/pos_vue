@@ -76,7 +76,6 @@ export default {
   },
   data() {
     return {
-      // 💡 ပြင်ဆင်ချက်: Local data ထဲက product ကို ဖျက်ပြီး productData တစ်ခုတည်း သုံးထားပါတယ်
       productData: null,
       selectedVariant: '',
       currentImageName: '',
@@ -106,7 +105,6 @@ export default {
 
       const productId = this.$route.query.id;
 
-      // 💡 ပြင်ဆင်ချက်: ProductView ထဲက list အတိုင်း ၂၀ လုံး အစုံထည့်ပေးထားပါတယ်
       const allProducts = [
         { id: 201, name: "Lancome Tonique Douceur", category: "Toner", price: 32000, imageName: "product-1.jpg" },
         { id: 202, name: "Media Cream Foundation", category: "Concelar", price: 48000, imageName: "product-2.png" },
@@ -164,33 +162,23 @@ export default {
     },
     addToCart() {
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const cartItem = { 
-    id: this.productData.id,
-    name: this.productData.name,
-    category: this.productData.category,
-    chosenVariant: this.selectedVariant, 
-    price: this.currentDisplayPrice,
-    imageName: this.currentImageName || this.productData.imageName,
-    buyQuantity: this.quantity
-  };
-      // cart.push({ 
-      //   ...this.productData,
-      //   chosenVariant: this.selectedVariant, 
-      //   price: this.currentDisplayPrice,
-      //   imageName: this.currentImageName || this.productData.imageName,
-      //   buyQuantity: this.quantity
-      // });
-      cart.push(cartItem);
+      cart.push({
+        ...this.product,
+        imageName:this.currentImageName,
+        price:this.selectedVariant,
+        buyQuantity: this.quantity
+      });
+      
+     
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
-      this.$emit('add-to-cart', this.productData);
       alert(`${this.productData.name}(${this.selectedVariant}) added to cart`);
     },
-    // handleImageError(event) {
-    //   if (event && event.target) {
-    //     event.target.src = 'https://placehold.co/300x300?text=Glow+Skin';
-    //   }
-    // }
+    handleImageError(event) {
+      if (event && event.target) {
+       event.target.src = 'https://placehold.co/300x300?text=Glow+Skin';
+     }
+     }
   }
 };
 </script>

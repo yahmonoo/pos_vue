@@ -1,8 +1,17 @@
 <template>
   <v-container fluid class="pa-6" style="background-color: #f3eae8; min-height: 100vh;">
-    <v-btn text color="grey darken-2" class="mb-4 text-none" @click="goBack">
+    <!-- <v-btn text color="grey darken-2" class="mb-4 text-none" @click="goBack">
       <v-icon left>mdi-arrow-left</v-icon> Back to Home
-    </v-btn>
+    </v-btn> -->
+
+    <v-btn 
+  text 
+  color="pink darken-1" 
+  class="mb-4 text-none font-weight-medium back-btn" 
+  @click="goBack"
+>
+  <v-icon left class="mr-1">mdi-chevron-left</v-icon> Back to Home
+</v-btn>
 
     <v-row v-if="productData">
       <v-col cols="12" md="6" class="d-flex justify-center">
@@ -40,6 +49,28 @@
         </div>
 
         <v-card flat class="pa-4 grey lighten-4 mb-6" style="border-radius: 8px;">
+          <!-- <div class="d-flex align-center justify-space-between mb-2">
+          <h4 class="subtitle-2 font-weight-bold grey--text text--darken-3">Product Rating & Reviews</h4>
+          <div v-if="productData.rating" class="d-flex align-center">
+            <v-icon color="amber" small class="mr-1">mdi-star</v-icon>
+             <span class="body-2 font-weight-bold">{{ productData.rating }}</span>
+             <span class="caption grey--text ml-1">({{ productData.reviewCount }} reviews)</span>
+            </div>
+            <div v-else class="caption grey--text">No ratings yet</div>
+  </div>
+  <div class="d-flex align-center justify-center py-2 grey lighten-5 rounded-lg">
+    <span class="body-2 grey--text text--darken-1 mr-3">Your Rating:</span>
+    <v-rating
+      v-model="userRating"
+      color="amber"
+      background-color="grey lighten-1"
+      dense
+      half-increments
+      hover
+      size="24"
+      @input="submitRating"
+    ></v-rating>
+    </div> -->
           <h4 class="subtitle-2 font-weight-bold grey--text text--darken-3 mb-1">Product Description</h4>
           <p class="body-2 grey--text text--darken-1 mb-0">
             {{ productData.description || 'High-quality cosmetic product imported directly. Safe for all skin types and long-lasting.' }}
@@ -64,7 +95,7 @@
         </v-btn>
       </v-col>
     </v-row>
-    
+  
     <v-row v-else class="text-center pa-12">
       <v-col cols="12">
         <p class="grey--text">Product data not found.</p>
@@ -78,7 +109,7 @@ export default {
   name: 'HomeDetail',
   props: {
     product: {
-      type: Object, // 💡 ပြင်ဆင်ချက် - Objects မှ Object သို့ ပြင်ဆင်ထားပါသည်
+      type: Object, 
       default: null
     }
   },
@@ -116,7 +147,7 @@ export default {
       // 💡 ပြင်ဆင်ချက် - const allProducts = [ ... ] ဟု ပြောင်းလဲသတ်မှတ်ထားပါသည်
       const allProducts = [
         // Popular Products
-        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', category: 'Lipsticks', description: 'နှုတ်ခမ်းသားကို တနေကုန် စိုပြေဝင်းပစေပြီး Natural Look ပေးမယ့် Dior ရဲ့ Luxury Lip Glow ပါ။' },
+        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', category: 'Lipsticks', description: 'နှုတ်ခမ်းသားကို တနေကုန် စိုပြေဝင်းပစေပြီး Natural Look ပေးမယ့် Dior ရဲ့ Luxury Lip Glow ပါ။',rating:4.8,reviewCount:25 },
         { id: 102, name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', category: 'Skincare', description: 'အသားအရေကို အဆီမပြန်စေဘဲ UV ဒဏ်ကနေ အပြည့်အဝကာကွယ်ပေးတဲ့ ပြင်သစ်နိုင်ငံထုတ် နေလောင်ကာခရင်မ် ဖြစ်ပါတယ်။' },
         { id: 103, name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', category: 'serum', description: 'အမည်းစက်၊ တင်းတိပ်နဲ့ အသားအရေ မညီညာမှုတွေကို သိသိသာသာ သက်သာလျော့ပါးစေတဲ့ နာမည်ကြီး Serum ဖြစ်ပါတယ်။' },
         { id: 104, name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', description: 'အသားအရေကို ရေဓာတ်ပြည့်ဝပြီး ကော်လာဂျင်ကြောင့် တင်းရင်းအိစက်စေမယ့် ဂျယ်လီခရင်မ် ဖြစ်ပါတယ်။' },
@@ -124,7 +155,7 @@ export default {
         { id: 106, name: 'Chanel coco perfume(30ml)', price: 230000, img: 'coco.webp', description: 'Chanel ရဲ့ နာမည်ကြီး လူကြိုက်အများဆုံး ဆွဲဆောင်မှုရှိတဲ့ ဇိမ်ခံ ရေမွှေး ဖြစ်ပါတယ်။' },
         { id: 107, name: 'Anua 70+ Toner', price: 65500, img: 'anua.webp', description: 'အသားအရေ နီမြန်းတာတွေနဲ့ Sensitive ဖြစ်တာတွေကို အမြန်ဆုံး သက်သာစေတဲ့ နာမည်ကြီး Toner ပါ။' },
         { id: 108, name: 'CeraVe Moisture Cream', price: 84000, img: 'carave.avif', description: 'အသားအရေ ခြောက်သွေ့ပြီး ကွဲအက်တာတွေအတွက် ဆရာဝန်ညွှန်ကြားချက်ပါဝင်တဲ့ အစိုဓာတ်ထိန်းခရင်မ်ပါ။' },
-        { id: 109, name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp', description: 'Hailey Bieber ရဲ့ နာမည်ကြီး Rhode Lip Tint ဖြစ်ပြီး နှုတ်ခမ်းကို ပြည့်ပြည့်အိအိလေး ဖြစ်စေပါတယ်။' },
+        { id: 109, name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp',category:'Lip Tint', description: 'Hailey Bieber ရဲ့ နာမည်ကြီး Rhode Lip Tint ဖြစ်ပြီး နှုတ်ခမ်းကို ပြည့်ပြည့်အိအိလေး ဖြစ်စေပါတယ်။' },
         { id: 110, name: 'COSRX essence', price: 69000, img: 'cosrx.jpg', description: 'ခရုချွဲဓာတ် ၉၆% ပါဝင်လို့ အသားအရေ ပျက်စီးတာတွေကို ပြုပြင်ပေးပြီး ကြည်လင်စေပါတယ်။' },
         { id: 111, name: 'Kiro Waterproof Eyeliner', price: 7000, img: 'eye.jpg', description: 'ရေစိုခံ၊ ချွေးစိုခံပြီး ဆိုးရလွယ်ကူတဲ့ Waterproof Eyeliner ဖြစ်ပါတယ်။' },
 
@@ -132,8 +163,8 @@ export default {
         { id: 112, name: 'Romand Zero Matte Lipstick', oldPrice: 29000, newPrice: 26100, price: 26100, discount: '10% OFF', img: 'r0.webp', category: 'Lipstick', description: 'နှုတ်ခမ်းသား ခြောက်သွေ့ခြင်းမရှိဘဲ Matte အိအိလေးနဲ့ အရောင်ထွက် စွဲမက်ဖွယ်ကောင်းတဲ့ Romand Lipstick ပါ။' },
         { id: 113, name: 'Dior Eyeshadow palette', oldPrice: 130000, newPrice: 65000, price: 65000, discount: '50% OFF', img: 'de.jpg', category: 'Eyeshadow', description: 'Dior ရဲ့ မျက်ဝန်းကို ပိုမိုတောက်ပ စွဲမက်စေမယ့် Luxury Eyeshadow Palette ဖြစ်ပါတယ်။' },
         { id: 114, name: 'Innisfree Facial Foam', oldPrice: 30000, newPrice: 27000, price: 27000, discount: '10% OFF', img: 'inn.jpg', description: 'မျက်နှာအဆီပြန်တာကို ထိန်းပေးပြီး အသားအရေကို သန့်စင်လန်းဆန်းစေတဲ့ Green Tea မျက်နှာသစ်ဖောက်ပါ။' },
-        { id: 115, name: 'Black Rouge Airfit Velvet Tint', oldPrice: 41900, newPrice: 29330, price: 29330, discount: '30% OFF', img: 'br.jpg', description: 'နှုတ်ခမ်းပေါ်တင်လိုက်ရင် ပေါ့ပါးပြီး Velvet သားလေးအတိုင်း တနေကုန်ခံတဲ့ နှုတ်ခမ်းနီ ဖြစ်ပါတယ်။' },
-        { id: 116, name: 'Loreal Intense Volume Matte', oldPrice: 40000, newPrice: 26000, price: 26000, discount: '35% OFF', img: 'lo.jpg', description: 'Loreal ရဲ့ Slim Matte နှုတ်ခမ်းနီဖြစ်ပြီး နှုတ်ခမ်းကို ထူထူအိအိလေးနဲ့ ပေါ်လွင်စေပါတယ်။' },
+        { id: 115, name: 'Black Rouge Airfit Velvet Tint', oldPrice: 41900, newPrice: 29330, price: 29330, discount: '30% OFF', img: 'br.jpg',category:'Velvet Tint', description: 'နှုတ်ခမ်းပေါ်တင်လိုက်ရင် ပေါ့ပါးပြီး Velvet သားလေးအတိုင်း တနေကုန်ခံတဲ့ နှုတ်ခမ်းနီ ဖြစ်ပါတယ်။' },
+        { id: 116, name: 'Loreal Intense Volume Matte', oldPrice: 40000, newPrice: 26000, price: 26000, discount: '35% OFF', img: 'lo.jpg',category:'Matte', description: 'Loreal ရဲ့ Slim Matte နှုတ်ခမ်းနီဖြစ်ပြီး နှုတ်ခမ်းကို ထူထူအိအိလေးနဲ့ ပေါ်လွင်စေပါတယ်။' },
         { id: 117, name: 'Loreal Shampoo', oldPrice: 25000, newPrice: 23750, price: 23750, discount: '5% OFF', img: 'sh.jpg', description: 'ဆံသားပျက်စီးတာတွေကို အမြန်ဆုံး ပြုပြင်ပေးပြီး ဆံပင်ကျွတ်ခြင်းကို သက်သာစေတဲ့ ခေါင်းလျှော်ရည်ပါ။' },
 
         // Best Seller Products
@@ -144,7 +175,8 @@ export default {
         { id: 122, name: 'Medicube Collegen Night Warping Mask', price: 98000, img: 'nw.jpg', description: 'ညအိပ်နေစဉ် အသားအရေကို ပြုပြင်ပေးပြီး မနက်ခင်းမှာ တင်းရင်းကြည်လင်စေမယ့် Night Mask ပါ။' },
         { id: 123, name: 'Axis-Y Dark Spot Glow Serum', price: 44000, img: 'axis.jpg', description: 'တင်းတိပ်၊ မှဲ့ခြောက်နဲ့ အမည်းစက်တွေကို အထိရောက်ဆုံး ဖျောက်ဖျက်ပေးတဲ့ နာမည်ကြီး Serum ဖြစ်ပါတယ်။' }
       ];
-
+     
+      // Product Card မှာ ပေါ်အောင် ရေးမည့် Logic ပုံစံ
       const found = allProducts.find(p => p.id === productId);
       if (found) {
         this.setupProductDetails(found);
@@ -155,12 +187,12 @@ export default {
     setupProductDetails(found) {
       this.productData = found;
 
-      if (found.category === 'Lipstick & Dior'|| found.category === 'Lipsticks' || found.category === 'Lipstick') {
+      if (found.category === 'Lipstick'|| found.category === 'Lip Tint' || found.category === 'Velvet Tint' || found.category==='Matte') {
         this.variantOptions = [
-          { name: '06', imageName: 'dior.jpg', price: found.price }, // လက်ရှိပုံအမည်များကို ကောင်းမွန်အောင် ချိန်ညှိထားပါသည်
+          { name: '06', imageName: 'dior.jpg', price: found.price }, 
           { name: '07', imageName: 'dior1.webp', price: found.price },
-          { name: '09', imageName: 'dior2.webp', price: found.price },
-          { name: '10', imageName: 'dior3.jpg', price: found.price }
+          { name: '08', imageName: 'dior2.webp', price: found.price },
+          { name: '09', imageName: 'dior3.jpg', price: found.price }
         ];
       } else {
         this.variantOptions = [
@@ -171,6 +203,10 @@ export default {
       this.currentImageName = this.variantOptions[0].imageName;
       this.currentDisplayPrice = this.variantOptions[0].price;
     },
+
+isPopular(product) {
+  return product.rating >= 4.5 && product.reviewCount >= 10;
+},
     changeVariant(vOption) {
       this.selectedVariant = vOption.name;
       this.currentImageName = vOption.imageName; 
@@ -204,6 +240,12 @@ export default {
 </script>
 
 <style scoped>
+.back-btn {
+  transition: transform 0.2s ease-in-out;
+}
+.back-btn:hover {
+  transform: translateX(-4px); /* Mouse တင်လိုက်ရင် ဘယ်ဘက်ကို နည်းနည်းရွေ့သွားမယ် */
+}
 .detail-image-box-container {
   width: 100%;
   max-width: 400px;

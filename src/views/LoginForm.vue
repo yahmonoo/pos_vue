@@ -103,8 +103,9 @@ const handleLogin = () => {
           type="submit"
           block
           size="large"
-          class="text-none font-weight-bold rounded-lg text-white login-btn"
+          class="text-none font-weight-bold rounded-lg text-black login-btn"
           elevation="2"
+          
         >
           Sign In
         </v-btn>
@@ -127,7 +128,7 @@ const handleLogin = () => {
 }
 
 .primary-title {
-  color: #4a154b;
+  color: black;
   font-family: sans-serif;
   letter-spacing: 1px;
 }
@@ -137,7 +138,7 @@ const handleLogin = () => {
 }
 
 .login-btn {
-  background: linear-gradient(135deg, #4a154b 0%, #6b216c 100%) !important;
+  background: linear-gradient(135deg,rgb(228, 132, 148) 0%) !important;
   transition:
     transform 0.2s ease,
     opacity 0.2s ease;

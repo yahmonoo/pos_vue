@@ -197,7 +197,7 @@ export default {
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
       
-      alert(`${product.name} added to cart။`);
+      // alert(`${product.name} added to cart။`);
     },
     handleAddToCartFromDetail(productDataFromDetail) {
       this.addToCart(productDataFromDetail);

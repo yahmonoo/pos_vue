@@ -133,7 +133,7 @@ export default {
       cart.push({ ...product, chosenVariant: 'Default', buyQuantity: 1 });
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
-      alert(`${product.name} added  to cart။`);
+      // alert(`${product.name} added  to cart။`);
     },
     handleImageError(event) {
       if (event && event.target) {

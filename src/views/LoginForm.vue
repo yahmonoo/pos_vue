@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const email = ref('')
+const name = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const rememberMe = ref(false)
@@ -13,23 +13,23 @@ const errorMessage = ref('') // 📍 ၁။ Error စာသားသိမ်း
 // Login.vue ရဲ့ handleLogin function ထဲတွင် ပြင်ရန်
 const handleLogin = () => {
   // 📍 LocalStorage ထဲက Sign Up တုန်းက သိမ်းခဲ့တဲ့ အချက်အလက်ကို ပြန်ထုတ်ယူခြင်း
-  const savedEmail = localStorage.getItem('user_email')
+  const savedName = localStorage.getItem('user_name')
   const savedPassword = localStorage.getItem('user_password')
   const savedRole = localStorage.getItem('user_role')
 
   // Sign Up လုပ်ထားတာ ရှိ၊ မရှိ အရင်စစ်ပြီးမှ Password တိုက်စစ်မည်
-  if (email.value === savedEmail && password.value === savedPassword) {
+  if (name.value === savedName && password.value === savedPassword) {
     errorMessage.value = ''
     localStorage.setItem('user_role', savedRole)
-    alert('Login အောင်မြင်ပါတယ်ရှင်!')
+    // alert('Login အောင်မြင်ပါတယ်ရှင်!')
     if (savedRole == 'CUSTOMER') {
-      router.push('/') // Home Page သို့ သွားမည်
+     window.location.href = '/' // Home Page သို့ သွားမည်
     } else {
-      router.push('/admin')
+      window.location.href = '/‌admin'
     }
   } else {
     errorMessage.value =
-      'အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
+      'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
   }
 }
 </script>
@@ -43,14 +43,14 @@ const handleLogin = () => {
         <v-divider class="mt-4 mx-auto" width="60" color="#FFC0CB" thickness="3"></v-divider>
       </div>
 
-      <v-form @submit.prevent="handleLogin">
+      <v-form @submit.prevent="handleLogin" >
         <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
-          >Email Address</span
+          >Name</span
         >
         <v-text-field
-          v-model="email"
-          prepend-inner-icon="mdi-email-outline"
-          placeholder="example@gmail.com"
+          v-model="name"
+          prepend-inner-icon="mdi-name-outline"
+          placeholder="Enter your name"
           variant="outlined"
           density="comfortable"
           color="#4a154b"
@@ -103,7 +103,7 @@ const handleLogin = () => {
           type="submit"
           block
           size="large"
-          class="text-none font-weight-bold rounded-lg text-black login-btn"
+          class="text-none font-weight-bold rounded-lg text-white login-btn"
           elevation="2"
           
         >

@@ -228,7 +228,7 @@ isPopular(product) {
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
       
-      alert(`${this.productData.name} (${this.selectedVariant}) x ${this.quantity} ခုကို Cart ထဲသို့ ထည့်လိုက်ပါပြီ။`);
+    //   alert(`${this.productData.name} (${this.selectedVariant}) x ${this.quantity} ခုကို Cart ထဲသို့ ထည့်လိုက်ပါပြီ။`);
     },
     handleImageError(event) {
       if (event && event.target) {

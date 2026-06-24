@@ -19,11 +19,11 @@ const handleRegister = () => {
   }
 
   // 📍 LocalStorage ထဲတွင် အကောင့်အချက်အလက်ကို သိမ်းဆည်းခြင်း
-  localStorage.setItem('user_email', email.value)
+  localStorage.setItem('user_name', name.value)
   localStorage.setItem('user_password', password.value)
   localStorage.setItem('user_role', 'CUSTOMER')
 
-  alert('အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါတယ်ရှင်။ Sign In အရင်ဝင်ပေးပါဦးနော်။')
+  // alert('အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါတယ်ရှင်။ Sign In အရင်ဝင်ပေးပါဦးနော်။')
   router.push('/login')
 }
 </script>
@@ -138,7 +138,7 @@ const handleRegister = () => {
 }
 
 .register-btn {
-  background: linear-gradient(135deg, #4a154b 0%, #6b216c 100%) !important;
+  background: linear-gradient(135deg,rgb(228, 132, 148) 0%) !important;
   transition:
     transform 0.2s ease,
     opacity 0.2s ease;

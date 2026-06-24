@@ -15,24 +15,28 @@ const handleLogin = () => {
   // 📍 LocalStorage ထဲက Sign Up တုန်းက သိမ်းခဲ့တဲ့ အချက်အလက်ကို ပြန်ထုတ်ယူခြင်း
   const savedEmail = localStorage.getItem('user_email')
   const savedPassword = localStorage.getItem('user_password')
+  const savedRole = localStorage.getItem('user_role')
 
   // Sign Up လုပ်ထားတာ ရှိ၊ မရှိ အရင်စစ်ပြီးမှ Password တိုက်စစ်မည်
   if (email.value === savedEmail && password.value === savedPassword) {
-    errorMessage.value = ""
+    errorMessage.value = ''
+    localStorage.setItem('user_role', savedRole)
     alert('Login အောင်မြင်ပါတယ်ရှင်!')
-    router.push('/') // Home Page သို့ သွားမည်
+    if (savedRole == 'CUSTOMER') {
+      router.push('/') // Home Page သို့ သွားမည်
+    } else {
+      router.push('/admin')
+    }
   } else {
-    errorMessage.value = "အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။"
+    errorMessage.value =
+      'အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
   }
-
 }
 </script>
 
 <template>
   <v-container fluid class="login-bg fill-height d-flex align-center justify-center">
-    
     <v-card width="100%" max-width="450" class="pa-8 elevation-4 rounded-xl" color="white">
-      
       <div class="text-center mb-6">
         <h1 class="text-h4 font-weight-bold primary-title mb-2">Glow Skin</h1>
         <p class="text-subtitle-2 text-muted">Welcome back! Please login to your account.</p>
@@ -40,8 +44,9 @@ const handleLogin = () => {
       </div>
 
       <v-form @submit.prevent="handleLogin">
-        
-        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1">Email Address</span>
+        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
+          >Email Address</span
+        >
         <v-text-field
           v-model="email"
           prepend-inner-icon="mdi-email-outline"
@@ -55,7 +60,11 @@ const handleLogin = () => {
 
         <div class="d-flex justify-space-between align-center mb-1">
           <span class="text-caption font-weight-medium text-grey-darken-1">Password</span>
-          <a href="#" class="text-caption text-purple-darken-2 font-weight-bold text-decoration-none">Forgot Password?</a>
+          <a
+            href="#"
+            class="text-caption text-purple-darken-2 font-weight-bold text-decoration-none"
+            >Forgot Password?</a
+          >
         </div>
         <v-text-field
           v-model="password"
@@ -102,12 +111,11 @@ const handleLogin = () => {
       </v-form>
 
       <div class="text-center mt-6 text-body-2 text-muted">
-        Don't have an account? 
+        Don't have an account?
         <router-link to="/reg" class="text-purple-darken-2 font-weight-bold text-decoration-none">
           Create an account
         </router-link>
       </div>
-
     </v-card>
   </v-container>
 </template>
@@ -130,7 +138,9 @@ const handleLogin = () => {
 
 .login-btn {
   background: linear-gradient(135deg, #4a154b 0%, #6b216c 100%) !important;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .login-btn:hover {

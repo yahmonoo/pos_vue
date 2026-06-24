@@ -5,8 +5,10 @@ import mapImage from '@/assets/images/1.png'
   <v-container class="py-10">
     <v-row justify="center" class="text-center mb-10">
       <v-col cols="12" md="8">
-        <h1 class="primary-title mt-n3 mb-3 mm-stroke-bold" 
-          style="font-size: 2.5rem !important; font-weight: 400 !important; color:black;">
+        <h1
+          class="primary-title mt-n3 mb-3 mm-stroke-bold"
+          style="font-size: 2.5rem !important; font-weight: 400 !important; color: black"
+        >
           About Glow Skin Cosmetics
         </h1>
         <p class="text-subtitle-1 text-muted">"Trusted High-Quality Cosmetics for Your Beauty"</p>
@@ -16,10 +18,13 @@ import mapImage from '@/assets/images/1.png'
 
     <v-row align="stretch" class="mb-12 px-6 px-md-16">
       <v-col cols="12" md="7" class="pr-md-8 d-flex flex-column justify-center">
-        <h2 class="headline mb-4 mm-stroke-bold" 
-          style="color: black; font-size: 1.5rem !important; font-weight: 700 !important;">
+        <h2
+          class="headline mb-4 mm-stroke-bold"
+          style="color: black; font-size: 1.5rem !important; font-weight: 700 !important"
+        >
           ကျွန်ုပ်တို့၏ ရည်ရွယ်ချက်
-        </h2><br>
+        </h2>
+        <br />
         <p class="body-1 text-justify lineHeight-lg">
           <strong>Glow Skin Cosmetics</strong> သည် မန္တလေးမြို့အခြေစိုက်ပြီး လူကြီးမင်းတို့၏
           သဘာဝအလှတရားများကို ပိုမိုတောက်ပလာစေရန်အတွက် အရည်အသွေးမြင့် ကမ္ဘာကျော်
@@ -37,7 +42,7 @@ import mapImage from '@/assets/images/1.png'
         <v-img
           src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop"
           width="100%"
-          max-width="450"  
+          max-width="450"
           class="elevation-3 rounded-lg"
           cover
         ></v-img>
@@ -46,8 +51,10 @@ import mapImage from '@/assets/images/1.png'
 
     <v-row class="bg-light-pink py-8 rounded-lg text-center mb-12">
       <v-col cols="12">
-        <h2 class="headline font-weight-bold mb-6"
-          style="color: black; font-size: 1.5rem !important; font-weight: 600 !important;">
+        <h2
+          class="headline font-weight-bold mb-6"
+          style="color: black; font-size: 1.5rem !important; font-weight: 600 !important"
+        >
           ဘာကြောင့် Glow Skin က Cosmeticsတွေ ကို ရွေးချယ်သင့်သလဲ?
         </h2>
       </v-col>
@@ -84,52 +91,64 @@ import mapImage from '@/assets/images/1.png'
       </v-col>
       <v-row justify="center" class="mt-12">
         <v-col cols="12" md="10">
-          <h2 class="headline font-weight-bold text-center mb-6"       
-            style="color: black; font-size: 1.5rem !important; font-weight: 600 !important;">
+          <h2
+            class="headline font-weight-bold text-center mb-6"
+            style="color: black; font-size: 1.5rem !important; font-weight: 600 !important"
+          >
             အမေးများသော မေးခွန်းများ (FAQ)
           </h2>
 
           <v-expansion-panels variant="accordion">
             <v-expansion-panel
+              class="pl-3"
               title="Glow Skin Cosmetics က ပစ္စည်းတွေက တကယ်ပဲ Original စစ်စစ်တွေလား?"
               text="ဟုတ်ပါတယ်။ ကျွန်ုပ်တို့ဆိုင်မှာ ရောင်းချတဲ့ အလှကုန်ပစ္စည်းအားလုံးကို သက်ဆိုင်ရာနိုင်ငံတွေကနေ (၁၀၀%) စစ်မှန်ကြောင်း အာမခံချက်အပြည့်နဲ့ တိုက်ရိုက်တင်သွင်းထားတာဖြစ်လို့ စိတ်ချယုံကြည်စွာ ဝယ်ယူအားပေးနိုင်ပါတယ်ခင်ဗျာ။"
             ></v-expansion-panel>
 
             <v-expansion-panel
+              class="pl-3"
               title="နယ်မြို့တွေကို ရန်ကုန်/မန္တလေးကနေ ဘယ်လိုပို့ဆောင်ပေးပါသလဲ?"
               text="မန္တလေးမြို့တွင်းကို အိမ်အရောက် Delivery စနစ်နဲ့ ပို့ဆောင်ပေးသလို၊ အခြားနယ်မြို့များကိုလည်း သက်ဆိုင်ရာ အမြန်ချောပို့ (ကားဂိတ်များ) မှတစ်ဆင့် စနစ်တကျ ထုပ်ပိုးပြီး ပို့ဆောင်ပေးနေပါတယ်ဗျာ။"
             ></v-expansion-panel>
           </v-expansion-panels>
         </v-col>
       </v-row>
-      <v-row align="center" class="my-10 pa-6 pa-md-10 mx-0 rounded-lg" style="background-color: #fff0f2">
-      <v-col cols="12" md="6" class="px-6 d-flex flex-column justify-center">
-        <h3 class="title font-weight-bold mb-3" 
-         style="color: black; font-size: 1.5rem !important; font-weight: 600 !important;">
-          📍 Shop Location & Opening Time
-        </h3>
-        <p class="body-1 mb-2">
-          <strong>Address:</strong> Theik Pan Road, Chan Mya Thazi Township, Mandalay
-        </p>
-        <p class="body-1 mb-2"><strong>Opening Time:</strong> Daily (9:00 AM - 9:00 PM)</p>
-        <p class="body-1"><strong>Phone:</strong> 09-123456789</p>
-      </v-col>
+      <v-row
+        align="center"
+        class="my-10 pa-6 pa-md-10 mx-0 rounded-lg"
+        style="background-color: #fff0f2"
+      >
+        <v-col cols="12" md="6" class="px-6 d-flex flex-column justify-center">
+          <h3
+            class="title font-weight-bold mb-3"
+            style="color: black; font-size: 1.5rem !important; font-weight: 600 !important"
+          >
+            📍 Shop Location & Opening Time
+          </h3>
+          <p class="body-1 mb-2">
+            <strong>Address:</strong> Theik Pan Road, Chan Mya Thazi Township, Mandalay
+          </p>
+          <p class="body-1 mb-2"><strong>Opening Time:</strong> Daily (9:00 AM - 9:00 PM)</p>
+          <p class="body-1"><strong>Phone:</strong> 09-123456789</p>
+        </v-col>
 
-      <v-col cols="12" md="6" class="d-flex align-center">
-        <v-img
-          :src="mapImage"
-          height="auto"
-          class="rounded-lg elevation-1 bg-grey-lighten-2"
-          cover
-          alt="Glow Skin Cosmetics Map"
-        ></v-img>
-      </v-col>
-    </v-row>
+        <v-col cols="12" md="6" class="d-flex align-center">
+          <v-img
+            :src="mapImage"
+            height="auto"
+            class="rounded-lg elevation-1 bg-grey-lighten-2"
+            cover
+            alt="Glow Skin Cosmetics Map"
+          ></v-img>
+        </v-col>
+      </v-row>
       <v-row class="px-6 text-center my-10">
         <v-col cols="12">
-          <h2 class="headline font-weight-bold mb-5" 
-           style="color: black; font-size: 1.5rem !important; font-weight: 600 !important;">
-           Customer Reviews
+          <h2
+            class="headline font-weight-bold mb-5"
+            style="color: black; font-size: 1.5rem !important; font-weight: 600 !important"
+          >
+            Customer Reviews
           </h2>
         </v-col>
 
@@ -138,7 +157,7 @@ import mapImage from '@/assets/images/1.png'
             <v-rating
               model-value="5"
               readonly
-              active-color="#FFD700" 
+              active-color="#FFD700"
               color="grey-lighten-1"
               density="compact"
               class="mb-2"
@@ -156,8 +175,8 @@ import mapImage from '@/assets/images/1.png'
             <v-rating
               model-value="4"
               readonly
-              active-color="#FFD700" 
-              color="grey-lighten-1"  
+              active-color="#FFD700"
+              color="grey-lighten-1"
               density="compact"
               class="mb-2"
             ></v-rating>
@@ -174,12 +193,12 @@ import mapImage from '@/assets/images/1.png'
             <v-rating
               model-value="4"
               readonly
-              active-color="#FFD700" 
+              active-color="#FFD700"
               color="grey-lighten-1"
               density="compact"
               class="mb-2"
             ></v-rating>
-            <p class="body-2 ">
+            <p class="body-2">
               "SK-II နဲ့ Anua သုံးနေကျမို့ ပစ္စည်းအတု/အစစ် ချက်ချင်းသိသာတယ်။ ဒီဆိုင်ကတော့ Skincare
               တိုင်းက တကယ့် Batch Code စစ်စစ်တွေမို့ စိတ်ချရတယ်။ အမြဲဝယ်ဖြစ်ပါတယ်!"
             </p>
@@ -192,7 +211,6 @@ import mapImage from '@/assets/images/1.png'
 </template>
 
 <style scoped>
-
 .primary-title {
   color: #4a154b;
 }

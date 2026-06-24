@@ -87,6 +87,22 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Registration.vue'),
     },
+    {
+      path: '/admin',
+      name: 'admin',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/AdminDashboard.vue'),
+    },
+    {
+      path: '/admin/product',
+      name: 'adminproduct',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/Product.vue'),
+    },
     
   ],
 })

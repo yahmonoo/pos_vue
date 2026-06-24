@@ -9,6 +9,6 @@ if (process.env.NODE_ENV == 'development') {
 const instance = axios.create({
   baseURL: baseURL,
   timeout: 0,
-  headers: { 'info-client': 'travel' },
+  headers: { 'info-client': 'pos' },
 })
 export default instance

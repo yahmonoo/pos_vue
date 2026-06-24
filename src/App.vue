@@ -13,32 +13,75 @@
           </v-avatar>
           Glow Skin Cosmetics
         </v-toolbar-title>
-      </router-link> 
+      </router-link>
 
       <v-spacer />
       <!-- LEFT SIDE NAV LINKS -->
       <div class="d-flex align-center ml-4">
-        <v-btn to="/" variant="text" class="nav-link d-none d-md-flex"> Home </v-btn>
+        <v-btn to="/" variant="text" v-if="role != 'ADMIN'" class="nav-link d-none d-md-flex">
+          Home
+        </v-btn>
 
-        <v-btn to="/product" variant="text" class="nav-link d-none d-md-flex"> Product </v-btn>
+        <v-btn
+          to="/product"
+          variant="text"
+          v-if="role != 'ADMIN'"
+          class="nav-link d-none d-md-flex"
+        >
+          Product
+        </v-btn>
 
-        <v-btn to="/about" variant="text" class="nav-link d-none d-md-flex"> About Us</v-btn>
+        <v-btn to="/about" variant="text" v-if="role != 'ADMIN'" class="nav-link d-none d-md-flex">
+          About Us</v-btn
+        >
+
+        <!-- Admin -->
+
+        <v-btn v-if="role == 'ADMIN'" to="/admin" variant="text" class="set-link d-none d-md-flex"
+          >Dashboard</v-btn
+        >
+        <v-btn v-if="role == 'ADMIN'" to="/about" variant="text" class="set-link d-none d-md-flex"
+          >Sale</v-btn
+        >
+
+        <v-menu v-if="role === 'ADMIN'" class="ma-4 pl-5">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" variant="text" class="set-link d-none d-md-flex">
+              Settings
+              <v-icon end>mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-for="menu in adminMenus"
+              :key="menu.to"
+              :to="menu.to"
+              :prepend-icon="menu.icon"
+              :title="menu.title"
+            />
+          </v-list>
+        </v-menu>
       </div>
 
       <v-spacer />
 
       <!-- RIGHT ICONS -->
-      <v-btn icon class="mr-4" to="/cart">
-        <v-badge :content="cartCount":value="cartCount"color="pink"overlap>
+      <v-btn icon class="mr-4" to="/cart" v-if="role !== 'ADMIN'">
+        <v-badge :content="cartCount" :value="cartCount" color="pink" overlap>
           <v-icon icon="mdi-cart" color="#d78f99"></v-icon>
         </v-badge>
       </v-btn>
 
+<<<<<<< HEAD
       <v-btn v-if="!isLoggedIn" icon to="/LoginView">
+=======
+      <v-btn icon to="/login" v-if="!role">
+>>>>>>> e069668ef3323aa3803b337578f96b91427abe9a
         <v-icon>mdi-login</v-icon>
       </v-btn>
 
-      <v-menu>
+      <v-menu v-if="role" class="ma-4 pl-5">
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" class="profile-btn" variant="text">
             <v-avatar size="32" class="mr-2">
@@ -68,9 +111,35 @@
     <!-- Sidebar / Drawer -->
     <v-navigation-drawer v-model="drawer" app :temporary="$vuetify.display.smAndDown">
       <v-list nav>
-        <v-list-item to="/" title="Home" prepend-icon="mdi-home" />
-        <v-list-item to="/product" title="Product" prepend-icon="mdi-package-variant" />
-        <v-list-item to="/about" title="About Us" prepend-icon="mdi-phone" />
+        <!-- Customer Menu -->
+        <template v-if="role !== 'ADMIN'">
+          <v-list-item to="/" title="Home" prepend-icon="mdi-home" />
+
+          <v-list-item to="/product" title="Product" prepend-icon="mdi-package-variant" />
+
+          <v-list-item to="/about" title="About Us" prepend-icon="mdi-information" />
+        </template>
+
+        <!-- Admin Menu -->
+        <template v-else>
+          <v-list-item to="/admin" title="Dashboard" prepend-icon="mdi-view-dashboard" />
+
+          <v-list-item to="/sale" title="Sale" prepend-icon="mdi-cash-register" />
+
+          <v-list-group value="settings">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" title="Settings" prepend-icon="mdi-cog" />
+            </template>
+
+            <v-list-item
+              v-for="menu in adminMenus"
+              :key="menu.to"
+              :to="menu.to"
+              :title="menu.title"
+              :prepend-icon="menu.icon"
+            />
+          </v-list-group>
+        </template>
       </v-list>
     </v-navigation-drawer>
 
@@ -83,11 +152,11 @@
   </v-app>
 </template>
 <script>
-
 export default {
-  name:'App',
-  data () {
+  name: 'App',
+  data() {
     return {
+<<<<<<< HEAD
     drawer: false,
     cartCount: 0,
     isLoggedIn: false,
@@ -144,6 +213,51 @@ methods:
 
 
     }
+=======
+      drawer: false,
+      cartCount: 0,
+      role: null,
+      adminMenus: [
+        {
+          title: 'Products',
+          icon: 'mdi-package-variant',
+          to: '/admin/product',
+        },
+        {
+          title: 'Orders',
+          icon: 'mdi-cart',
+          to: '/admin/orders',
+        },
+      ],
+    }
+  },
+  mounted() {
+    this.role = localStorage.getItem('user_role')
+
+    this.updateCartGlobalCount()
+    window.addEventListener('cart-local-storage-changed', this.updateCartGlobalCount)
+  },
+  beforeUnmount() {
+    window.removeEventListener('cart-local-storage-changed', this.updateCartCount)
+  },
+
+  methods: {
+    updateCartGlobalCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || []
+      this.cartCount = cart.reduce((total, item) => {
+        return total + (item.buyQuantity || 1)
+      }, 0)
+    },
+    logout() {
+      localStorage.removeItem('user_email')
+      localStorage.removeItem('user_password')
+      localStorage.removeItem('user_role')
+
+      this.role = null
+
+      this.$router.push('/login')
+    },
+>>>>>>> e069668ef3323aa3803b337578f96b91427abe9a
   },
   // created(){
   //   const savedCart =localStorage.getItem('cart');
@@ -152,12 +266,21 @@ methods:
   //   }else{
   //     this.cart=[];
   //   }
+<<<<<<< HEAD
 created() {
     this.updateCartGlobalCount();
     this.checkLoginStatus();
   }
 };
 
+=======
+  created() {
+    // အကယ်၍ local storage ထဲမှာ cart ရှိရင် ကောင်တာ တန်းတွက်ဖို့
+    this.updateCartGlobalCount()
+    this.role = localStorage.getItem('user_role')
+  },
+}
+>>>>>>> e069668ef3323aa3803b337578f96b91427abe9a
 </script>
 <style scoped>
 .shop-brand {
@@ -177,6 +300,18 @@ created() {
 }
 
 .nav-link:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+  transform: translateY(-2px);
+}
+
+.set-link {
+  font-size: 16px;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.set-link:hover {
   background-color: rgba(25, 118, 210, 0.1);
   transform: translateY(-2px);
 }

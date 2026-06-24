@@ -6,7 +6,7 @@
     @add-to-cart="handleAddToCartFromDetail"
   /> -->
   
-  <div oclass="main-content">
+  <div class="main-content">
     <section class="banner">
       <div class="video-box">
         <video controls autoplay :muted="true" loop playsinline preload="auto">
@@ -23,6 +23,13 @@
         <div v-for="(product, index) in popularProducts" :key="'popular-' + index" class="card" @click="openDetail(product)">
           <div class="image-box">
             <img :src="getImageUrl(product.img)" :alt="product.name" />
+            <div class="rating-container" v-if="product.rating">
+  <span class="stars">
+    <span v-for="star in Math.floor(product.rating)" :key="'star-' + star" class="star filled">★</span>
+    <span v-if="product.rating % 1 !== 0" class="star half">★</span>
+  </span>
+  <span class="rating-text">({{ product.rating }})</span>
+</div>
             <div class="product-desc" v-if="product.description">
               <p>{{ product.description }}</p>
             </div>
@@ -126,17 +133,17 @@ export default {
 
       // Popular Products Data
       popularProducts: [
-        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', qty: 0, maxQty: 2, category: 'Lipsticks',description:'Natural Lipstick' },
-        { id: 102, name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', qty: 0, maxQty: 7, category: 'Skincare' },
-        { id: 103, name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', qty: 0, maxQty: 12, category: 'serum' },
-        { id: 104, name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', qty: 0, maxQty: 13 },
-        { id: 105, name: 'YSL Glow Cushion', price: 93000, img: 'foun.jpg', qty: 0, maxQty: 3 },
-        { id: 106, name: 'Chanel coco perfume(30ml)', price: 230000, img: 'coco.webp', qty: 0, maxQty: 5 },
-        { id: 107, name: 'Anua 70+ Toner', price: 65500, img: 'anua.webp', qty: 0, maxQty: 11 },
-        { id: 108, name: 'CeraVe Moisture Cream', price: 84000, img: 'carave.avif', qty: 0, maxQty: 10 },
-        { id: 109, name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp', qty: 0, maxQty: 7 },
-        { id: 110, name: 'COSRX essence', price: 69000, img: 'cosrx.jpg', qty: 0, maxQty: 5 }, // 6900 မှ 69000 သို့ ပြင်ဆင်ထားပါသည်
-        { id: 111, name: 'Kiro Waterproof Eyeliner', price: 7000, img: 'eye.jpg', qty: 0, maxQty: 9 }
+        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', qty: 0, maxQty: 2, category: 'Lipsticks',description:'Natural Lipstick',rating:5 },
+        { id: 102, name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', qty: 0, maxQty: 7, category: 'Skincare', rating:4.8},
+        { id: 103, name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', qty: 0, maxQty: 12, category: 'serum',rating:4.5  },
+        { id: 104, name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', qty: 0, maxQty: 13,rating:5 },
+        { id: 105, name: 'YSL Glow Cushion', price: 93000, img: 'foun.jpg', qty: 0, maxQty: 3 ,rating: 4.8},
+        { id: 106, name: 'Chanel coco perfume(30ml)', price: 230000, img: 'coco.webp', qty: 0, maxQty: 5 ,rating:4.3},
+        { id: 107, name: 'Anua 70+ Toner', price: 65500, img: 'anua.webp', qty: 0, maxQty: 11,rating:4.5 },
+        { id: 108, name: 'CeraVe Moisture Cream', price: 84000, img: 'carave.avif', qty: 0, maxQty: 10,rating:4.8 },
+        { id: 109, name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp', qty: 0, maxQty: 7 ,rating:4.6},
+        { id: 110, name: 'COSRX essence', price: 69000, img: 'cosrx.jpg', qty: 0, maxQty: 5,rating:4  }, // 6900 မှ 69000 သို့ ပြင်ဆင်ထားပါသည်
+        { id: 111, name: 'Kiro Waterproof Eyeliner', price: 7000, img: 'eye.jpg', qty: 0, maxQty: 9,rating:4.8 }
       ],
 
       // Discount Products Data
@@ -303,6 +310,12 @@ body {
   margin-bottom: 10px;
   border-radius: 8px;
 }
+.card:hover img {
+  transform: scale(1.05);
+}
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Card လေးပါ အပေါ်ကို နည်းနည်း ကြွတက်လာသလို ခံစားရစေတယ် */
+}
 .card h3 {
   font-size: 1rem;
   color: #000000;
@@ -446,6 +459,35 @@ footer {
   font-size: 11px !important;
   color: #95a5a6;
   margin: 5px 0px 10px 0px !important;
+}
+.rating-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 5px 0;
+}
+
+.stars {
+  color: #f1c40f; /* ကြယ်ရောင်ကို အဝါရောင် သတ်မှတ်ခြင်း */
+  font-size: 14px;
+}
+
+.star.filled {
+  color: #f1c40f;
+}
+
+.star.half {
+  position: relative;
+  display: inline-block;
+  background: linear-gradient(90deg, #f1c40f 50%, #e0e0e0 50%);
+  /* -webkit-background-clip: text; */
+  -webkit-text-fill-color: transparent;
+}
+
+.rating-text {
+  font-size: 12px;
+  color: #7f8c8d;
 }
 
 @media (max-width: 768px) {

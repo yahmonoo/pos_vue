@@ -21,16 +21,15 @@ const handleRegister = () => {
   // 📍 LocalStorage ထဲတွင် အကောင့်အချက်အလက်ကို သိမ်းဆည်းခြင်း
   localStorage.setItem('user_email', email.value)
   localStorage.setItem('user_password', password.value)
+  localStorage.setItem('user_role', 'CUSTOMER')
 
   alert('အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါတယ်ရှင်။ Sign In အရင်ဝင်ပေးပါဦးနော်။')
-  router.push('/login') 
+  router.push('/login')
 }
 </script>
 <template>
   <v-container fluid class="register-bg fill-height d-flex align-center justify-center py-10">
-    
     <v-card width="100%" max-width="480" class="pa-8 elevation-4 rounded-xl" color="white">
-      
       <div class="text-center mb-6">
         <h1 class="text-h4 font-weight-bold primary-title mb-2">Create Account</h1>
         <p class="text-subtitle-2 text-muted">Sign up to start shopping your favorite cosmetics.</p>
@@ -38,8 +37,9 @@ const handleRegister = () => {
       </div>
 
       <v-form @submit.prevent="handleRegister">
-        
-        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1">Full Name</span>
+        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
+          >Full Name</span
+        >
         <v-text-field
           v-model="name"
           prepend-inner-icon="mdi-account-outline"
@@ -51,7 +51,9 @@ const handleRegister = () => {
           required
         ></v-text-field>
 
-        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1">Email Address</span>
+        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
+          >Email Address</span
+        >
         <v-text-field
           v-model="email"
           prepend-inner-icon="mdi-email-outline"
@@ -64,7 +66,9 @@ const handleRegister = () => {
           required
         ></v-text-field>
 
-        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1">Password</span>
+        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
+          >Password</span
+        >
         <v-text-field
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
@@ -79,7 +83,9 @@ const handleRegister = () => {
           required
         ></v-text-field>
 
-        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1">Confirm Password</span>
+        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
+          >Confirm Password</span
+        >
         <v-text-field
           v-model="confirmPassword"
           :type="showConfirmPassword ? 'text' : 'password'"
@@ -106,14 +112,13 @@ const handleRegister = () => {
       </v-form>
 
       <div class="text-center mt-6 text-body-2 text-muted">
-        Already have an account? 
+        Already have an account?
         <router-link to="/login" class="text-purple-darken-2 font-weight-bold text-decoration-none">
           Sign In instead
         </router-link>
       </div>
-
-    </v-card> 
-      </v-container>
+    </v-card>
+  </v-container>
 </template>
 
 <style scoped>
@@ -134,7 +139,9 @@ const handleRegister = () => {
 
 .register-btn {
   background: linear-gradient(135deg, #4a154b 0%, #6b216c 100%) !important;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .register-btn:hover {

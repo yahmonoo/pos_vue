@@ -170,7 +170,7 @@ td {
 .city-table thead th {
   background: #d66182 !important;
   font-weight: 700;
-  /* color: #374151; */
+
   text-transform: none;
   position: sticky;
   top: 0;

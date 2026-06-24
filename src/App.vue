@@ -157,6 +157,11 @@ export default {
       role: null,
       adminMenus: [
         {
+          title: 'City',
+          icon: 'mdi-city',
+          to: '/admin/city',
+        },
+        {
           title: 'Products',
           icon: 'mdi-package-variant',
           to: '/admin/product',

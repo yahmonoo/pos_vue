@@ -73,11 +73,7 @@
         </v-badge>
       </v-btn>
 
-<<<<<<< HEAD
-      <v-btn v-if="!isLoggedIn" icon to="/LoginView">
-=======
-      <v-btn icon to="/login" v-if="!role">
->>>>>>> e069668ef3323aa3803b337578f96b91427abe9a
+      <v-btn v-if="!role" icon to="/login">
         <v-icon>mdi-login</v-icon>
       </v-btn>
 
@@ -156,16 +152,32 @@ export default {
   name: 'App',
   data() {
     return {
-<<<<<<< HEAD
     drawer: false,
     cartCount: 0,
     isLoggedIn: false,
-    userName:''
+    role:null,
+    userName:'',
+
+      adminMenus: [
+        {
+          title: 'Products',
+          icon: 'mdi-package-variant',
+          to: '/admin/product',
+        },
+        {
+          title: 'Orders',
+          icon: 'mdi-cart',
+          to: '/admin/orders',
+        },
+      ],
   };
   
 },
 mounted()
 {
+  console.log(localStorage.getItem("user_role"));
+  
+  this.role = localStorage.getItem("user_role")
  this.updateCartGlobalCount();
  this.checkLoginStatus();
  window.addEventListener('cart-local-storage-changed',
@@ -212,27 +224,11 @@ methods:
       this.$router.push('/product');}
 
 
-    }
-=======
-      drawer: false,
-      cartCount: 0,
-      role: null,
-      adminMenus: [
-        {
-          title: 'Products',
-          icon: 'mdi-package-variant',
-          to: '/admin/product',
-        },
-        {
-          title: 'Orders',
-          icon: 'mdi-cart',
-          to: '/admin/orders',
-        },
-      ],
+
+      
     }
   },
   mounted() {
-    this.role = localStorage.getItem('user_role')
 
     this.updateCartGlobalCount()
     window.addEventListener('cart-local-storage-changed', this.updateCartGlobalCount)
@@ -257,7 +253,6 @@ methods:
 
       this.$router.push('/login')
     },
->>>>>>> e069668ef3323aa3803b337578f96b91427abe9a
   },
   // created(){
   //   const savedCart =localStorage.getItem('cart');
@@ -266,21 +261,13 @@ methods:
   //   }else{
   //     this.cart=[];
   //   }
-<<<<<<< HEAD
 created() {
     this.updateCartGlobalCount();
-    this.checkLoginStatus();
+    this.checkLoginStatus;
   }
 };
 
-=======
-  created() {
-    // အကယ်၍ local storage ထဲမှာ cart ရှိရင် ကောင်တာ တန်းတွက်ဖို့
-    this.updateCartGlobalCount()
-    this.role = localStorage.getItem('user_role')
-  },
-}
->>>>>>> e069668ef3323aa3803b337578f96b91427abe9a
+
 </script>
 <style scoped>
 .shop-brand {

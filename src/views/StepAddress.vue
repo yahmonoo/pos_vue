@@ -1,7 +1,6 @@
 <template>
   <div class="address-wrapper">
     <v-form class="px-2">
-      
       <div class="input-label-hint">Phone Number</div>
       <v-text-field
         v-model="formData.phone"

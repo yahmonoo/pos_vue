@@ -8,8 +8,10 @@
       <v-col cols="12" md="8">
         <v-card v-for="(item, index) in cartItems" :key="index" class="pa-4 mb-3" elevation="1" style="border-radius: 8px;">
           <v-row align="center">
-            <v-col cols="3" sm="2">
-              <v-img :src="getProductImage(item.imageName)" height="70" contain @error="handleImageError"></v-img>
+            <v-col cols="3" sm="2" class="d-flex align-center justify-center">
+              <div style="width: 80px; height: 70px; overflow:hidden; border-radius:4px;display:flex;align-items:center;justify-content:center;">
+              <v-img :src="getProductImage(item.imageName)" height="100%"width="100%" cover @error="handleImageError"></v-img>
+              </div>
             </v-col>
             
             <v-col cols="5" sm="5">
@@ -75,21 +77,56 @@ export default {
       cartItems: []
     };
   },
+
   computed: {
-    totalItemsCount() {
-      return this.cartItems.reduce((total, item) => total + (parseInt(item.buyQuantity) || 1), 0);
-    },
-    totalPrice() {
-      return this.cartItems.reduce((total, item) => total + (item.price * (parseInt(item.buyQuantity) || 1)), 0);
-    }
+  totalItemsCount() {
+    if (!this.cartItems) return 0;
+    return this.cartItems.reduce((total, item) => {
+      const qty = parseInt(item.buyQuantity) || 1;
+      return total + qty;
+    }, 0);
   },
+  
+  totalPrice() {
+    if (!this.cartItems) return 0;
+    return this.cartItems.reduce((total, item) => {
+      let rawPrice = item.price || item.variantPrice  || (item.product ? item.product.price : 0);
+      
+      if (typeof rawPrice === 'string' && (rawPrice.includes('ml') || rawPrice.includes('g'))) {
+        rawPrice = item.product ? item.product.price : 32000; 
+      }
+
+      let price = 0;
+      if (rawPrice) {
+        price = typeof rawPrice === 'string'
+          ? Number(rawPrice.replace(/[^0-9]/g, ''))
+          : Number(rawPrice);
+      }
+      
+      if (!price || price === 0) {
+        price = 32000; 
+      }
+      
+      const qty = parseInt(item.buyQuantity) || 1;
+      return total + (price * qty);
+    }, 0);
+  }
+},
+  
   mounted() {
     this.loadCart();
   },
   methods: {
     goToCheckout() {
+      const token=localStorage.getItem('user-token');
+      if(!token){
+        
+      this.$router.push({path:'/LoginView', query:{fromCart :true}});
+    }
+    else{
       this.$router.push('/checkOut');
-    },
+    }
+  },
     loadCart() {
       const items = JSON.parse(localStorage.getItem('cart')) || [];
       this.cartItems = items.map(item => ({
@@ -98,11 +135,22 @@ export default {
       }));
     },
     getProductImage(name) {
-      if (!name) return '';
-      const path1 = new URL(`../assets/images/${name}`, import.meta.url).href;
-      const path2 = new URL(`../assets/products/${name}`, import.meta.url).href;
-      return path1 || path2;
-    }, // 💡 ဤနေရာတွင် ကော်မာ (,) နှင့် တွန့်ကွင်း ပိတ်ရန် ကျန်ခဲ့သည်ကို ပြင်ဆင်ထားပါသည်
+  if (!name) return '';
+
+  if (name.startsWith('http') || name.startsWith('data:') || name.startsWith('blob:')) {
+    return name;
+  }
+
+  try {
+    return new URL(`../assets/products/${name}`, import.meta.url).href;
+  } catch (e) {
+    try {
+      return new URL(`../assets/images/${name}`, import.meta.url).href;
+    } catch (err) {
+      return 'https://placehold.co/300x300?text=Product';
+    }
+  }
+},
     
     updateQuantity(index, change) {
       let currentQty = parseInt(this.cartItems[index].buyQuantity) || 1;

@@ -1,8 +1,8 @@
 <template>
   <v-container fluid class="pa-6" style="background-color: #f3eae8; min-height: 100vh;">
     
-    <v-btn text color="grey darken-2" class="mb-4 text-none" @click="$router.push('/product')">
-      <v-icon left>mdi-arrow-left</v-icon> Back to Products
+    <v-btn outlined color="#d78f99" class="mb-4 text-none font-weight-bold back-btn px-4"style="border-radius:30px; border-width:2px;background-color:white;letter-spacing:0.5px;" @click="$router.push('/product')">
+      <v-icon left size="18" class="arrow-icon">mdi-arrow-left</v-icon> Back to Products
     </v-btn>
 
     <v-card v-if="productData" class="pa-6" elevation="1" style="border-radius: 12px; background-color: white;">
@@ -163,10 +163,15 @@ export default {
     addToCart() {
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
       cart.push({
-        ...this.product,
-        imageName:this.currentImageName,
-        price:this.selectedVariant,
+      ...this.product,
+        id: this.productData.id,
+        name: this.productData.name,
+        price: this.currentDisplayPrice,
+        imageName: this.currentImageName,
+        chosenVariant: this.selectedVariant,
         buyQuantity: this.quantity
+
+        
       });
       
      
@@ -202,5 +207,18 @@ export default {
   max-height: 100%;
   object-fit: contain; 
   display: block;
+}
+.back-btn:hover {
+  background-color: #fff1f7 !important;
+  box-shadow: 0 4px 10px rgba(215, 143, 153, 0.15);
+}
+
+.back-btn:hover .arrow-icon {
+  transform: translateX(-4px);
+  transition: transform 0.2s ease-in-out;
+}
+
+.arrow-icon {
+  transition: transform 0.2s ease-in-out;
 }
 </style>

@@ -34,7 +34,7 @@
         </v-badge>
       </v-btn>
 
-      <v-btn icon>
+      <v-btn v-if="!isLoggedIn" icon to="/LoginView">
         <v-icon>mdi-login</v-icon>
       </v-btn>
 
@@ -45,7 +45,7 @@
               <v-img src="https://i.pravatar.cc/100" />
             </v-avatar>
 
-            <span class="username">Snowy</span>
+            <span class="username">{{userName}}</span>
 
             <v-icon size="18" class="ml-1">mdi-chevron-down</v-icon>
           </v-btn>
@@ -89,19 +89,26 @@ export default {
   data () {
     return {
     drawer: false,
-    cartCount: 0
+    cartCount: 0,
+    isLoggedIn: false,
+    userName:''
   };
   
 },
 mounted()
 {
  this.updateCartGlobalCount();
+ this.checkLoginStatus();
  window.addEventListener('cart-local-storage-changed',
   this.updateCartGlobalCount);
+  window.addEventListener('cart-local-storage-changed',
+  this.checkLoginStatus);
 },
  beforeUnmount()
  {
   window.removeEventListener('cart-local-storage-changed',this.updateCartCount);
+  window.removeEventListener('cart-local-storage-changed',this.checkLoginStatus);
+
  },
 
 methods:
@@ -111,9 +118,32 @@ methods:
     const cart=JSON.parse(localStorage.getItem('cart')) || [];
     this.cartCount=cart.reduce((total,item) =>
   {
-    return total+(item.buyQuantity || 1);
+    return total+(parseInt(item.buyQuantity) || 1);
   },0);
-  }
+  
+  },
+
+  checkLoginStatus()
+  {
+    const token=localStorage.getItem('user-token');
+    const userInfo =JSON.parse(localStorage.getItem('user-info'));
+    if(token && userInfo){
+      this.isLoggedIn=true;
+      this.userName=userInfo.name || 'User';
+    } else{
+      this.isLoggedIn=false;
+      this.userName='';
+    }
+  },
+  logout(){
+    if(confirm("Are you sure to log out?")){
+      localStorage.removeItem('user-token');
+      localStorage.removeItem('user-info');
+      this.checkLoginStatus();
+      this.$router.push('/product');}
+
+
+    }
   },
   // created(){
   //   const savedCart =localStorage.getItem('cart');
@@ -123,8 +153,8 @@ methods:
   //     this.cart=[];
   //   }
 created() {
-    // အကယ်၍ local storage ထဲမှာ cart ရှိရင် ကောင်တာ တန်းတွက်ဖို့
     this.updateCartGlobalCount();
+    this.checkLoginStatus();
   }
 };
 

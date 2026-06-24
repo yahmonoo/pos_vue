@@ -73,7 +73,7 @@
         </v-badge>
       </v-btn>
 
-      <v-btn v-if="!role" icon to="/login">
+      <v-btn icon to="/login" v-if="!role">
         <v-icon>mdi-login</v-icon>
       </v-btn>
 
@@ -84,7 +84,7 @@
               <v-img src="https://i.pravatar.cc/100" />
             </v-avatar>
 
-            <span class="username">{{userName}}</span>
+            <span class="username">Snowy</span>
 
             <v-icon size="18" class="ml-1">mdi-chevron-down</v-icon>
           </v-btn>
@@ -152,12 +152,9 @@ export default {
   name: 'App',
   data() {
     return {
-    drawer: false,
-    cartCount: 0,
-    isLoggedIn: false,
-    role:null,
-    userName:'',
-
+      drawer: false,
+      cartCount: 0,
+      role: null,
       adminMenus: [
         {
           title: 'Products',
@@ -170,65 +167,10 @@ export default {
           to: '/admin/orders',
         },
       ],
-  };
-  
-},
-mounted()
-{
-  console.log(localStorage.getItem("user_role"));
-  
-  this.role = localStorage.getItem("user_role")
- this.updateCartGlobalCount();
- this.checkLoginStatus();
- window.addEventListener('cart-local-storage-changed',
-  this.updateCartGlobalCount);
-  window.addEventListener('cart-local-storage-changed',
-  this.checkLoginStatus);
-},
- beforeUnmount()
- {
-  window.removeEventListener('cart-local-storage-changed',this.updateCartCount);
-  window.removeEventListener('cart-local-storage-changed',this.checkLoginStatus);
-
- },
-
-methods:
-{
-  updateCartGlobalCount()
-  {
-    const cart=JSON.parse(localStorage.getItem('cart')) || [];
-    this.cartCount=cart.reduce((total,item) =>
-  {
-    return total+(parseInt(item.buyQuantity) || 1);
-  },0);
-  
-  },
-
-  checkLoginStatus()
-  {
-    const token=localStorage.getItem('user-token');
-    const userInfo =JSON.parse(localStorage.getItem('user-info'));
-    if(token && userInfo){
-      this.isLoggedIn=true;
-      this.userName=userInfo.name || 'User';
-    } else{
-      this.isLoggedIn=false;
-      this.userName='';
-    }
-  },
-  logout(){
-    if(confirm("Are you sure to log out?")){
-      localStorage.removeItem('user-token');
-      localStorage.removeItem('user-info');
-      this.checkLoginStatus();
-      this.$router.push('/product');}
-
-
-
-      
     }
   },
   mounted() {
+    this.role = localStorage.getItem('user_role')
 
     this.updateCartGlobalCount()
     window.addEventListener('cart-local-storage-changed', this.updateCartGlobalCount)
@@ -261,13 +203,12 @@ methods:
   //   }else{
   //     this.cart=[];
   //   }
-created() {
-    this.updateCartGlobalCount();
-    this.checkLoginStatus;
-  }
-};
-
-
+  created() {
+    // အကယ်၍ local storage ထဲမှာ cart ရှိရင် ကောင်တာ တန်းတွက်ဖို့
+    this.updateCartGlobalCount()
+    this.role = localStorage.getItem('user_role')
+  },
+}
 </script>
 <style scoped>
 .shop-brand {

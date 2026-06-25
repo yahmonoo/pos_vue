@@ -118,6 +118,54 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/City.vue'),
     },
+    {
+      path: '/admin/category',
+      name: 'admincategory',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/Category.vue'),
+    },
+    {
+      path: '/admin/township',
+      name: 'admintownship',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/Township.vue'),
+    },
+    {
+      path: '/admin/useraccount',
+      name: 'adminuseraccount',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/UserAccount.vue'),
+    },
+    {
+      path: '/admin/report',
+      name: 'adminreport',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/Report.vue'),
+    },
+    {
+      path: '/admin/sale',
+      name: 'adminsale',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/Sale.vue'),
+    },
+    {
+      path: '/admin/salelist',
+      name: 'adminsalelist',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/admin/SaleList.vue'),
+    },
     
   ],
 })

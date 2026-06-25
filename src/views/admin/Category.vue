@@ -3,7 +3,7 @@
     <!-- Header -->
 
     <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true"> Add Product </v-btn>
+      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true"> Add Category </v-btn>
     </div>
 
     <!-- Table Card -->
@@ -12,24 +12,23 @@
         <thead>
           <tr>
             <th class="text-center">No.</th>
-            <th class="text-center">Township Name</th>
+            <th class="text-center">Category Name</th>
             <th class="text-center" width="150">Action</th>
           </tr>
         </thead>
 
         <tbody>
           <tr
-            v-for="(item, index) in townshipList"
-            :key="item.townshipId"
+            v-for="(item, index) in categoryList"
+            :key="item.catgoryId"
             @click="selectedOne = item"
             :style="{
-              backgroundColor:
-                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
+              backgroundColor: item.catgoryId == selectedOne.catgoryId ? '#f5e2e5' : 'transparent',
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
 
-            <td class="text-center">{{ item.townshipName }}</td>
+            <td class="text-center">{{ item.name }}</td>
 
             <td class="text-center">
               <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
@@ -54,9 +53,9 @@
 
         <v-card-text class="pa-6">
           <v-text-field
-            v-model="townshipDto.townshipName"
+            v-model="categoryDto.name"
             class="cinput"
-            label="Township Name"
+            label="City Name"
             variant="outlined"
             density="compact"
           />
@@ -103,58 +102,58 @@ export default {
     return {
       dialog: false,
       cityName: '',
-      townshipDto: {},
+      categoryDto: {},
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
-      townshipList: [
+      categoryList: [
         {
-          townshipId: 1,
-          townshipName: 'Yangon',
+          catgoryId: 1,
+          name: 'Yangon',
         },
         {
-          townshipId: 2,
-          townshipName: 'Mandalay',
+          catgoryId: 2,
+          name: 'Mandalay',
         },
         {
-          townshipId: 3,
-          townshipName: 'Naypyidaw',
+          catgoryId: 3,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 4,
-          townshipName: 'Naypyidaw',
+          catgoryId: 4,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 5,
-          townshipName: 'Naypyidaw',
+          catgoryId: 5,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 6,
-          townshipName: 'Naypyidaw',
+          catgoryId: 6,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 7,
-          townshipName: 'Naypyidaw',
+          catgoryId: 7,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 8,
-          townshipName: 'Naypyidaw',
+          catgoryId: 8,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 9,
-          townshipName: 'Naypyidaw',
+          catgoryId: 9,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 10,
-          townshipName: 'Naypyidaw',
+          catgoryId: 10,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 11,
-          townshipName: 'Naypyidaw',
+          catgoryId: 11,
+          name: 'Naypyidaw',
         },
         {
-          townshipId: 12,
-          townshipName: 'Naypyidaw',
+          catgoryId: 12,
+          name: 'Naypyidaw',
         },
       ],
     }
@@ -166,8 +165,8 @@ export default {
       cityService
         .getCity()
         .then((response) => {
-          this.townshipList.splice(0, this.townshipList.length)
-          this.townshipList.push(...response)
+          this.categoryList.splice(0, this.categoryList.length)
+          this.categoryList.push(...response)
         })
         .catch((error) => {
           this.$swal('Fail!', error.response.data.message, 'error')
@@ -178,7 +177,7 @@ export default {
         console.log(this.saveOrUpdate)
 
         cityService
-          .addCity(this.townshipDto)
+          .addCity(this.categoryDto)
           .then((response) => {})
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
@@ -187,7 +186,7 @@ export default {
         console.log(this.saveOrUpdate)
 
         cityService
-          .updateCity(this.townshipDto)
+          .updateCity(this.categoryDto)
           .then((response) => {})
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
@@ -198,7 +197,7 @@ export default {
       console.log(item)
       this.dialog = true
       this.saveOrUpdate = 'UPDATE'
-      this.townshipDto = { ...item }
+      this.categoryDto = { ...item }
     },
     deletCity(item) {
       this.dialogDelete = true

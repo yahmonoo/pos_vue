@@ -40,8 +40,32 @@
         <v-btn v-if="role == 'ADMIN'" to="/admin" variant="text" class="set-link d-none d-md-flex"
           >Dashboard</v-btn
         >
-        <v-btn v-if="role == 'ADMIN'" to="/about" variant="text" class="set-link d-none d-md-flex"
-          >Sale</v-btn
+
+        <v-menu v-if="role === 'ADMIN'" class="ma-4 pl-5">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" variant="text" class="set-link d-none d-md-flex">
+              Sale
+              <v-icon end>mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-for="menu in saleMenus"
+              :key="menu.to"
+              :to="menu.to"
+              :prepend-icon="menu.icon"
+              :title="menu.title"
+            />
+          </v-list>
+        </v-menu>
+
+        <v-btn
+          v-if="role == 'ADMIN'"
+          to="/admin/report"
+          variant="text"
+          class="set-link d-none d-md-flex"
+          >Report</v-btn
         >
 
         <v-menu v-if="role === 'ADMIN'" class="ma-4 pl-5">
@@ -120,7 +144,21 @@
         <template v-else>
           <v-list-item to="/admin" title="Dashboard" prepend-icon="mdi-view-dashboard" />
 
-          <v-list-item to="/sale" title="Sale" prepend-icon="mdi-cash-register" />
+          <v-list-group value="sale">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" title="Sale" prepend-icon="mdi-point-of-sale" />
+            </template>
+
+            <v-list-item
+              v-for="menu in saleMenus"
+              :key="menu.to"
+              :to="menu.to"
+              :title="menu.title"
+              :prepend-icon="menu.icon"
+            />
+          </v-list-group>
+
+          <v-list-item to="/admin/report" title="Report" prepend-icon="mdi-chart-box" />
 
           <v-list-group value="settings">
             <template #activator="{ props }">
@@ -161,15 +199,39 @@ export default {
           icon: 'mdi-city',
           to: '/admin/city',
         },
+
+        {
+          title: 'Township',
+          icon: 'mdi-home-city',
+          to: '/admin/township',
+        },
+        {
+          title: 'Category',
+          icon: 'mdi-shape',
+          to: '/admin/category',
+        },
         {
           title: 'Products',
           icon: 'mdi-package-variant',
           to: '/admin/product',
         },
         {
-          title: 'Orders',
-          icon: 'mdi-cart',
-          to: '/admin/orders',
+          title: 'User Account',
+          icon: 'mdi-account-group',
+          to: '/admin/useraccount',
+        },
+      ],
+      saleMenus: [
+        {
+          title: 'Sale',
+          icon: 'mdi-cash-register',
+          to: '/admin/sale',
+        },
+
+        {
+          title: 'Sale List',
+          icon: 'mdi-format-list-bulleted',
+          to: '/admin/salelist',
         },
       ],
     }

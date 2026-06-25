@@ -3,7 +3,7 @@
     <!-- Header -->
 
     <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true"> Add Product </v-btn>
+      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true"> Add Township </v-btn>
     </div>
 
     <!-- Table Card -->

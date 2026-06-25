@@ -25,8 +25,11 @@
             <img :src="getImageUrl(product.img)" :alt="product.name" />
             <div class="rating-container" v-if="product.rating">
   <span class="stars">
-    <span v-for="star in Math.floor(product.rating)" :key="'star-' + star" class="star filled">★</span>
+    <span v-for="star in Math.floor(product.rating)" :key="'filled-' + star" class="star filled">★</span>
+    
     <span v-if="product.rating % 1 !== 0" class="star half">★</span>
+    
+    <span v-for="star in (5 - Math.ceil(product.rating))" :key="'empty-' + star" class="star empty">★</span>
   </span>
   <span class="rating-text">({{ product.rating }})</span>
 </div>
@@ -133,7 +136,7 @@ export default {
 
       // Popular Products Data
       popularProducts: [
-        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', qty: 0, maxQty: 2, category: 'Lipsticks',description:'Natural Lipstick',rating:5 },
+        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', qty: 0, maxQty: 2, category: 'Lipsticks',rating:5 },
         { id: 102, name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', qty: 0, maxQty: 7, category: 'Skincare', rating:4.8},
         { id: 103, name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', qty: 0, maxQty: 12, category: 'serum',rating:4.5  },
         { id: 104, name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', qty: 0, maxQty: 13,rating:5 },
@@ -142,7 +145,7 @@ export default {
         { id: 107, name: 'Anua 70+ Toner', price: 65500, img: 'anua.webp', qty: 0, maxQty: 11,rating:4.5 },
         { id: 108, name: 'CeraVe Moisture Cream', price: 84000, img: 'carave.avif', qty: 0, maxQty: 10,rating:4.8 },
         { id: 109, name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp', qty: 0, maxQty: 7 ,rating:4.6},
-        { id: 110, name: 'COSRX essence', price: 69000, img: 'cosrx.jpg', qty: 0, maxQty: 5,rating:4  }, // 6900 မှ 69000 သို့ ပြင်ဆင်ထားပါသည်
+        { id: 110, name: 'COSRX essence', price: 69000, img: 'cosrx.jpg', qty: 0, maxQty: 5,rating:4  },
         { id: 111, name: 'Kiro Waterproof Eyeliner', price: 7000, img: 'eye.jpg', qty: 0, maxQty: 9,rating:4.8 }
       ],
 
@@ -466,22 +469,27 @@ footer {
   justify-content: center;
   gap: 5px;
   margin: 5px 0;
+  background:#fff9fa;
 }
 
 .stars {
+  display:inline-flex;
   color: #f1c40f; /* ကြယ်ရောင်ကို အဝါရောင် သတ်မှတ်ခြင်း */
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .star.filled {
-  color: #f1c40f;
+  color: #ffb800;
 }
 
+.star.empty {
+  color: #e2e8f0; 
+}
 .star.half {
   position: relative;
   display: inline-block;
   background: linear-gradient(90deg, #f1c40f 50%, #e0e0e0 50%);
-  /* -webkit-background-clip: text; */
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

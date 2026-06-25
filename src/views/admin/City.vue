@@ -28,7 +28,7 @@
           >
             <td class="text-center">{{ index + 1 }}</td>
 
-            <td class="text-center">{{ item.name }}</td>
+            <td class="text-center">{{ item.cityName }}</td>
 
             <td class="text-center">
               <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
@@ -102,7 +102,9 @@ export default {
     return {
       dialog: false,
       cityName: '',
-      cityDto: {},
+      cityDto: {
+        
+      },
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
@@ -178,7 +180,10 @@ export default {
 
         cityService
           .addCity(this.cityDto)
-          .then((response) => {})
+          .then((response) => {
+            
+
+          })
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
           })

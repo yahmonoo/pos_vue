@@ -1,309 +1,303 @@
 <template>
-  <v-container fluid>
-    <!-- Header -->
-
-    <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true"> Add Township </v-btn>
+  <div class="township-container">
+    <div class="township-header">
+      <h1>Township Management</h1>
+      <p class="subtitle">Glow Skin Cosmetics Delivery Fees by Township</p>
     </div>
 
-    <!-- Table Card -->
-    <v-card rounded="lg" elevation="0">
-      <v-table fixed-header height="400px" density="compact" class="c-table">
-        <thead>
-          <tr>
-            <th class="text-center">No.</th>
-            <th class="text-center">Township Name</th>
-            <th class="text-center" width="150">Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr
-            v-for="(item, index) in townshipList"
-            :key="item.townshipId"
-            @click="selectedOne = item"
-            :style="{
-              backgroundColor:
-                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
-            }"
-          >
-            <td class="text-center">{{ index + 1 }}</td>
-
-            <td class="text-center">{{ item.townshipName }}</td>
-
-            <td class="text-center">
-              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
-              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-    </v-card>
-
-    <!-- Add Dialog -->
-    <v-dialog v-model="dialog" max-width="500" persistent>
-      <v-card rounded="xl" class="cdialog">
-        <!-- Header -->
-        <div class="dialog-header">
-          <div class="d-flex align-center">
-            <div>
-              <div class="text-h6 font-weight-bold">Add New City</div>
-            </div>
-          </div>
+    <!-- 1. Create & Update Form -->
+    <div class="form-card">
+      <h2>{{ isEditing ? 'New Township' : 'New Township' }}</h2>
+      <form @submit.prevent="handleSubmit" class="township-form">
+        
+        <!-- 🔴 City ရွေးချယ်ရန် Dropdown (Backend ကလာမယ့် City List နဲ့ ချိတ်ရပါမယ်) -->
+        <div class="form-group">
+          <label>City</label>
+          <select v-model="townshipForm.cityId" required>
+            <option value="" disabled>--- City ---</option>
+            <option v-for="city in cities" :key="city.id" :value="city.id">
+              {{ city.nameMm }} ({{ city.nameEn }})
+            </option>
+          </select>
         </div>
 
-        <v-card-text class="pa-6">
-          <v-text-field
-            v-model="townshipDto.townshipName"
-            class="cinput"
-            label="Township Name"
-            variant="outlined"
-            density="compact"
-          />
-        </v-card-text>
+        <div class="form-group">
+          <label>Township (Myanmar)*</label>
+          <input type="text" v-model="townshipForm.nameMm" placeholder="eg - ကမာရွတ်" required />
+        </div>
 
-        <v-divider />
+        <div class="form-group">
+          <label>Township (English)*</label>
+          <input type="text" v-model="townshipForm.nameEn" placeholder="eg - Kamayut" required />
+        </div>
 
-        <v-card-actions class="pa-4">
-          <v-spacer />
+        <div class="form-group">
+          <label>Delivery Fee</label>
+          <input type="number" v-model.number="townshipForm.deliveryFee" placeholder="eg - 3000" required />
+        </div>
 
-          <v-btn variant="tonal" rounded="pill" class="mr-2" @click="dialog = false">
-            Cancel
-          </v-btn>
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            {{ isEditing ? 'Submit' : 'Submit' }}
+          </button>
+          <button type="button" v-if="isEditing" @click="resetForm" class="btn-cancel">Delete</button>
+        </div>
+      </form>
+    </div>
 
-          <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Delete Dialog  -->
-    <v-col>
-      <v-dialog v-model="dialogDelete" width="500">
-        <v-card>
-          <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
-
-          <v-card-text class="text-h6">
-            Are you sure to delete({{ selectedOne.name }})?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn class="black" text @click="dialogDelete = false"> CANCEL </v-btn>
-            <v-btn dark class="bg-red" text @click="clickDeleteDialog()"> DELETE </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-col>
-  </v-container>
+    <!-- 2. Read, Update, Delete Table -->
+    <div class="table-card">
+      <h2>Township List</h2>
+      <div class="table-responsive">
+        <table class="township-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>City</th>
+              <th>Township (Myanmar)</th>
+              <th>Township (English)</th>
+              <th>Delivery Fee</th>
+              <th class="text-center">Update & Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(town, index) in townships" :key="town.id">
+              <td>{{ index + 1 }}</td>
+              <!-- ID အစား မြို့အမည်ကို လှမ်းပြခြင်း -->
+              <td class="city-badge">{{ getCityName(town.cityId) }}</td>
+              <td class="font-bold">{{ town.nameMm }}</td>
+              <td>{{ town.nameEn }}</td>
+              <td class="fee">{{ town.deliveryFee.toLocaleString() }} MMK</td>
+              <td class="text-left py-2 px-4">
+                <button @click="editTownship(town)" class="btn-action edit">📝 </button>
+                <button @click="deleteTownship(town.id)" class="btn-action delete">🗑️ </button>
+              </td>
+            </tr>
+            <tr v-if="townships.length === 0">
+              <td colspan="6" class="text-center no-data">No Township List</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import cityService from '../../service/CityService.js'
 export default {
+  name: 'TownshipManagement',
   data() {
     return {
-      dialog: false,
-      cityName: '',
-      townshipDto: {},
-      selectedOne: {},
-      saveOrUpdate: 'SAVE',
-      dialogDelete: false,
-      townshipList: [
-        {
-          townshipId: 1,
-          townshipName: 'Yangon',
-        },
-        {
-          townshipId: 2,
-          townshipName: 'Mandalay',
-        },
-        {
-          townshipId: 3,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 4,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 5,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 6,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 7,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 8,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 9,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 10,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 11,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 12,
-          townshipName: 'Naypyidaw',
-        },
+      // Dropdown မှာ ပြဖို့အတွက် City List (ဒါတွေကလည်း Backend ကလာမှာပါ)
+      cities: [
+        { id: 1, nameMm: 'ရန်ကုန်', nameEn: 'Yangon' },
+        { id: 2, nameMm: 'မန္တလေး', nameEn: 'Mandalay' }
       ],
-    }
+      // နမူနာ မြို့နယ်ဒေတာများ
+      townships: [
+        { id: 101, cityId: 1, nameMm: 'ကမာရွတ်', nameEn: 'Kamayut', deliveryFee: 3000 },
+        { id: 102, cityId: 1, nameMm: 'လှိုင်', nameEn: 'Hlaing', deliveryFee: 3000 },
+        { id: 103, cityId: 2, nameMm: 'ချမ်းအေးသာစံ', nameEn: 'Chanayethazan', deliveryFee: 2500 }
+      ],
+      townshipForm: {
+        id: null,
+        cityId: '',
+        nameMm: '',
+        nameEn: '',
+        deliveryFee: null
+      },
+      isEditing: false
+    };
   },
-  props: {},
-  mounted: function () {},
   methods: {
-    cityListMethod() {
-      cityService
-        .getCity()
-        .then((response) => {
-          this.townshipList.splice(0, this.townshipList.length)
-          this.townshipList.push(...response)
-        })
-        .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
-        })
+    // City ID ကိုကြည့်ပြီး မြို့အမည် ပြပေးမယ့် helper function
+    getCityName(cityId) {
+      const city = this.cities.find(c => c.id === cityId);
+      return city ? city.nameMm : 'Unknown';
     },
-    saveCity() {
-      if (this.saveOrUpdate == 'SAVE') {
-        console.log(this.saveOrUpdate)
-
-        cityService
-          .addCity(this.townshipDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
-          })
+    handleSubmit() {
+      if (this.isEditing) {
+        const index = this.townships.findIndex(t => t.id === this.townshipForm.id);
+        if (index !== -1) {
+          this.townships[index] = { ...this.townshipForm };
+          // alert('မြို့နယ်အချက်အလက် ပြင်ဆင်ပြီးပါပြီ။');
+        }
       } else {
-        console.log(this.saveOrUpdate)
-
-        cityService
-          .updateCity(this.townshipDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
-          })
+        const newTownship = {
+          id: Date.now(),
+          ...this.townshipForm
+        };
+        this.townships.push(newTownship);
+        // alert('မြို့နယ်အသစ်ကို ထည့်သွင်းပြီးပါပြီ။');
+      }
+      this.resetForm();
+    },
+    editTownship(town) {
+      this.isEditing = true;
+      this.townshipForm = { ...town };
+    },
+    deleteTownship(id) {
+      if (confirm('Are you sure want to delete?')) {
+        this.townships = this.townships.filter(t => t.id !== id);
+        // alert('ပယ်ဖျက်ပြီးပါပြီ။');
+        if (this.townshipForm.id === id) this.resetForm();
       }
     },
-    editCity(item) {
-      console.log(item)
-      this.dialog = true
-      this.saveOrUpdate = 'UPDATE'
-      this.townshipDto = { ...item }
-    },
-    deletCity(item) {
-      this.dialogDelete = true
-      this.selectedOne = { ...item }
-      console.log(item)
-    },
-    clickDeleteDialog() {
-      cityService
-        .deleteCity(this.selectedOne)
-        .then((response) => {
-          this.dialogDelete = false
-        })
-        .catch((error) => {
-          // this.$swal('Fail!', error.response.data.message, 'error')
-        })
-    },
-  },
-  watch: {},
-  components: {},
-}
+    resetForm() {
+      this.townshipForm = { id: null, cityId: '', nameMm: '', nameEn: '', deliveryFee: null };
+      this.isEditing = false;
+    }
+  }
+};
 </script>
 
 <style scoped>
-.v-table {
-  background: transparent;
+.township-container {
+  padding: 24px;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  font-family: sans-serif;
+}
+.township-header h1 {
+  font-size: 24px;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 24px 0;
 }
 
-.v-table thead th {
-  font-weight: 700;
-  background: #f8fafc;
+/* Form Styles */
+.form-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+.form-card h2, .table-card h2 {
+  font-size: 16px;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 10px;
+}
+.township-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 180px;
+}
+.form-group label {
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 500;
+}
+.form-group input, 
+.form-group select {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+  background-color: #fff;
 }
 
-.v-table tbody tr:hover {
-  background: #f8fafc;
-  transition: 0.2s;
+/* Buttons */
+.form-actions { 
+  display: flex; 
+  gap: 8px; 
+}
+.btn-submit {
+  padding: 10px 20px;
+  background-color: rgb(248, 126, 146);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.btn-cancel {
+  padding: 10px 16px;
+  background-color: rgb(248, 126, 146);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-table,
-th,
-td {
-  border: 1px solid rgb(215, 215, 215);
+/* Table Styles */
+.table-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+.table-responsive { 
+  overflow-x: auto; 
+}
+.township-table {
+  width: 100%;
   border-collapse: collapse;
-  padding: 0 3px !important;
+  font-size: 14px;
+}
+.township-table th {
+  background-color: #f9fafb;
+  color: #4b5563;
+  padding: 12px;
+  border-bottom: 2px solid #e5e7eb;
+  text-align: left;
+}
+.township-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.city-badge {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+.fee { 
+  font-weight: bold; 
+  color: #10b981; 
+}
+.font-bold { 
+  font-weight: 600; 
+}
+.text-center { 
+  text-align: center; 
 }
 
-.add-btn {
-  background: linear-gradient(135deg, #e48494 0%, rgb(214, 96, 130) 100%) !important;
-  color: white;
-  font-weight: 600;
-  text-transform: none;
-  border-radius: 999px;
-  padding: 10px 18px;
-  box-shadow: 0 8px 20px rgba(228, 132, 148, 0.35);
-
-  transition: all 0.25s ease;
+/* Action Buttons */
+.btn-action {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 0 4px;
 }
-
-.add-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 28px rgba(228, 132, 148, 0.45);
+.edit { 
+  background-color: #fef3c7; 
+  color: #d97706; 
 }
-
-.add-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 6px 14px rgba(228, 132, 148, 0.3);
-}
-
-.c-table thead th {
-  background: #d66182 !important;
-  font-weight: 700;
-
-  text-transform: none;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-/* .c-table tbody tr:hover {
-  background: #f5e2e5;
-  transition: 0.2s ease;
-} */
-
-.cdialog {
-  overflow: hidden;
-  border: 1px solid #f4d7de;
-}
-
-.dialog-header {
-  background: linear-gradient(135deg, #e48494 0%, #d66182 100%);
-  padding: 22px;
-  color: white;
-}
-
-.cinput :deep(.v-field) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
-}
-
-.cinput :deep(.v-field--focused) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
-}
-
-.cinput :deep(.v-label.v-field-label) {
-  background: white;
-  padding: 0 3px;
+.delete { 
+  background-color: #fee2e2; 
+  color: #ef4444; 
 }
 </style>

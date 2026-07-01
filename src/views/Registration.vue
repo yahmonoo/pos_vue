@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router' // 📍 ၁။ Router ကို ဆွဲသွင်းရန် (မေ့နေခဲ့သော အချက်)
+import { useRouter } from 'vue-router' 
 
-const router = useRouter() // 📍 ၂။ Router ကို စတင်အသုံးပြုရန် ကြေညာရန် (မေ့နေခဲ့သော အချက်)
-
+const router = useRouter() 
 const name = ref('')
 const email = ref('')
 const password = ref('')
@@ -11,19 +10,20 @@ const confirmPassword = ref('')
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
-// Register.vue ရဲ့ handleRegister function ထဲတွင် ပြင်ရန်
+
 const handleRegister = () => {
   if (password.value !== confirmPassword.value) {
     alert('Password များ တူညီမှု မရှိပါရှင်။ ပြန်လည်စစ်ဆေးပေးပါ။')
-    return
+    return ;
+    
   }
 
-  // 📍 LocalStorage ထဲတွင် အကောင့်အချက်အလက်ကို သိမ်းဆည်းခြင်း
+  
   localStorage.setItem('user_name', name.value)
   localStorage.setItem('user_password', password.value)
   localStorage.setItem('user_role', 'CUSTOMER')
 
-  // alert('အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါတယ်ရှင်။ Sign In အရင်ဝင်ပေးပါဦးနော်။')
+  
   router.push('/login')
 }
 </script>

@@ -1,26 +1,25 @@
-<script setup>
-import mapImage from '@/assets/images/1.png'
-</script>
 <template>
   <v-container class="py-10">
+    <!-- Title Section -->
     <v-row justify="center" class="text-center mb-10">
       <v-col cols="12" md="8">
         <h1
           class="primary-title mt-n3 mb-3 mm-stroke-bold"
-          style="font-size: 2.5rem !important; font-weight: 400 !important; color: black"
+          style="font-size: 2.5rem ; font-weight: 400 ; color: black"
         >
           About Glow Skin Cosmetics
         </h1>
         <p class="text-subtitle-1 text-muted">"Trusted High-Quality Cosmetics for Your Beauty"</p>
-        <v-divider class="my-5 mx-auto" width="100" color="#FFC0CB" thickness="3"></v-divider>
+        <v-divider class="my-5 mx-auto" ></v-divider>
       </v-col>
     </v-row>
 
+    
     <v-row align="stretch" class="mb-12 px-6 px-md-16">
       <v-col cols="12" md="7" class="pr-md-8 d-flex flex-column justify-center">
         <h2
           class="headline mb-4 mm-stroke-bold"
-          style="color: black; font-size: 1.5rem !important; font-weight: 700 !important"
+          style="color: black; font-size: 1.5rem ; font-weight: 700 "
         >
           ကျွန်ုပ်တို့၏ ရည်ရွယ်ချက်
         </h2>
@@ -38,9 +37,10 @@ import mapImage from '@/assets/images/1.png'
         </p>
       </v-col>
 
+      
       <v-col cols="12" md="5" class="d-flex justify-end align-center">
         <v-img
-          src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop"
+          :src="aboutPhoto"
           width="100%"
           max-width="450"
           class="elevation-3 rounded-lg"
@@ -49,51 +49,58 @@ import mapImage from '@/assets/images/1.png'
       </v-col>
     </v-row>
 
-    <v-row class="bg-light-pink py-8 rounded-lg text-center mb-12">
-      <v-col cols="12">
-        <h2
-          class="headline font-weight-bold mb-6"
-          style="color: black; font-size: 1.5rem !important; font-weight: 600 !important"
-        >
-          ဘာကြောင့် Glow Skin က Cosmeticsတွေ ကို ရွေးချယ်သင့်သလဲ?
-        </h2>
-      </v-col>
+    
+    <div class="bg-light-pink pa-6 pa-md-10 rounded-lg">
+      
+      <!-- Why Choose Us Section -->
+      <v-row class="text-center mb-12">
+        <v-col cols="12">
+          <h2
+            class="headline font-weight-bold mb-6"
+            style="color: black; font-size: 1.5rem ; font-weight: 600 "
+          >
+            ဘာကြောင့် Glow Skin က Cosmetics တွေကို ရွေးချယ်သင့်သလဲ?
+          </h2>
+        </v-col>
 
-      <v-col cols="12" sm="4">
-        <v-avatar color="#FFC0CB" size="64" class="mb-4">
-          <v-icon size="32" color="white">mdi-shield-check</v-icon>
-        </v-avatar>
-        <h3 class="title font-weight-bold mb-2">100% Authentic</h3>
-        <p class="body-2 text-muted px-4">
-          စစ်မှန်သော Quality ကောင်းမွန်သည့် ပစ္စည်းများကိုသာ တိုက်ရိုက်တင်သွင်းရောင်းချပါသည်။
-        </p>
-      </v-col>
+        <v-col cols="12" sm="4">
+          <v-avatar color="#FFC0CB" size="64" class="mb-4">
+            <v-icon size="32" color="white">mdi-shield-check</v-icon>
+          </v-avatar>
+          <h3 class="title font-weight-bold mb-2">100% Authentic</h3>
+          <p class="body-2 text-muted px-4">
+            စစ်မှန်သော Quality ကောင်းမွန်သည့် ပစ္စည်းများကိုသာ တိုက်ရိုက်တင်သွင်းရောင်းချပါသည်။
+          </p>
+        </v-col>
 
-      <v-col cols="12" sm="4">
-        <v-avatar color="#FFC0CB" size="64" class="mb-4">
-          <v-icon size="32" color="white">mdi-heart</v-icon>
-        </v-avatar>
-        <h3 class="title font-weight-bold mb-2">Customer First</h3>
-        <p class="body-2 text-muted px-4">
-          ဝယ်ယူသူတိုင်း စိတ်တိုင်းကျစေမည့် နွေးထွေးပျူငှာသော ဝန်ဆောင်မှုဖြင့် ကြိုဆိုနေပါသည်။
-        </p>
-      </v-col>
+        <v-col cols="12" sm="4">
+          <v-avatar color="#FFC0CB" size="64" class="mb-4">
+            <v-icon size="32" color="white">mdi-heart</v-icon>
+          </v-avatar>
+          <h3 class="title font-weight-bold mb-2">Customer First</h3>
+          <p class="body-2 text-muted px-4">
+            ဝယ်ယူသူတိုင်း စိတ်တိုင်းကျစေမည့် နွေးထွေးပျူငှာသော ဝန်ဆောင်မှုဖြင့် ကြိုဆိုနေပါသည်။
+          </p>
+        </v-col>
 
-      <v-col cols="12" sm="4">
-        <v-avatar color="#FFC0CB" size="64" class="mb-4">
-          <v-icon size="32" color="white">mdi-map-marker</v-icon>
-        </v-avatar>
-        <h3 class="title font-weight-bold mb-2">Mandalay Delivery</h3>
-        <p class="body-2 text-muted px-4">
-          မန္တလေးမြို့တွင်းသာမက မြန်မာတစ်နိုင်ငံလုံးသို့ အိမ်အရောက် Delivery စနစ်ဖြင့်
-          ပို့ဆောင်ပေးပါသည်။
-        </p>
-      </v-col>
-      <v-row justify="center" class="mt-12">
+        <v-col cols="12" sm="4">
+          <v-avatar  color="#FFC0CB" size="64" class="mb-4">
+            <v-icon size="32" color="white">mdi-map-marker</v-icon>
+          </v-avatar>
+          <h3 class="title font-weight-bold mb-2">Mandalay Delivery</h3>
+          <p class="body-2 text-muted px-4">
+            မန္တလေးမြို့တွင်းသာမက မြန်မာတစ်နိုင်ငံလုံးသို့ အိမ်အရောက် Delivery စနစ်ဖြင့်
+            ပို့ဆောင်ပေးပါသည်။
+          </p>
+        </v-col>
+      </v-row>
+
+      <!-- FAQ Section -->
+      <v-row justify="center" class="mb-12">
         <v-col cols="12" md="10">
           <h2
             class="headline font-weight-bold text-center mb-6"
-            style="color: black; font-size: 1.5rem !important; font-weight: 600 !important"
+            style="color: black; font-size: 1.5rem ; font-weight: 600 "
           >
             အမေးများသော မေးခွန်းများ (FAQ)
           </h2>
@@ -113,11 +120,9 @@ import mapImage from '@/assets/images/1.png'
           </v-expansion-panels>
         </v-col>
       </v-row>
-      <v-row
-        align="center"
-        class="my-10 pa-6 pa-md-10 mx-0 rounded-lg"
-        style="background-color: #fff0f2"
-      >
+
+      <!-- Location & Map Section -->
+      <v-row align="center" class="mb-12">
         <v-col cols="12" md="6" class="px-6 d-flex flex-column justify-center">
           <h3
             class="title font-weight-bold mb-3"
@@ -133,27 +138,23 @@ import mapImage from '@/assets/images/1.png'
         </v-col>
 
         <v-col cols="12" md="6" class="d-flex align-center">
-          <v-img
-            :src="mapImage"
-            height="auto"
-            class="rounded-lg elevation-1 bg-grey-lighten-2"
-            cover
-            alt="Glow Skin Cosmetics Map"
-          ></v-img>
+          <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d947361.3439733528!2d96.3695953!3d21.9487616!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30cb6d23addc9fb1%3A0x2802b4778282b0ad!2sInfo%20Lite!5e0!3m2!1sen!2smm!4v1782627498306!5m2!1sen!2smm" width="100%" height="350" style="border:0; border-radius: 8px;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </v-col>
       </v-row>
-      <v-row class="px-6 text-center my-10">
+
+      <!-- Reviews Section -->
+      <v-row class="px-6 text-center">
         <v-col cols="12">
           <h2
             class="headline font-weight-bold mb-5"
-            style="color: black; font-size: 1.5rem !important; font-weight: 600 !important"
+            style="color: black; font-size: 1.5rem ; font-weight: 600 "
           >
             Customer Reviews
           </h2>
         </v-col>
 
         <v-col cols="12" sm="4">
-          <v-card class="pa-5 elevation-1 rounded-xl">
+          <v-card class="pa-5 elevation-1 rounded-xl" color="white">
             <v-rating
               model-value="5"
               readonly
@@ -171,7 +172,7 @@ import mapImage from '@/assets/images/1.png'
         </v-col>
 
         <v-col cols="12" sm="4">
-          <v-card class="pa-5 elevation-1 rounded-xl">
+          <v-card class="pa-5 elevation-1 rounded-xl" color="white">
             <v-rating
               model-value="4"
               readonly
@@ -189,7 +190,7 @@ import mapImage from '@/assets/images/1.png'
         </v-col>
 
         <v-col cols="12" sm="4">
-          <v-card class="pa-5 elevation-1 rounded-xl">
+          <v-card class="pa-5 elevation-1 rounded-xl" color="white">
             <v-rating
               model-value="4"
               readonly
@@ -206,9 +207,23 @@ import mapImage from '@/assets/images/1.png'
           </v-card>
         </v-col>
       </v-row>
-    </v-row>
+    </div>
   </v-container>
 </template>
+
+<script>
+
+import aboutphoto from '../assets/images/about.avif'
+
+export default {
+  name: 'AboutUs',
+  data() {
+    return {
+      aboutPhoto: aboutphoto
+    };
+  }
+};
+</script>
 
 <style scoped>
 .primary-title {

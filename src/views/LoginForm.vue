@@ -8,16 +8,16 @@ const name = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const rememberMe = ref(false)
-const errorMessage = ref('') // 📍 ၁။ Error စာသားသိမ်းရန် Variable အသစ်တိုးလိုက်ပါသည်
+const errorMessage = ref('') 
 
-// Login.vue ရဲ့ handleLogin function ထဲတွင် ပြင်ရန်
+
 const handleLogin = () => {
-  // 📍 LocalStorage ထဲက Sign Up တုန်းက သိမ်းခဲ့တဲ့ အချက်အလက်ကို ပြန်ထုတ်ယူခြင်း
+  
   const savedName = localStorage.getItem('user_name')
   const savedPassword = localStorage.getItem('user_password')
   const savedRole = localStorage.getItem('user_role')
 
-  // Sign Up လုပ်ထားတာ ရှိ၊ မရှိ အရင်စစ်ပြီးမှ Password တိုက်စစ်မည်
+  
   if (name.value === savedName && password.value === savedPassword) {
     errorMessage.value = ''
     localStorage.setItem('user_role', savedRole)
@@ -49,7 +49,7 @@ const handleLogin = () => {
         >
         <v-text-field
           v-model="name"
-          prepend-inner-icon="mdi-name-outline"
+          prepend-inner-icon="mdi-account-outline"
           placeholder="Enter your name"
           variant="outlined"
           density="comfortable"

@@ -1,311 +1,400 @@
 <template>
-  <v-container fluid>
-    <!-- Header -->
+  <div class="sale-container">
+   
+    <div class="products-section">
+      <div class="search-box">
+        <input type="text" v-model="searchQuery" placeholder="🔍 Search by product name or SKU..." />
+      </div>
 
-    <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true">
-        Add UserAccount
-      </v-btn>
-    </div>
-
-    <!-- Table Card -->
-    <v-card rounded="lg" elevation="0">
-      <v-table fixed-header height="400px" density="compact" class="c-table">
-        <thead>
-          <tr>
-            <th class="text-center">No.</th>
-            <th class="text-center">Township Name</th>
-            <th class="text-center" width="150">Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr
-            v-for="(item, index) in townshipList"
-            :key="item.townshipId"
-            @click="selectedOne = item"
-            :style="{
-              backgroundColor:
-                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
-            }"
-          >
-            <td class="text-center">{{ index + 1 }}</td>
-
-            <td class="text-center">{{ item.townshipName }}</td>
-
-            <td class="text-center">
-              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
-              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-    </v-card>
-
-    <!-- Add Dialog -->
-    <v-dialog v-model="dialog" max-width="500" persistent>
-      <v-card rounded="xl" class="cdialog">
-        <!-- Header -->
-        <div class="dialog-header">
-          <div class="d-flex align-center">
-            <div>
-              <div class="text-h6 font-weight-bold">Add New City</div>
-            </div>
+      
+      <div class="products-grid">
+        <div 
+          v-for="prod in filteredProducts" 
+          :key="prod.id" 
+          class="product-card"
+          @click="addToCart(prod)"
+        >
+          <div class="prod-badge">{{ prod.category }}</div>
+          <div class="prod-avatar">🧴</div>
+          <div class="prod-info">
+            <h3 class="prod-name">{{ prod.name }}</h3>
+            <p class="prod-sku">{{ prod.sku }}</p>
+            <p class="prod-price">{{ prod.price.toLocaleString() }} MMK</p>
+            <p :class="['prod-stock', prod.stock <= 5 ? 'low' : '']">Stock: {{ prod.stock }} pcs</p>
           </div>
         </div>
+        <div v-if="filteredProducts.length === 0" class="no-products">
+         No items found.
+        </div>
+      </div>
+    </div>
 
-        <v-card-text class="pa-6">
-          <v-text-field
-            v-model="townshipDto.townshipName"
-            class="cinput"
-            label="Township Name"
-            variant="outlined"
-            density="compact"
-          />
-        </v-card-text>
+   
+    <div class="cart-section">
+      <h2>🛒 Shopping Cart</h2>
 
-        <v-divider />
+      
+      <div class="cart-items">
+        <div v-for="item in cart" :key="item.id" class="cart-item">
+          <div class="item-details">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-price">{{ (item.price * item.quantity).toLocaleString() }} MMK</span>
+          </div>
+          <div class="item-actions">
+            <div class="qty-controls">
+              <button @click="updateQty(item, -1)">-</button>
+              <span class="qty-number">{{ item.quantity }}</span>
+              <button @click="updateQty(item, 1)">+</button>
+            </div>
+            <button @click="removeFromCart(item.id)" class="btn-remove">🗑️</button>
+          </div>
+        </div>
+        <div v-if="cart.length === 0" class="empty-cart">
+          🛒 Click on items to add to cart
+        </div>
+      </div>
 
-        <v-card-actions class="pa-4">
-          <v-spacer />
+      <div class="cart-summary">
+        
+        <div class="summary-row">
+          <label>Delivery Township:</label>
+          <select v-model="selectedTownshipId" @change="updateDeliveryFee">
+            <option :value="null">Shop Pickup (0 MMK)</option>
+            <option v-for="town in townships" :key="town.id" :value="town.id">
+              {{ town.nameMm }} (+{{ town.deliveryFee.toLocaleString() }} MMK)
+            </option>
+          </select>
+        </div>
 
-          <v-btn variant="tonal" rounded="pill" class="mr-2" @click="dialog = false">
-            Cancel
-          </v-btn>
+        <hr class="divider" />
 
-          <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>{{ subtotal.toLocaleString() }} MMK</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery Fee:</span>
+          <span>{{ deliveryFee.toLocaleString() }} MMK</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total Amount:</span>
+          <span>{{ grandTotal.toLocaleString() }} MMK</span>
+        </div>
 
-    <!-- Delete Dialog  -->
-    <v-col>
-      <v-dialog v-model="dialogDelete" width="500">
-        <v-card>
-          <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
-
-          <v-card-text class="text-h6">
-            Are you sure to delete({{ selectedOne.name }})?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn class="black" text @click="dialogDelete = false"> CANCEL </v-btn>
-            <v-btn dark class="bg-red" text @click="clickDeleteDialog()"> DELETE </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-col>
-  </v-container>
+        <button 
+          @click="checkout" 
+          class="btn-checkout" 
+          :disabled="cart.length === 0"
+        >
+          🧾 Print Voucher
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import cityService from '../../service/CityService.js'
 export default {
+  name: 'SalePage',
   data() {
     return {
-      dialog: false,
-      cityName: '',
-      townshipDto: {},
-      selectedOne: {},
-      saveOrUpdate: 'SAVE',
-      dialogDelete: false,
-      townshipList: [
-        {
-          townshipId: 1,
-          townshipName: 'Yangon',
-        },
-        {
-          townshipId: 2,
-          townshipName: 'Mandalay',
-        },
-        {
-          townshipId: 3,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 4,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 5,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 6,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 7,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 8,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 9,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 10,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 11,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 12,
-          townshipName: 'Naypyidaw',
-        },
+      searchQuery: '',
+      selectedTownshipId: null,
+      deliveryFee: 0,
+      
+      
+      townships: [
+        { id: 101, nameMm: 'Kamayut', deliveryFee: 3000 },
+        { id: 102, nameMm: 'Hlaing', deliveryFee: 3000 },
+        { id: 103, nameMm: 'Chanayethazan', deliveryFee: 2500 }
       ],
+      products: [
+        { id: 1, name: 'Glow Serum', category: 'Skincare', sku: 'GSC-001', price: 35000, stock: 24 },
+        { id: 2, name: 'Sunscreen SPF50', category: 'Skincare', sku: 'GSC-002', price: 28000, stock: 3 },
+        { id: 3, name: 'Matte Lipstick', category: 'Makeup', sku: 'GSC-003', price: 15000, stock: 15 }
+      ],
+      
+      // လက်ရှိ ရောင်းချနေတဲ့ ခြင်းတောင်းစာရင်း
+      cart: []
+    };
+  },
+  computed: {
+    
+    filteredProducts() {
+      return this.products.filter(p => {
+        return p.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+               p.sku.toLowerCase().includes(this.searchQuery.toLowerCase());
+      });
+    },
+    // ပစ္စည်းဖိုး သီးသန့် စုစုပေါင်းတွက်ရန်
+    subtotal() {
+      return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    },
+    // ပစ္စည်းဖိုး + Delivery ခ စုစုပေါင်း ကျသင့်ငွေတွက်ရန်
+    grandTotal() {
+      return this.subtotal + this.deliveryFee;
     }
   },
-  props: {},
-  mounted: function () {},
   methods: {
-    cityListMethod() {
-      cityService
-        .getCity()
-        .then((response) => {
-          this.townshipList.splice(0, this.townshipList.length)
-          this.townshipList.push(...response)
-        })
-        .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
-        })
-    },
-    saveCity() {
-      if (this.saveOrUpdate == 'SAVE') {
-        console.log(this.saveOrUpdate)
-
-        cityService
-          .addCity(this.townshipDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
-          })
+    addToCart(product) {
+      if (product.stock <= 0) {
+        // alert('ဤပစ္စည်းသည် လက်ကျန်ပြတ်လပ်နေပါသည်။');
+        return;
+      }
+      const existingItem = this.cart.find(item => item.id === product.id);
+      if (existingItem) {
+        if (existingItem.quantity < product.stock) {
+          existingItem.quantity++;
+        } else {
+          // alert('ဆိုင်ရှိလက်ကျန်ထက် ပိုရောင်း၍မရပါ။');
+        }
       } else {
-        console.log(this.saveOrUpdate)
-
-        cityService
-          .updateCity(this.townshipDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
-          })
+        this.cart.push({ ...product, quantity: 1 });
       }
     },
-    editCity(item) {
-      console.log(item)
-      this.dialog = true
-      this.saveOrUpdate = 'UPDATE'
-      this.townshipDto = { ...item }
+    updateQty(item, change) {
+      const product = this.products.find(p => p.id === item.id);
+      const newQty = item.quantity + change;
+      if (newQty <= 0) {
+        this.removeFromCart(item.id);
+      } else if (newQty > product.stock) {
+        // alert('ဆိုင်ရှိလက်ကျန်ထက် ပိုရောင်း၍မရပါ။');
+      } else {
+        item.quantity = newQty;
+      }
     },
-    deletCity(item) {
-      this.dialogDelete = true
-      this.selectedOne = { ...item }
-      console.log(item)
+    removeFromCart(id) {
+      this.cart = this.cart.filter(item => item.id !== id);
     },
-    clickDeleteDialog() {
-      cityService
-        .deleteCity(this.selectedOne)
-        .then((response) => {
-          this.dialogDelete = false
-        })
-        .catch((error) => {
-          // this.$swal('Fail!', error.response.data.message, 'error')
-        })
+    updateDeliveryFee() {
+      const town = this.townships.find(t => t.id === this.selectedTownshipId);
+      this.deliveryFee = town ? town.deliveryFee : 0;
     },
-  },
-  watch: {},
-  components: {},
-}
+    checkout() {
+      // alert(`ဘောက်ချာ ဖွင့်လှစ်ခြင်း အောင်မြင်ပါသည်။\nစုစုပေါင်းကျသင့်ငွေ: ${this.grandTotal.toLocaleString()} ကျပ်\n(မှတ်ချက် - ဤအဆင့်တွင် Stock အရေအတွက်များ လျှော့ချပြီး နေ့စဉ်စာရင်းထဲ သိမ်းဆည်းသွားမည် ဖြစ်သည်)`);
+      
+      // Stock နှုတ်ခြင်း (နမူနာ)
+      this.cart.forEach(item => {
+        const prod = this.products.find(p => p.id === item.id);
+        if (prod) prod.stock -= item.quantity;
+      });
+      
+      // Cart ရှင်းလင်းခြင်း
+      this.cart = [];
+      this.selectedTownshipId = null;
+      this.deliveryFee = 0;
+    }
+  }
+};
 </script>
 
 <style scoped>
-.v-table {
-  background: transparent;
+.sale-container {
+  display: flex;
+  height: calc(100vh - 60px);
+  background-color: #f3f4f6;
+  font-family: sans-serif;
 }
 
-.v-table thead th {
-  font-weight: 700;
-  background: #f8fafc;
+/* ဘယ်ဘက်ခြမ်း - ပစ္စည်းများပြသရန်နေရာ */
+.products-section {
+  flex: 7;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+.search-box input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+.product-card {
+  background-color: white;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s;
+}
+.product-card:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+}
+.prod-badge { 
+  position: absolute; 
+  top: 8px; right: 8px; 
+  background: #f3f4f6; 
+  font-size: 11px; 
+  padding: 2px 6px; 
+  border-radius: 4px; 
+}
+.prod-avatar { 
+  font-size: 32px; 
+  text-align: center; 
+  margin-bottom: 8px; 
+}
+.prod-name { 
+  font-size: 15px; 
+  margin: 0 0 4px 0; 
+  color: #111827; 
+}
+.prod-sku { 
+  font-size: 12px; 
+  color: #6b7280; 
+  font-family: monospace; 
+  margin: 0 0 8px 0; 
+}
+.prod-price { 
+  font-size: 14px; 
+  font-weight: bold; 
+  color: #2563eb; 
+  margin: 0 0 4px 0; 
+}
+.prod-stock { 
+  font-size: 12px; 
+  color: #10b981; 
+  margin: 0; 
+}
+.prod-stock.low { 
+  color: #ef4444; 
+  font-weight: bold; 
 }
 
-.v-table tbody tr:hover {
-  background: #f8fafc;
-  transition: 0.2s;
+/* ညာဘက်ခြမ်း - ခြင်းတောင်း */
+.cart-section {
+  flex: 3;
+  background-color: white;
+  border-left: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+.cart-section h2 { 
+  font-size: 16px; 
+  margin: 0 0 16px 0; 
+  padding-bottom: 10px; 
+  border-bottom: 1px solid #f3f4f6; 
+}
+.cart-items { 
+  flex: 1; 
+  overflow-y: auto; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+}
+.cart-item { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 10px; 
+  background: #f9fafb; 
+  border-radius: 6px; 
+}
+.item-details { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 2px; 
+}
+.item-name { 
+  font-size: 14px; 
+  font-weight: 500; 
+}
+.item-price { 
+  font-size: 13px; 
+  color: #2563eb; 
+  font-weight: 600; 
+}
+.item-actions { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+}
+.qty-controls { 
+  display: flex; 
+  align-items: center; 
+  background: #e5e7eb; 
+  border-radius: 4px; 
+}
+.qty-controls button { 
+  border: none; 
+  background: transparent; 
+  padding: 4px 10px; 
+  cursor: pointer; 
+  font-weight: bold; 
+}
+.qty-number { 
+  font-size: 13px; 
+  min-width: 20px; 
+  text-align: center; 
+}
+.btn-remove { 
+  background: transparent; 
+  border: none; 
+  cursor: pointer; 
 }
 
-table,
-th,
-td {
-  border: 1px solid rgb(215, 215, 215);
-  border-collapse: collapse;
-  padding: 0 3px !important;
+/* Summary */
+.cart-summary { 
+  margin-top: auto; 
+  padding-top: 16px; 
+  border-top: 1px solid #e5e7eb; 
 }
-
-.add-btn {
-  background: linear-gradient(135deg, #e48494 0%, rgb(214, 96, 130) 100%) !important;
-  color: white;
-  font-weight: 600;
-  text-transform: none;
-  border-radius: 999px;
-  padding: 10px 18px;
-  box-shadow: 0 8px 20px rgba(228, 132, 148, 0.35);
-
-  transition: all 0.25s ease;
+.summary-row { 
+  display: flex; 
+  justify-content: space-between; 
+  margin-bottom: 10px; 
+  font-size: 14px; 
+  align-items: center; 
 }
-
-.add-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 28px rgba(228, 132, 148, 0.45);
+.summary-row select { 
+  padding: 6px; 
+  border-radius: 6px; 
+  border: 1px solid #d1d5db; 
+  outline: none; 
 }
-
-.add-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 6px 14px rgba(228, 132, 148, 0.3);
+.divider { 
+  border: 0; 
+  border-top: 1px solid #f3f4f6; 
+  margin: 12px 0; 
 }
-
-.c-table thead th {
-  background: #d66182 !important;
-  font-weight: 700;
-
-  text-transform: none;
-  position: sticky;
-  top: 0;
-  z-index: 1;
+.total { 
+  font-size: 16px; 
+  font-weight: bold; 
+  color: #111827; 
 }
-
-/* .c-table tbody tr:hover {
-  background: #f5e2e5;
-  transition: 0.2s ease;
-} */
-
-.cdialog {
-  overflow: hidden;
-  border: 1px solid #f4d7de;
+.btn-checkout { 
+  width: 100%; 
+  padding: 14px; 
+  background: #10b981; 
+  color: white; 
+  border: none; 
+  border-radius: 8px; 
+  font-size: 15px; 
+  font-weight: bold; 
+  cursor: pointer; 
+  margin-top: 12px; 
 }
-
-.dialog-header {
-  background: linear-gradient(135deg, #e48494 0%, #d66182 100%);
-  padding: 22px;
-  color: white;
+.btn-checkout:disabled { 
+  background: #9ca3af; 
+  cursor: not-allowed; 
 }
-
-.cinput :deep(.v-field) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
-}
-
-.cinput :deep(.v-field--focused) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
-}
-
-.cinput :deep(.v-label.v-field-label) {
-  background: white;
-  padding: 0 3px;
+.empty-cart, 
+.no-products { 
+  text-align: center; 
+  color: #9ca3af; 
+  font-size: 14px; 
+  padding: 40px 0; 
 }
 </style>

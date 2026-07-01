@@ -203,7 +203,7 @@ export default {
 
 .receipt-card {
   border-radius: 16px !important;
-  background-color: #ffffff !important;
+  background-color: #ffffff !important; 
   font-family: monospace, sans-serif; 
 }
 .dashed-line {

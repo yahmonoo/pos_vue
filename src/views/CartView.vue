@@ -17,7 +17,7 @@
             <v-col cols="5" sm="5">
               <div class="subtitle-2 font-weight-bold grey--text text--darken-3 text-truncate">{{ item.name }}</div>
               <div class="caption pink--text font-weight-bold">Variant: {{ item.chosenVariant }}</div>
-              <div class="body-2 grey--text">Ks {{ item.price.toLocaleString() }}</div>
+              <div class="body-2 grey--text">Ks {{ item.price}}</div>
             </v-col>
 
             <v-col cols="4" sm="3" class="text-center">

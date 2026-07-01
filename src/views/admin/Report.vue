@@ -1,311 +1,286 @@
 <template>
-  <v-container fluid>
-    <!-- Header -->
-
-    <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true">
-        Add UserAccount
-      </v-btn>
+  <div class="report-container">
+    <!-- Header & Export Buttons -->
+    <div class="report-header">
+      <div>
+        <h1>Sales Report</h1>
+        <p class="subtitle">Detailed sales data of Glow Skin Cosmetics</p>
+      </div>
+     
+      <div class="export-buttons">
+        <button @click="exportData('Excel')" class="btn-export excel">📊 Export Excel</button>
+        <button @click="exportData('PDF')" class="btn-export pdf">📄 Export PDF</button>
+      </div>
     </div>
 
-    <!-- Table Card -->
-    <v-card rounded="lg" elevation="0">
-      <v-table fixed-header height="400px" density="compact" class="c-table">
-        <thead>
-          <tr>
-            <th class="text-center">No.</th>
-            <th class="text-center">Township Name</th>
-            <th class="text-center" width="150">Action</th>
-          </tr>
-        </thead>
+    
+    <div class="filter-card">
+      <div class="filter-group">
+        <label>Start Date:</label>
+        <input type="date" v-model="startDate" />
+      </div>
+      <div class="filter-group">
+        <label>End Date:</label>
+        <input type="date" v-model="endDate" />
+      </div>
+      <button @click="filterReport" class="btn-filter">Search</button>
+    </div>
 
-        <tbody>
-          <tr
-            v-for="(item, index) in townshipList"
-            :key="item.townshipId"
-            @click="selectedOne = item"
-            :style="{
-              backgroundColor:
-                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
-            }"
-          >
-            <td class="text-center">{{ index + 1 }}</td>
+   
+    <div class="report-summary-grid">
+      <div class="summary-box">
+        <span class="box-title">Total Revenue</span>
+        <span class="box-value text-green">105,000 MMK</span>
+      </div>
+      <div class="summary-box">
+        <span class="box-title">Total Orders</span>
+        <span class="box-value">3 orders</span>
+      </div>
+      <div class="summary-box">
+        <span class="box-title">Average Order Value</span>
+        <span class="box-value">35,000 MMK</span>
+      </div>
+    </div>
 
-            <td class="text-center">{{ item.townshipName }}</td>
-
-            <td class="text-center">
-              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
-              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-    </v-card>
-
-    <!-- Add Dialog -->
-    <v-dialog v-model="dialog" max-width="500" persistent>
-      <v-card rounded="xl" class="cdialog">
-        <!-- Header -->
-        <div class="dialog-header">
-          <div class="d-flex align-center">
-            <div>
-              <div class="text-h6 font-weight-bold">Add New City</div>
-            </div>
-          </div>
-        </div>
-
-        <v-card-text class="pa-6">
-          <v-text-field
-            v-model="townshipDto.townshipName"
-            class="cinput"
-            label="Township Name"
-            variant="outlined"
-            density="compact"
-          />
-        </v-card-text>
-
-        <v-divider />
-
-        <v-card-actions class="pa-4">
-          <v-spacer />
-
-          <v-btn variant="tonal" rounded="pill" class="mr-2" @click="dialog = false">
-            Cancel
-          </v-btn>
-
-          <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Delete Dialog  -->
-    <v-col>
-      <v-dialog v-model="dialogDelete" width="500">
-        <v-card>
-          <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
-
-          <v-card-text class="text-h6">
-            Are you sure to delete({{ selectedOne.name }})?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn class="black" text @click="dialogDelete = false"> CANCEL </v-btn>
-            <v-btn dark class="bg-red" text @click="clickDeleteDialog()"> DELETE </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-col>
-  </v-container>
+    
+    <div class="table-card">
+      <h2>Sales Details</h2>
+      <div class="table-responsive">
+        <table class="sales-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Items Purchased</th>
+              <th>Payment Method</th>
+              <th>Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in salesData" :key="row.orderId">
+              <td>{{ row.date }}</td>
+              <td class="order-id">{{ row.orderId }}</td>
+              <td>{{ row.customer }}</td>
+              <td>{{ row.product }}</td>
+              <td><span class="payment-method">{{ row.payment }}</span></td>
+              <td class="amount">{{ row.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import cityService from '../../service/CityService.js'
 export default {
+  name: 'SalesReport',
   data() {
     return {
-      dialog: false,
-      cityName: '',
-      townshipDto: {},
-      selectedOne: {},
-      saveOrUpdate: 'SAVE',
-      dialogDelete: false,
-      townshipList: [
-        {
-          townshipId: 1,
-          townshipName: 'Yangon',
-        },
-        {
-          townshipId: 2,
-          townshipName: 'Mandalay',
-        },
-        {
-          townshipId: 3,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 4,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 5,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 6,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 7,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 8,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 9,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 10,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 11,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 12,
-          townshipName: 'Naypyidaw',
-        },
-      ],
-    }
+      
+      startDate: '2026-06-01',
+      endDate: '2026-06-28',
+     
+      salesData: [
+        { date: '28-06-2026', orderId: 'ORD-001', customer: 'Ma May Thu', product: 'Glow Serum (1)', payment: 'KPay', amount: '35,000 MMK' },
+        { date: '27-06-2026', orderId: 'ORD-002', customer: 'Ko htet', product: 'Sunscreen SPF50 (1)', payment: 'Wave Pay', amount: '28,000 MMK' },
+        { date: '27-06-2026', orderId: 'ORD-003', customer: 'Ma Su Mon', product: 'Moisturizer Cream (1)', payment: 'Cash on Delivery', amount: '42,000 MMK' }
+      ]
+    };
   },
-  props: {},
-  mounted: function () {},
   methods: {
-    cityListMethod() {
-      cityService
-        .getCity()
-        .then((response) => {
-          this.townshipList.splice(0, this.townshipList.length)
-          this.townshipList.push(...response)
-        })
-        .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
-        })
+    filterReport() {
+      // alert(`ရက်စွဲ ${this.startDate} မှ ${this.endDate} အထိ ဒေတာများကို စစ်ထုတ်နေပါသည်...`);
+     
     },
-    saveCity() {
-      if (this.saveOrUpdate == 'SAVE') {
-        console.log(this.saveOrUpdate)
-
-        cityService
-          .addCity(this.townshipDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
-          })
-      } else {
-        console.log(this.saveOrUpdate)
-
-        cityService
-          .updateCity(this.townshipDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
-          })
-      }
-    },
-    editCity(item) {
-      console.log(item)
-      this.dialog = true
-      this.saveOrUpdate = 'UPDATE'
-      this.townshipDto = { ...item }
-    },
-    deletCity(item) {
-      this.dialogDelete = true
-      this.selectedOne = { ...item }
-      console.log(item)
-    },
-    clickDeleteDialog() {
-      cityService
-        .deleteCity(this.selectedOne)
-        .then((response) => {
-          this.dialogDelete = false
-        })
-        .catch((error) => {
-          // this.$swal('Fail!', error.response.data.message, 'error')
-        })
-    },
-  },
-  watch: {},
-  components: {},
-}
+    exportData(type) {
+      // alert(`အရောင်းစာရင်းကို ${type} ဖိုင်အဖြစ် ထုတ်ယူနေပါသည်...`);
+    }
+  }
+};
 </script>
 
 <style scoped>
-.v-table {
-  background: transparent;
+.report-container {
+  padding: 24px;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  font-family: sans-serif;
 }
 
-.v-table thead th {
-  font-weight: 700;
-  background: #f8fafc;
+/* Header Area */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.report-header h1 {
+  font-size: 24px;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
 }
 
-.v-table tbody tr:hover {
-  background: #f8fafc;
-  transition: 0.2s;
+/* Buttons Styling */
+.export-buttons {
+  display: flex;
+  gap: 12px;
+}
+.btn-export {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+.btn-export:hover { 
+  opacity: 0.9; 
+}
+.excel { 
+  background-color: #e2f5ec; 
+  color: #10b981; 
+}
+.pdf { 
+  background-color: #fee2e2; 
+  color: #ef4444; 
 }
 
-table,
-th,
-td {
-  border: 1px solid rgb(215, 215, 215);
+/* Filter Card */
+.filter-card {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.filter-group label {
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 500;
+}
+.filter-group input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+}
+.btn-filter {
+  padding: 9px 20px;
+  background-color: rgb(232, 124, 142);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-filter:hover { 
+  background-color: rgb(183, 64, 84); 
+}
+
+/* Summary Grid */
+.report-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (min-width: 640px) {
+  .report-summary-grid { 
+    grid-template-columns: repeat(3, minmax(0, 1fr)); 
+  }
+}
+.summary-box {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.box-title {
+   font-size: 13px;
+   color: #6b7280; 
+}
+.box-value { 
+  font-size: 18px; 
+  font-weight: bold; 
+  color: #1f2937; 
+}
+.text-green { 
+  color: #10b981; 
+}
+
+/* Table Styling */
+.table-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.table-card h2 {
+  font-size: 16px;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+.table-responsive {
+  overflow-x: auto;
+}
+.sales-table {
+  width: 100%;
   border-collapse: collapse;
-  padding: 0 3px !important;
+  text-align: left;
+  font-size: 14px;
 }
-
-.add-btn {
-  background: linear-gradient(135deg, #e48494 0%, rgb(214, 96, 130) 100%) !important;
-  color: white;
+.sales-table th {
+  background-color: #f9fafb;
+  color: #4b5563;
+  padding: 12px;
   font-weight: 600;
-  text-transform: none;
-  border-radius: 999px;
-  padding: 10px 18px;
-  box-shadow: 0 8px 20px rgba(228, 132, 148, 0.35);
-
-  transition: all 0.25s ease;
+  border-bottom: 2px solid #e5e7eb;
 }
-
-.add-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 28px rgba(228, 132, 148, 0.45);
+.sales-table td {
+  padding: 14px 12px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
 }
-
-.add-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 6px 14px rgba(228, 132, 148, 0.3);
+.sales-table tr:hover {
+  background-color: #f9fafb; 
 }
-
-.c-table thead th {
-  background: #d66182 !important;
-  font-weight: 700;
-
-  text-transform: none;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-/* .c-table tbody tr:hover {
-  background: #f5e2e5;
-  transition: 0.2s ease;
-} */
-
-.cdialog {
-  overflow: hidden;
-  border: 1px solid #f4d7de;
-}
-
-.dialog-header {
-  background: linear-gradient(135deg, #e48494 0%, #d66182 100%);
-  padding: 22px;
-  color: white;
-}
-
-.cinput :deep(.v-field) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
-}
-
-.cinput :deep(.v-field--focused) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
-}
-
-.cinput :deep(.v-label.v-field-label) {
-  background: white;
-  padding: 0 3px;
+.order-id { 
+  font-weight: 600; 
+  color: #2563eb;
+ }
+.amount {
+   font-weight: bold;
+    color: #111827;
+   }
+.payment-method {
+  background-color: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #4b5563;
 }
 </style>

@@ -1,308 +1,293 @@
 <template>
-  <v-container fluid>
-    <!-- Header -->
-
-    <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true"> Add Category </v-btn>
+  <div class="category-container">
+    <div class="category-header">
+      <h1>Category Management</h1>
+      <p class="subtitle">Set Product Categories for Glow Skin Cosmetics</p>
     </div>
 
-    <!-- Table Card -->
-    <v-card rounded="lg" elevation="0">
-      <v-table fixed-header height="400px" density="compact" class="c-table">
-        <thead>
-          <tr>
-            <th class="text-center">No.</th>
-            <th class="text-center">Category Name</th>
-            <th class="text-center" width="150">Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr
-            v-for="(item, index) in categoryList"
-            :key="item.catgoryId"
-            @click="selectedOne = item"
-            :style="{
-              backgroundColor: item.catgoryId == selectedOne.catgoryId ? '#f5e2e5' : 'transparent',
-            }"
-          >
-            <td class="text-center">{{ index + 1 }}</td>
-
-            <td class="text-center">{{ item.name }}</td>
-
-            <td class="text-center">
-              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
-              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-    </v-card>
-
-    <!-- Add Dialog -->
-    <v-dialog v-model="dialog" max-width="500" persistent>
-      <v-card rounded="xl" class="cdialog">
-        <!-- Header -->
-        <div class="dialog-header">
-          <div class="d-flex align-center">
-            <div>
-              <div class="text-h6 font-weight-bold">Add New City</div>
-            </div>
-          </div>
-        </div>
-
-        <v-card-text class="pa-6">
-          <v-text-field
-            v-model="categoryDto.name"
-            class="cinput"
-            label="City Name"
-            variant="outlined"
-            density="compact"
+    <!-- 1. Create & Update Form -->
+    <div class="form-card">
+      <h2>{{ isEditing ? 'New Category' : 'New Category' }}</h2>
+      <form @submit.prevent="handleSubmit" class="category-form">
+        <div class="form-group flex-1">
+          <label>Category Name</label>
+          <input 
+            type="text" 
+            v-model="categoryForm.name" 
+            placeholder="Eg - Skincare, Makeup" 
+            required 
           />
-        </v-card-text>
+        </div>
+        <div class="form-group flex-2">
+          <label>Description</label>
+          <input 
+            type="text" 
+            v-model="categoryForm.description" 
+            placeholder="Eg -Facial and Skincare Products" 
+          />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            {{ isEditing ? 'Submit' : 'Submit' }}
+          </button>
+          <button 
+            type="button" 
+            v-if="isEditing" 
+            @click="resetForm" 
+            class="btn-cancel"
+          >
+            Delete
+          </button>
+        </div>
+      </form>
+    </div>
 
-        <v-divider />
-
-        <v-card-actions class="pa-4">
-          <v-spacer />
-
-          <v-btn variant="tonal" rounded="pill" class="mr-2" @click="dialog = false">
-            Cancel
-          </v-btn>
-
-          <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Delete Dialog  -->
-    <v-col>
-      <v-dialog v-model="dialogDelete" width="500">
-        <v-card>
-          <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
-
-          <v-card-text class="text-h6">
-            Are you sure to delete({{ selectedOne.name }})?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn class="black" text @click="dialogDelete = false"> CANCEL </v-btn>
-            <v-btn dark class="bg-red" text @click="clickDeleteDialog()"> DELETE </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-col>
-  </v-container>
+    <!-- 2. Read, Update, Delete Table -->
+    <div class="table-card">
+      <h2>Category List</h2>
+      <div class="table-responsive">
+        <table class="category-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Category Name</th>
+              <th>Description</th>
+              <th class="text-center">Update & Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(category, index) in categories" :key="category.id">
+              <td>{{ index + 1 }}</td>
+              <td class="font-bold">{{ category.name }}</td>
+              <td class="text-muted">{{ category.description || '-' }}</td>
+              <td class="text-left py-2 px-4">
+                <button @click="editCategory(category)" class="btn-action edit">📝 </button>
+                <button @click="deleteCategory(category.id)" class="btn-action delete">🗑️ </button>
+              </td>
+            </tr>
+            <tr v-if="categories.length === 0">
+              <td colspan="4" class="text-center no-data">No Category List</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import cityService from '../../service/CityService.js'
 export default {
+  name: 'CategoryManagement',
   data() {
     return {
-      dialog: false,
-      cityName: '',
-      categoryDto: {},
-      selectedOne: {},
-      saveOrUpdate: 'SAVE',
-      dialogDelete: false,
-      categoryList: [
-        {
-          catgoryId: 1,
-          name: 'Yangon',
-        },
-        {
-          catgoryId: 2,
-          name: 'Mandalay',
-        },
-        {
-          catgoryId: 3,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 4,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 5,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 6,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 7,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 8,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 9,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 10,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 11,
-          name: 'Naypyidaw',
-        },
-        {
-          catgoryId: 12,
-          name: 'Naypyidaw',
-        },
+      
+      categories: [
+        { id: 1, name: 'Skincare', description: 'Facial and Skincare Products' },
+        { id: 2, name: 'Makeup', description: 'Lipsticks, makeup, and cosmetics' },
+        { id: 3, name: 'Haircare', description: 'Shampoo and hair care treatments' }
       ],
-    }
+      categoryForm: {
+        id: null,
+        name: '',
+        description: ''
+      },
+      isEditing: false
+    };
   },
-  props: {},
-  mounted: function () {},
   methods: {
-    cityListMethod() {
-      cityService
-        .getCity()
-        .then((response) => {
-          this.categoryList.splice(0, this.categoryList.length)
-          this.categoryList.push(...response)
-        })
-        .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
-        })
-    },
-    saveCity() {
-      if (this.saveOrUpdate == 'SAVE') {
-        console.log(this.saveOrUpdate)
-
-        cityService
-          .addCity(this.categoryDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
-          })
+    handleSubmit() {
+      if (this.isEditing) {
+        // --- UPDATE ---
+        const index = this.categories.findIndex(c => c.id === this.categoryForm.id);
+        if (index !== -1) {
+          this.categories[index] = { ...this.categoryForm };
+          // alert('အမျိုးအစားကို ပြင်ဆင်ပြီးပါပြီ။');
+        }
       } else {
-        console.log(this.saveOrUpdate)
-
-        cityService
-          .updateCity(this.categoryDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
-          })
+        // --- CREATE ---
+        const newCategory = {
+          id: Date.now(),
+          name: this.categoryForm.name,
+          description: this.categoryForm.description
+        };
+        this.categories.push(newCategory);
+        // alert('အမျိုးအစားအသစ်ကို ထည့်သွင်းပြီးပါပြီ။');
+      }
+      this.resetForm();
+    },
+    editCategory(category) {
+      this.isEditing = true;
+      this.categoryForm = { ...category };
+    },
+    deleteCategory(id) {
+      if (confirm('ဤအမျိုးအစားကို ဖျက်လိုက်ပါက ၎င်းအောက်ရှိ ပစ္စည်းများစာရင်းပါ ထိခိုက်နိုင်ပါသည်။ အပြီးဖျက်လိုပါသလား?')) {
+        this.categories = this.categories.filter(c => c.id !== id);
+        // alert('ပယ်ဖျက်ပြီးပါပြီ။');
+        if (this.categoryForm.id === id) this.resetForm();
       }
     },
-    editCity(item) {
-      console.log(item)
-      this.dialog = true
-      this.saveOrUpdate = 'UPDATE'
-      this.categoryDto = { ...item }
-    },
-    deletCity(item) {
-      this.dialogDelete = true
-      this.selectedOne = { ...item }
-      console.log(item)
-    },
-    clickDeleteDialog() {
-      cityService
-        .deleteCity(this.selectedOne)
-        .then((response) => {
-          this.dialogDelete = false
-        })
-        .catch((error) => {
-          // this.$swal('Fail!', error.response.data.message, 'error')
-        })
-    },
-  },
-  watch: {},
-  components: {},
-}
+    resetForm() {
+      this.categoryForm = { id: null, name: '', description: '' };
+      this.isEditing = false;
+    }
+  }
+};
 </script>
 
 <style scoped>
-.v-table {
-  background: transparent;
+.category-container {
+  padding: 24px;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  font-family: sans-serif;
+}
+.category-header h1 {
+  font-size: 24px;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 24px 0;
 }
 
-.v-table thead th {
-  font-weight: 700;
-  background: #f8fafc;
+/* Form Styles */
+.form-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+.form-card h2, .table-card h2 {
+  font-size: 16px;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 10px;
+}
+.category-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.flex-1 { 
+  flex: 1; 
+  min-width: 200px; 
+}
+.flex-2 { 
+  flex: 2; 
+  min-width: 300px; 
 }
 
-.v-table tbody tr:hover {
-  background: #f8fafc;
-  transition: 0.2s;
+.form-group label {
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 500;
+}
+.form-group input {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+}
+.form-group input:focus { 
+  border-color: pink; 
 }
 
-table,
-th,
-td {
-  border: 1px solid rgb(215, 215, 215);
+/* Buttons */
+.form-actions { 
+  display: flex; 
+  gap: 8px; 
+}
+.btn-submit {
+  padding: 10px 20px;
+  background-color: rgb(248, 126, 146);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.btn-cancel {
+  padding: 10px 16px;
+  background-color: rgb(248, 126, 146);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Table Styles */
+.table-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+.table-responsive { 
+  overflow-x: auto; 
+}
+.category-table {
+  width: 100%;
   border-collapse: collapse;
-  padding: 0 3px !important;
+  font-size: 14px;
+}
+.category-table th {
+  background-color: #f9fafb;
+  color: #4b5563;
+  padding: 12px;
+  border-bottom: 2px solid #e5e7eb;
+  text-align: left;
+}
+.category-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+}
+.category-table tr:hover { 
+  background-color: #f9fafb; 
+}
+.font-bold { 
+  font-weight: 600; 
+  color: #111827; 
+}
+.text-muted { 
+  color: #6b7280; 
+}
+.text-center { 
+  text-align: center; 
+}
+.no-data { 
+  color: #9ca3af; 
+  padding: 24px; 
 }
 
-.add-btn {
-  background: linear-gradient(135deg, #e48494 0%, rgb(214, 96, 130) 100%) !important;
-  color: white;
-  font-weight: 600;
-  text-transform: none;
-  border-radius: 999px;
-  padding: 10px 18px;
-  box-shadow: 0 8px 20px rgba(228, 132, 148, 0.35);
-
-  transition: all 0.25s ease;
+/* Action Buttons */
+.btn-action {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 0 4px;
 }
-
-.add-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 28px rgba(228, 132, 148, 0.45);
+.edit { 
+  background-color: #fef3c7; 
+  color: #d97706; 
 }
-
-.add-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 6px 14px rgba(228, 132, 148, 0.3);
-}
-
-.c-table thead th {
-  background: #d66182 !important;
-  font-weight: 700;
-
-  text-transform: none;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-/* .c-table tbody tr:hover {
-  background: #f5e2e5;
-  transition: 0.2s ease;
-} */
-
-.cdialog {
-  overflow: hidden;
-  border: 1px solid #f4d7de;
-}
-
-.dialog-header {
-  background: linear-gradient(135deg, #e48494 0%, #d66182 100%);
-  padding: 22px;
-  color: white;
-}
-
-.cinput :deep(.v-field) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
-}
-
-.cinput :deep(.v-field--focused) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
-}
-
-.cinput :deep(.v-label.v-field-label) {
-  background: white;
-  padding: 0 3px;
+.delete { 
+  background-color: #fee2e2; 
+  color: #ef4444; 
 }
 </style>

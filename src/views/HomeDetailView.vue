@@ -49,28 +49,7 @@
         </div>
 
         <v-card flat class="pa-4 grey lighten-4 mb-6" style="border-radius: 8px;">
-          <!-- <div class="d-flex align-center justify-space-between mb-2">
-          <h4 class="subtitle-2 font-weight-bold grey--text text--darken-3">Product Rating & Reviews</h4>
-          <div v-if="productData.rating" class="d-flex align-center">
-            <v-icon color="amber" small class="mr-1">mdi-star</v-icon>
-             <span class="body-2 font-weight-bold">{{ productData.rating }}</span>
-             <span class="caption grey--text ml-1">({{ productData.reviewCount }} reviews)</span>
-            </div>
-            <div v-else class="caption grey--text">No ratings yet</div>
-  </div>
-  <div class="d-flex align-center justify-center py-2 grey lighten-5 rounded-lg">
-    <span class="body-2 grey--text text--darken-1 mr-3">Your Rating:</span>
-    <v-rating
-      v-model="userRating"
-      color="amber"
-      background-color="grey lighten-1"
-      dense
-      half-increments
-      hover
-      size="24"
-      @input="submitRating"
-    ></v-rating>
-    </div> -->
+          
           <h4 class="subtitle-2 font-weight-bold grey--text text--darken-3 mb-1">Product Description</h4>
           <p class="body-2 grey--text text--darken-1 mb-0">
             {{ productData.description || 'High-quality cosmetic product imported directly. Safe for all skin types and long-lasting.' }}
@@ -147,7 +126,7 @@ export default {
       // 💡 ပြင်ဆင်ချက် - const allProducts = [ ... ] ဟု ပြောင်းလဲသတ်မှတ်ထားပါသည်
       const allProducts = [
         // Popular Products
-        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', category: 'Lipsticks', description: 'နှုတ်ခမ်းသားကို တနေကုန် စိုပြေဝင်းပစေပြီး Natural Look ပေးမယ့် Dior ရဲ့ Luxury Lip Glow ပါ။',rating:4.8,reviewCount:25 },
+        { id: 101, name: 'Dior Addict Lipstick Glow', price: 189000, img: 'dior.jpg', category: 'Lipstick', description: 'နှုတ်ခမ်းသားကို တနေကုန် စိုပြေဝင်းပစေပြီး Natural Look ပေးမယ့် Dior ရဲ့ Luxury Lip Glow ပါ။',rating:4.8,reviewCount:25 },
         { id: 102, name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', category: 'Skincare', description: 'အသားအရေကို အဆီမပြန်စေဘဲ UV ဒဏ်ကနေ အပြည့်အဝကာကွယ်ပေးတဲ့ ပြင်သစ်နိုင်ငံထုတ် နေလောင်ကာခရင်မ် ဖြစ်ပါတယ်။' },
         { id: 103, name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', category: 'serum', description: 'အမည်းစက်၊ တင်းတိပ်နဲ့ အသားအရေ မညီညာမှုတွေကို သိသိသာသာ သက်သာလျော့ပါးစေတဲ့ နာမည်ကြီး Serum ဖြစ်ပါတယ်။' },
         { id: 104, name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', description: 'အသားအရေကို ရေဓာတ်ပြည့်ဝပြီး ကော်လာဂျင်ကြောင့် တင်းရင်းအိစက်စေမယ့် ဂျယ်လီခရင်မ် ဖြစ်ပါတယ်။' },

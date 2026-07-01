@@ -5,23 +5,19 @@ class ProductService {
   constructor() {
     this.axios = axios;
   }
-
-  getCity() {
-    let url = `/city`;
+getProductHome(type,categoryId) {
+    let url = `/product/home`;
+    return axios.get(url,{
+      params:{
+        type,categoryId
+      }
+    }).then((request) => request.data);
+  }
+  getProductDetail(productId) {
+    let url = `/product/detail/${productId}`;
     return axios.get(url).then((request) => request.data);
   }
-  addCity(city) {
-    let url = `/city`;
-    return this.axios.post(url, city).then((request) => request.data);
-  }
-  updateCity(city) {
-    let url = `/city/${city.cityId}`;
-    return this.axios.put(url, note).then((request) => request.data);
-  }
-  deleteCity(city) {
-    let url = `/city/${city.cityId}`;
-    return this.axios.delete(url).then((request) => request.data);
-  }
+
 
   
 }

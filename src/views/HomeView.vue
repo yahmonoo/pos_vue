@@ -13,39 +13,45 @@
           <source :src="homeVideo" type="video/mp4" />
         </video>
       </div>
-    </section>
+      </section>
+    </div>
 
     <section class="products">
       <div class="title">
         <h2>Popular Products</h2>
       </div>
-      <div class="card-container">
-        <div v-for="(product, index) in popularProducts" :key="'popular-' + index" class="card" @click="openDetail(product)">
-          <div class="image-box">
-            <img :src="getImageUrl(product.img)" :alt="product.name" />
-            <div class="rating-container" v-if="product.rating">
-  <span class="stars">
-    <span v-for="star in Math.floor(product.rating)" :key="'filled-' + star" class="star filled">★</span>
-    
-    <span v-if="product.rating % 1 !== 0" class="star half">★</span>
-    
-    <span v-for="star in (5 - Math.ceil(product.rating))" :key="'empty-' + star" class="star empty">★</span>
-  </span>
-  <span class="rating-text">({{ product.rating }})</span>
-</div>
-            <div class="product-desc" v-if="product.description">
-              <p>{{ product.description }}</p>
+       
+      <div class="slider-wrapper">
+        <button class="arrow-btn prev-btn" @click="scrollSlider('popularSlider', -300)">&#10094;</button>
+        
+        <div class="card-container" ref="popularSlider">
+          <div v-for="(product, index) in popularProducts" :key="'popular-' + index" class="card" @click="openDetail(product)">
+            <div class="image-box">
+              <img :src="getImageUrl(product.photoOne)"  width="100vh" height="100vh" />
+              <div class="rating-container" v-if="product.ratingCount">
+                <span class="stars">
+                  <span v-for="star in Math.floor(product.ratingCount)" :key="'filled-' + star" class="star filled">★</span>
+                  <span v-if="product.ratingCount % 1 !== 0" class="star half">★</span>
+                  <span v-for="star in (5 - Math.ceil(product.ratingCount))" :key="'empty-' + star" class="star empty">★</span>
+                </span>
+                <span class="rating-text">({{ product.ratingCount }})</span>
+              </div>
+              <!-- <div class="product-desc" v-if="product.description">
+                <p>{{ product.description }}</p>
+              </div> -->
+            </div>
+            <h3>{{ product.title }}</h3>
+            <p class="product-code">Code: #{{ product.code }}</p>
+            <div class="add-btn">
+              <span class="price-container">{{ product.priceOne.toLocaleString() }}MMK</span>
+              <button class="add-to-cart-btn" @click.stop="addToCart(product)">
+                + Add
+              </button>
             </div>
           </div>
-          <h3>{{ product.name }}</h3>
-          <p class="product-code">Code: #{{ product.id }}</p>
-          <div class="add-btn">
-            <span class="price-container">{{ product.price.toLocaleString() }}MMK</span>
-            <button class="add-to-cart-btn" @click.stop="addToCart(product)">
-              + Add
-            </button>
-          </div>
         </div>
+
+        <button class="arrow-btn next-btn" @click="scrollSlider('popularSlider', 300)">&#10095;</button>
       </div>
     </section>
 
@@ -53,9 +59,11 @@
       <div class="title">
         <h2>Discount Products</h2>
       </div>
-      <div class="card-container">
+      <div class="slider-wrapper">
+        <button class="arrow-btn prev-btn" @click="scrollSlider('discountSlider', -300)">&#10094;</button>
+      <div class="card-container" ref="discountSlider">
         <div v-for="(product, index) in discountProducts" :key="'discount-' + product.name + index" class="card" @click="openDetail(product)">
-          <span class="discount-badge">{{ product.discount }}</span>
+          <span class="discount-badge">{{ product.discountOne }}</span>
           <img :src="getImageUrl(product.img)" :alt="product.name" />
           <h3>{{ product.name }}</h3>
           <p class="product-code">Code: #{{ product.id }}</p>
@@ -70,13 +78,17 @@
           </div>
         </div>
       </div>
+       <button class="arrow-btn next-btn" @click="scrollSlider('discountSlider', 300)">&#10095;</button>
+       </div>
     </section>
 
     <section class="products">
       <div class="title">
         <h2>Best Seller Products</h2>
       </div>
-      <div class="card-container">
+      <div class="slider-wrapper">
+        <button class="arrow-btn prev-btn" @click="scrollSlider('bestsellerSlider', -300)">&#10094;</button>
+      <div class="card-container" ref="bestsellerSlider">
         <div v-for="(product, index) in bestsellerProducts" :key="'bestseller-' + index" class="card" @click="openDetail(product)">
           <img :src="getImageUrl(product.img)" :alt="product.name" />
           <h3>{{ product.name }}</h3>
@@ -89,8 +101,11 @@
           </div>
         </div>
       </div>
+      <button class="arrow-btn next-btn" @click="scrollSlider('bestsellerSlider', 300)">&#10095;</button>
+       </div>
     </section>
   
+
     <footer id="contact-section">
       <div class="footer-content">
         <h3>Glow Skin Cosmetics</h3>
@@ -111,13 +126,13 @@
         <p class="copyright">© 2026 Cosmetics POS. All rights reserved.</p>
       </div>
     </footer>
-  </div>
 </template>
 
 <script>
 import homeVideo from '../assets/images/co.mp4'
 import HomeDetailView from './HomeDetailView.vue'
-
+import productService from "../service/ProductService.js";
+import axios from "@/config";
 export default {
   name: 'HomeView',
   components: {
@@ -136,28 +151,21 @@ export default {
 
       // Popular Products Data
       popularProducts: [
-        { id: 101, name: 'Dior Addict Lip Glow', price: 189000, img: 'dior.jpg', qty: 0, maxQty: 2, category: 'Lipsticks',rating:5 },
-        { id: 102, name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', qty: 0, maxQty: 7, category: 'Skincare', rating:4.8},
-        { id: 103, name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', qty: 0, maxQty: 12, category: 'serum',rating:4.5  },
-        { id: 104, name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', qty: 0, maxQty: 13,rating:5 },
-        { id: 105, name: 'YSL Glow Cushion', price: 93000, img: 'foun.jpg', qty: 0, maxQty: 3 ,rating: 4.8},
-        { id: 106, name: 'Chanel coco perfume(30ml)', price: 230000, img: 'coco.webp', qty: 0, maxQty: 5 ,rating:4.3},
-        { id: 107, name: 'Anua 70+ Toner', price: 65500, img: 'anua.webp', qty: 0, maxQty: 11,rating:4.5 },
-        { id: 108, name: 'CeraVe Moisture Cream', price: 84000, img: 'carave.avif', qty: 0, maxQty: 10,rating:4.8 },
-        { id: 109, name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp', qty: 0, maxQty: 7 ,rating:4.6},
-        { id: 110, name: 'COSRX essence', price: 69000, img: 'cosrx.jpg', qty: 0, maxQty: 5,rating:4  },
-        { id: 111, name: 'Kiro Waterproof Eyeliner', price: 7000, img: 'eye.jpg', qty: 0, maxQty: 9,rating:4.8 }
+        // { id: 101, name: 'Dior Addict Lipstick Glow', price: 189000, img: 'dior.jpg', qty: 0, maxQty: 2, category: 'Lipstick',rating:5 },
+        //  { id: 102, name: 'Bioderma Suncream', price: 61500, img: 'sun.jpg', qty: 0, maxQty: 7, category: 'Skincare', rating:4.8},
+        // { id: 103, name: 'The Ordinary Serum', price: 60000, img: 'serum.jpg', qty: 0, maxQty: 12, category: 'serum',rating:4.5  },
+        // { id: 104, name: 'Medicube Collagen Jelly Cream', price: 68000, img: 'medi.webp', qty: 0, maxQty: 13,rating:5 },
+        // { id: 105, name: 'YSL Glow Cushion', price: 93000, img: 'foun.jpg', qty: 0, maxQty: 3 ,rating: 4.8},
+        // { id: 106, name: 'Chanel coco perfume(30ml)', price: 230000, img: 'coco.webp', qty: 0, maxQty: 5 ,rating:4.3},
+        // { id: 107, name: 'Anua 70+ Toner', price: 65500, img: 'anua.webp', qty: 0, maxQty: 11,rating:4.5 },
+        // { id: 108, name: 'CeraVe Moisture Cream', price: 84000, img: 'carave.avif', qty: 0, maxQty: 10,rating:4.8 },
+        // { id: 109, name: 'Rhode Peptide Lip Tint', price: 140000, img: 'rhode.webp', qty: 0, maxQty: 7 ,rating:4.6},
+        // { id: 110, name: 'COSRX essence', price: 69000, img: 'cosrx.jpg', qty: 0, maxQty: 5,rating:4  },
+        // { id: 111, name: 'Kiro Waterproof Eyeliner', price: 7000, img: 'eye.jpg', qty: 0, maxQty: 9,rating:4.8 }
       ],
 
       // Discount Products Data
-      discountProducts: [
-        { id: 112, name: 'Romand Zero Matte Lipstick', oldPrice: 29000, newPrice: 26100, price: 26100, discount: '10% OFF', img: 'r0.webp', qty: 0, maxQty: 22, category: 'Lipstick' },
-        { id: 113, name: 'Dior Eyeshadow palette', oldPrice: 130000, newPrice: 65000, price: 65000, discount: '50% OFF', img: 'de.jpg', qty: 0, maxQty: 5, category: 'Eyeshadow' },
-        { id: 114, name: 'Innisfree Facial Foam', oldPrice: 30000, newPrice: 27000, price: 27000, discount: '10% OFF', img: 'inn.jpg', qty: 0, maxQty: 15 },
-        { id: 115, name: 'Black Rouge Airfit Velvet Tint', oldPrice: 41900, newPrice: 29330, price: 29330, discount: '30% OFF', img: 'br.jpg', qty: 0, maxQty: 25 },
-        { id: 116, name: 'Loreal Intense Volume Matte', oldPrice: 40000, newPrice: 26000, price: 26000, discount: '35% OFF', img: 'lo.jpg', qty: 0, maxQty: 15 },
-        { id: 117, name: 'Loreal Shampoo', oldPrice: 25000, newPrice: 23750, price: 23750, discount: '5% OFF', img: 'sh.jpg', qty: 0, maxQty: 14 }
-      ],
+      discountProducts: [],
 
       // Best Seller Products Data
       bestsellerProducts: [
@@ -172,16 +180,55 @@ export default {
   },
   computed: {
   },
-
+  mounted: function() {
+    //this.popularProducts.splice(0,this.popularProducts.length);
+    this.getProductHome();
+    this.getDiscountProduct();
+  },
   methods: {
-    getImageUrl(name) {
-      return new URL(`../assets/images/${name}`, import.meta.url).href
+    getDiscountProduct:function(){
+      productService
+        .getProductHome("d",0)
+        .then((response) => {
+          this.discountProducts.splice(0);
+          this.discountProducts.push(...response);
+        })
+        .catch((error) => {
+          // this.$swal("Fail!", error.response.data.message, "error");
+        });
+    },
+    scrollSlider(containerRef, distance) {
+  const container = this.$refs[containerRef];
+  if (container) {
+    container.scrollBy({
+      left: distance,
+      behavior: 'smooth'
+    });
+  }
+},
+    getProductHome:function(){
+     productService
+        .getProductHome("p",0)
+        .then((response) => {
+          this.popularProducts.splice(0);
+          this.popularProducts.push(...response);
+        })
+        .catch((error) => {
+          // this.$swal("Fail!", error.response.data.message, "error");
+        });
+    },
+    getImageUrl(photo) {
+      console.log("photo");
+      console.log(photo);
+      const baseURL = axios?.defaults?.baseURL || "";
+      return photo ? `${baseURL}/productphoto/${photo}` : "";
+       //return new URL(`../assets/images/${photo}`, import.meta.url).href;
     },
 
     openDetail(product) {
       this.$router.push({
        path:'/home-detail',
-       query:{id:product.id}
+       query:{id:product.productId}
       });
     },
      
@@ -219,13 +266,14 @@ export default {
 }
 
 body {
-  background: #fdf7f8;
+  background:#d81b60;
 }
 
 .main-content {
   margin-left: 0;
   margin-top: 0;
   padding: 0;
+  min-height: 100vh;
 }
 
 .banner {
@@ -256,6 +304,7 @@ body {
 
 .products {
   padding: 40px 30px 30px 30px;
+  background:#F5F5F7;
 }
 
 .title {
@@ -273,15 +322,17 @@ body {
 
 .card-container {
   display: flex;
-  overflow-x: scroll;
+  overflow-x:auto;
   gap: 20px;
-  padding: 20px;
+  padding: 20px 40px;
   scroll-behavior: smooth;
   white-space: nowrap;
-  scrollbar-width: thin;
+  scrollbar-width:none;
+  width:100%;
 }
 .card-container::-webkit-scrollbar {
-  height: 6px;
+  /* height: 6px; */
+  display:none;
 }
 .card-container::-webkit-scrollbar-thumb {
   background: #ffb6c1;
@@ -496,6 +547,47 @@ footer {
 .rating-text {
   font-size: 12px;
   color: #7f8c8d;
+}
+
+.slider-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width:100%;
+}
+
+.arrow-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); /* အလယ်ဗဟိုတည့်တည့် ရောက်အောင်လို့ပါ */
+  background-color: rgba(255, 255, 255, 0.9); /* နောက်ခံ အဖြူကြည်ရောင် */
+  color: #d81b60;
+  border: 1px solid #ffb6c1;
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10; /* မြားက ကတ်တွေရဲ့ အပေါ်မှာ ပေါ်နေဖို့ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.arrow-btn:hover {
+  background-color: #d81b60;
+  color: white;
+}
+
+.prev-btn {
+  left:0; 
+}
+
+/* ညာဘက်မြားကို ညာဘက်အစွန်းမှာ ကပ်မယ် */
+.next-btn {
+  right:0;
 }
 
 @media (max-width: 768px) {

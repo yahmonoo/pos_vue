@@ -116,13 +116,10 @@
 
 <script>
 import homeVideo from '../assets/images/co.mp4'
-import HomeDetailView from './HomeDetailView.vue'
+import productDetail from './ProductDetail.vue'
 
 export default {
   name: 'HomeView',
-  components: {
-    HomeDetailView
-  },
   props: {
     cart: {
       type: Array,
@@ -180,7 +177,7 @@ export default {
 
     openDetail(product) {
       this.$router.push({
-       path:'/home-detail',
+       path:'/product-detail',
        query:{id:product.id}
       });
     },

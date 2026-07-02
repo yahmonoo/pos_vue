@@ -245,13 +245,10 @@ export default {
       let id = product.productId;
       let query = { id };
       this.$router.push({
-<<<<<<< HEAD
         name: "้homedetailview",
         query,
-=======
-       path:'/product-detail',
-       query:{id:product.id}
->>>>>>> ff3df523001048652ce8dc9c29f4825db1dfb559
+      //  path:'/product-detail',
+      //  query:{id:product.id}
       });
       // this.$router.push({
       //  path:'/home-detail',

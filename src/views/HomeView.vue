@@ -14,7 +14,7 @@
         </video>
       </div>
       </section>
-    </div>
+  </div>
 
     <section class="products">
       <div class="title">
@@ -27,21 +27,21 @@
         <div class="card-container" ref="popularSlider">
           <div v-for="(product, index) in popularProducts" :key="'popular-' + index" class="card" @click="openDetail(product)">
             <div class="image-box">
-              <img :src="getImageUrl(product.photoOne)"  width="100vh" height="100vh" />
-              <div class="rating-container" v-if="product.ratingCount">
+              <img :src="getImageUrl(product.photoOne || product.img )" :alt="product.title "/>
+              <div class="rating-container" v-if="product.rating">
                 <span class="stars">
-                  <span v-for="star in Math.floor(product.ratingCount)" :key="'filled-' + star" class="star filled">★</span>
-                  <span v-if="product.ratingCount % 1 !== 0" class="star half">★</span>
-                  <span v-for="star in (5 - Math.ceil(product.ratingCount))" :key="'empty-' + star" class="star empty">★</span>
+                  <span v-for="star in Math.floor(product.rating)" :key="'filled-' + star" class="star filled">★</span>
+                  <span v-if="product.rating % 1 !== 0" class="star half">★</span>
+                  <span v-for="star in (5 - Math.ceil(product.ratingCount || product.rating))" :key="'empty-' + star" class="star empty">★</span>
                 </span>
-                <span class="rating-text">({{ product.ratingCount }})</span>
+                <span class="rating-text">({{ product.rating }})</span>
               </div>
               <!-- <div class="product-desc" v-if="product.description">
                 <p>{{ product.description }}</p>
               </div> -->
             </div>
             <h3>{{ product.title }}</h3>
-            <p class="product-code">Code: #{{ product.code }}</p>
+            <p class="product-code">Code: #{{ product.code  }}</p>
             <div class="add-btn">
               <span class="price-container">{{ product.priceOne.toLocaleString() }}MMK</span>
               <button class="add-to-cart-btn" @click.stop="addToCart(product)">
@@ -62,14 +62,14 @@
       <div class="slider-wrapper">
         <button class="arrow-btn prev-btn" @click="scrollSlider('discountSlider', -300)">&#10094;</button>
       <div class="card-container" ref="discountSlider">
-        <div v-for="(product, index) in discountProducts" :key="'discount-' + product.name + index" class="card" @click="openDetail(product)">
-          <span class="discount-badge">{{ product.discountOne }}</span>
-          <img :src="getImageUrl(product.img)" :alt="product.name" />
-          <h3>{{ product.name }}</h3>
-          <p class="product-code">Code: #{{ product.id }}</p>
+        <div v-for="(product, index) in discountProducts" :key="'discount-' + index" class="card" @click="openDetail(product)">
+          <span class="discount-badge" v-if="product.discountOne">{{ product.discountOne }}</span>
+          <img :src="getImageUrl(product.photoOne || product.img)" :alt="product.title" />
+          <h3>{{ product.title }}</h3>
+          <p class="product-code">Code: #{{ product.code }}</p>
           <div class="price-container">
-            <span class="new-price">{{ product.newPrice.toLocaleString() }}MMK</span>
-            <span class="old-price">{{ product.oldPrice.toLocaleString() }}MMK</span>
+            <span class="new-price">{{ (product.priceOne || 0) .toLocaleString() }}MMK</span>
+            <span class="old-price" v-if="product.oldPrice">{{ product.oldPrice.toLocaleString() }}MMK</span>
           </div>
           <div class="add-btn-dis">
             <button class="add-to-cart-btn" @click.stop="addToCart(product)">
@@ -90,11 +90,11 @@
         <button class="arrow-btn prev-btn" @click="scrollSlider('bestsellerSlider', -300)">&#10094;</button>
       <div class="card-container" ref="bestsellerSlider">
         <div v-for="(product, index) in bestsellerProducts" :key="'bestseller-' + index" class="card" @click="openDetail(product)">
-          <img :src="getImageUrl(product.img)" :alt="product.name" />
-          <h3>{{ product.name }}</h3>
-          <p class="product-code">Code: #{{ product.id }}</p>
+          <img :src="getImageUrl(product.photoOne || product.img)" :alt="product.title " />
+          <h3>{{ product.title }}</h3>
+          <p class="product-code">Code: #{{ product.code }}</p>
           <div class="add-btn">
-            <span class="price-container">{{ product.price.toLocaleString() }}MMK</span>
+            <span class="price-container">{{ product.priceOne.toLocaleString() }}MMK</span>
             <button class="add-to-cart-btn" @click.stop="addToCart(product)">
               + Add
             </button>
@@ -169,12 +169,12 @@ export default {
 
       // Best Seller Products Data
       bestsellerProducts: [
-        { id: 118, name: '345 relief cream', price: 58000, img: '345.jpg', qty: 0, maxQty: 11 },
-        { id: 119, name: 'Skin1004 Tone Brightening Ampoule', price: 56000, img: 'sk1004.jpg', qty: 0, maxQty: 25, category: 'Cream' },
-        { id: 120, name: 'Anua Niacinamide serum', price: 82000, img: 'an.jpg', qty: 0, maxQty: 5, category: 'serum' },
-        { id: 121, name: 'Laneige lip Sleeping mask', price: 44000, img: 'la.jpg', qty: 0, maxQty: 13 },
-        { id: 122, name: 'Medicube Collegen Night Warping Mask', price: 98000, img: 'nw.jpg', qty: 0, maxQty: 7 },
-        { id: 123, name: 'Axis-Y Dark Spot Glow Serum', price: 44000, img: 'axis.jpg', qty: 0, maxQty: 11 }
+        // { id: 118, name: '345 relief cream', price: 58000, img: '345.jpg', qty: 0, maxQty: 11 },
+        // { id: 119, name: 'Skin1004 Tone Brightening Ampoule', price: 56000, img: 'sk1004.jpg', qty: 0, maxQty: 25, category: 'Cream' },
+        // { id: 120, name: 'Anua Niacinamide serum', price: 82000, img: 'an.jpg', qty: 0, maxQty: 5, category: 'serum' },
+        // { id: 121, name: 'Laneige lip Sleeping mask', price: 44000, img: 'la.jpg', qty: 0, maxQty: 13 },
+        // { id: 122, name: 'Medicube Collegen Night Warping Mask', price: 98000, img: 'nw.jpg', qty: 0, maxQty: 7 },
+        // { id: 123, name: 'Axis-Y Dark Spot Glow Serum', price: 44000, img: 'axis.jpg', qty: 0, maxQty: 11 }
       ]
     }
   },
@@ -184,14 +184,28 @@ export default {
     //this.popularProducts.splice(0,this.popularProducts.length);
     this.getProductHome();
     this.getDiscountProduct();
+    this.getBestSellerProduct();
   },
   methods: {
     getDiscountProduct:function(){
       productService
         .getProductHome("d",0)
         .then((response) => {
+          console.log("Discount Products Response:", response);
           this.discountProducts.splice(0);
           this.discountProducts.push(...response);
+        })
+        .catch((error) => {
+          // this.$swal("Fail!", error.response.data.message, "error");
+        });
+    },
+    getBestSellerProduct:function(){
+      productService
+        .getProductHome("b",0)
+        .then((response) => {
+          console.log("Best Seller Products Response:", response);
+          this.bestsellerProducts.splice(0);
+          this.bestsellerProducts.push(...response);
         })
         .catch((error) => {
           // this.$swal("Fail!", error.response.data.message, "error");
@@ -210,6 +224,7 @@ export default {
      productService
         .getProductHome("p",0)
         .then((response) => {
+          console.log("Popular Products Response:", response);
           this.popularProducts.splice(0);
           this.popularProducts.push(...response);
         })
@@ -218,18 +233,28 @@ export default {
         });
     },
     getImageUrl(photo) {
-      console.log("photo");
-      console.log(photo);
-      const baseURL = axios?.defaults?.baseURL || "";
-      return photo ? `${baseURL}/productphoto/${photo}` : "";
-       //return new URL(`../assets/images/${photo}`, import.meta.url).href;
+       return `${axios.defaults.baseURL}/productphoto/${photo}`;
+      // if(!photo) return "";
+  //     const baseURL = "http://localhost:8088"; 
+  // return `${baseURL}/productphoto/${photo}`;
+      //  console.log("photo");
+      //  console.log(photo);
+      // const baseURL = axios?.defaults?.baseURL || "";
+      //  return photo ? `${baseURL}/productphoto/${photo}` : "";
+      //  return new URL(`../assets/images/${photo}`, import.meta.url).href;
     },
 
     openDetail(product) {
+      let id = product.productId;
+      let query = { id };
       this.$router.push({
-       path:'/home-detail',
-       query:{id:product.productId}
+        name: "้homedetailview",
+        query,
       });
+      // this.$router.push({
+      //  path:'/home-detail',
+      //  query:{id:product.productId}
+      // });
     },
      
     addToCart(product) {
@@ -238,7 +263,7 @@ export default {
       const targetPrice = product.price || product.newPrice;
       cart.push({ 
         ...product, 
-        imageName: product.img,
+        imageName: product.photoOne || product.img,
         price: targetPrice,
         chosenVariant: product.category === 'Lipstick' || product.category === 'Lipsticks' ? '06' : 'Standard', 
         buyQuantity: 1 

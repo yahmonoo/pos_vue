@@ -13,11 +13,11 @@
   <v-icon left class="mr-1">mdi-chevron-left</v-icon> Back to Home
 </v-btn>
 
-    <v-row v-if="productData">
+    <v-row >
       <v-col cols="12" md="6" class="d-flex justify-center">
         <div class="detail-image-box-container">
           <img 
-            :src="currentDisplayImage" 
+          :src="getImageUrl(product.photoOne)"
             class="detail-pure-product-img" 
             @error="handleImageError"
             alt="Product Image"
@@ -26,9 +26,9 @@
       </v-col>
 
       <v-col cols="12" md="6">
-        <h1 class="headline font-weight-bold grey--text text--darken-3 mb-2">{{ productData.name }}</h1>
-        <p class="caption grey--text mb-4">Ks {{ currentDisplayPrice.toLocaleString() }}</p>
-
+        <h1 class="headline font-weight-bold grey--text text--darken-3 mb-2">{{ product.title }}</h1>
+        <p class="caption grey--text mb-4">Ks {{ product.priceOne }}</p>
+<!-- 
         <div class="mb-6">
           Selected Color/Size: <strong class="pink--text">{{ selectedVariant }}</strong>
         </div>
@@ -54,9 +54,9 @@
           <p class="body-2 grey--text text--darken-1 mb-0">
             {{ productData.description || 'High-quality cosmetic product imported directly. Safe for all skin types and long-lasting.' }}
           </p>
-        </v-card>
+        </v-card> -->
 
-        <div class="mb-6">
+        <!-- <div class="mb-6">
           <div class="body-2 grey--text mb-2">Quantity to buy:</div>
           <div class="d-flex align-center">
             <v-btn outlined small :disabled="(quantity || 1) <= 1" @click.native="quantity--">
@@ -67,55 +67,70 @@
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </div>
-        </div>
+        </div> -->
         
-        <v-btn color="#d78f99" dark large block depressed style="border-radius: 6px;" class="text-none" @click="addToCart">
+        <!-- <v-btn color="#d78f99" dark large block depressed style="border-radius: 6px;" class="text-none" @click="addToCart">
           <v-icon left>mdi-cart-plus</v-icon> Add to Cart
-        </v-btn>
+        </v-btn> -->
       </v-col>
     </v-row>
   
-    <v-row v-else class="text-center pa-12">
+    <!-- <v-row v-else class="text-center pa-12">
       <v-col cols="12">
         <p class="grey--text">Product data not found.</p>
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 
 <script>
+import productService from "../service/ProductService.js";
+import axios from "@/config";
 export default {
   name: 'HomeDetail',
   props: {
-    product: {
-      type: Object, 
-      default: null
-    }
   },
   data() {
     return {
-      productData: null, // UI ပေါ်မှာ အချက်အလက်ပြဖို့ သုံးပါမည်
-      selectedVariant: '',
-      currentImageName: '',
-      currentDisplayPrice: 0,
-      quantity: 1,
-      variantOptions: []
+      // productData: null, // UI ပေါ်မှာ အချက်အလက်ပြဖို့ သုံးပါမည်
+      // selectedVariant: '',
+      // currentImageName: '',
+      // currentDisplayPrice: 0,
+      // quantity: 1,
+      // variantOptions: [],
+      productId:0,
+      product:{},
     };
   },
   computed: {
-    currentDisplayImage() {
-      if (!this.currentImageName) return '';
-      if (this.currentImageName.startsWith('http') || this.currentImageName.startsWith('data:')) {
-        return this.currentImageName;
-      }
-      // 💡 ရုပ်ထွက်ပုံရိပ်များကို assets/images ထဲမှ ရှာဖွေရန် ချိတ်ဆက်ထားပါသည်
-      return new URL(`../assets/images/${this.currentImageName}`, import.meta.url).href;
-    }
+    // currentDisplayImage() {
+    //   if (!this.currentImageName) return '';
+    //   if (this.currentImageName.startsWith('http') || this.currentImageName.startsWith('data:')) {
+    //     return this.currentImageName;
+    //   }
+    //   // 💡 ရုပ်ထွက်ပုံရိပ်များကို assets/images ထဲမှ ရှာဖွေရန် ချိတ်ဆက်ထားပါသည်
+    //   return new URL(`../assets/images/${this.currentImageName}`, import.meta.url).href;
+    // }
   },
   mounted() {
-    this.loadProduct();
+   // this.loadProduct();
+   this.productId = parseInt(this.$route.query.id);
+   this.getProductDetail();
   },
   methods: {
+     getImageUrl(photo) {
+      return `${axios.defaults.baseURL}/productphoto/${photo}`;
+    },
+    getProductDetail:function(){
+    productService
+        .getProductDetail(this.productId)
+        .then((response) => {
+          this.product = response;
+        })
+        .catch((error) => {
+          // this.$swal("Fail!", error.response.data.message, "error");
+        });
+    },
     loadProduct() {
       if (this.product) {
         this.setupProductDetails(this.product);

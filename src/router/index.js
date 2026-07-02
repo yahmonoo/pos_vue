@@ -47,7 +47,7 @@ const router = createRouter({
     },
     {
       path: '/home-detail',
-      name: '้homeDetailview',
+      name: '้homedetailview',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -166,7 +166,14 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/admin/SaleList.vue'),
     },
-        
+          {
+      path: '/city',
+      name: 'city',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "city" */ "../views/City.vue"),
+    },  
   ],
 })
 

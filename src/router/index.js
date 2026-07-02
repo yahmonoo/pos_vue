@@ -1,11 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import HomeDetailView from '../views/HomeDetailView.vue'
 import productView from '../views/ProductView.vue'
 import productDetail from '../views/ProductDetail.vue'
 import cart from '../views/CartView.vue'
 import checkOut from '../views/CheckoutView.vue'
-import LoginView from '../views/LoginView.vue'
+
 
 
 
@@ -45,6 +44,7 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/ProductDetail.vue'),
     },
+<<<<<<< HEAD
     {
       path: '/home-detail',
       name: '้homedetailview',
@@ -53,6 +53,9 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/HomeDetailView.vue'),
     },
+=======
+  
+>>>>>>> ff3df523001048652ce8dc9c29f4825db1dfb559
     {
       path: '/cart',
       name: 'cart',
@@ -61,14 +64,7 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/CartView.vue'),
     },
-    {
-      path: '/LoginView',
-      name: 'LoginView',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/LoginView.vue'),
-    },
+  
 
     {
       path: '/checkOut',

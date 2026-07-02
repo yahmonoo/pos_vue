@@ -130,14 +130,11 @@
 
 <script>
 import homeVideo from '../assets/images/co.mp4'
-import HomeDetailView from './HomeDetailView.vue'
+import productDetail from './ProductDetail.vue'
 import productService from "../service/ProductService.js";
 import axios from "@/config";
 export default {
   name: 'HomeView',
-  components: {
-    HomeDetailView
-  },
   props: {
     cart: {
       type: Array,
@@ -248,8 +245,13 @@ export default {
       let id = product.productId;
       let query = { id };
       this.$router.push({
+<<<<<<< HEAD
         name: "้homedetailview",
         query,
+=======
+       path:'/product-detail',
+       query:{id:product.id}
+>>>>>>> ff3df523001048652ce8dc9c29f4825db1dfb559
       });
       // this.$router.push({
       //  path:'/home-detail',

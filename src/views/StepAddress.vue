@@ -118,7 +118,7 @@ export default {
   letter-spacing: 0.4px;
 }
 
-.custom-input >>> .v-input__control > .v-input__slot {
+.custom-input :deep(.v-input__control >.v-input__slot) {
   background-color: #ffffff !important;
   border: 1px solid #cbd5e1 !important;
   border-radius: 8px !important;
@@ -126,22 +126,22 @@ export default {
   min-height: 38px !important; 
 }
 
-.custom-input >>> .v-input__slot:focus-within {
+.custom-input :deep( .v-input__slot:focus-within) {
   border-color: #e91e63 !important;
   box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.12) !important;
 }
 
-.custom-input >>> fieldset {
+.custom-input :deep(fieldset) {
   border: none !important;
 }
 
-.custom-input >>> input, .custom-input >>> .v-select__selection {
+.custom-input :deep(input), .custom-input :deep(.v-select__selection) {
   font-size: 13.5px !important;
   color: #334155 !important;
   padding: 5px 0 !important;
 }
 
-.custom-input.v-input--is-disabled >>> .v-input__slot {
+.custom-input.v-input--is-disabled :deep(.v-input__slot) {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
 }

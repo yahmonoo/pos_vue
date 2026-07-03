@@ -1,340 +1,311 @@
 <template>
-  <div class="user-container">
-    <div class="user-header">
-      <h1>User Account Management </h1>
-      <p class="subtitle">Manage staff accounts for Glow Skin Cosmetics POS system</p>
+  <v-container fluid>
+    <!-- Header -->
+
+    <div class="d-flex justify-end mb-4">
+      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true">
+        Add UserAccount
+      </v-btn>
     </div>
 
-    <!-- 1. Create & Update Form (အကောင့်အသစ်ဖွင့်ရန်နှင့် ပြင်ရန်) -->
-    <div class="form-card">
-      <h2>{{ isEditing ? 'Create New Account' : 'Create New Account' }}</h2>
-      <form @submit.prevent="handleSubmit" class="user-form">
-        
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label>Staff Name</label>
-            <input type="text" v-model="userForm.name" placeholder="e.g., Mya Mya" required />
-          </div>
+    <!-- Table Card -->
+    <v-card rounded="lg" elevation="0">
+      <v-table fixed-header height="400px" density="compact" class="c-table">
+        <thead>
+          <tr>
+            <th class="text-center">No.</th>
+            <th class="text-center">Township Name</th>
+            <th class="text-center" width="150">Action</th>
+          </tr>
+        </thead>
 
-          <div class="form-group flex-1">
-            <label>Username / Email</label>
-            <input type="text" v-model="userForm.username" placeholder="e.g., myamya@gmail.com" required />
+        <tbody>
+          <tr
+            v-for="(item, index) in townshipList"
+            :key="item.townshipId"
+            @click="selectedOne = item"
+            :style="{
+              backgroundColor:
+                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
+            }"
+          >
+            <td class="text-center">{{ index + 1 }}</td>
+
+            <td class="text-center">{{ item.townshipName }}</td>
+
+            <td class="text-center">
+              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
+              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-card>
+
+    <!-- Add Dialog -->
+    <v-dialog v-model="dialog" max-width="500" persistent>
+      <v-card rounded="xl" class="cdialog">
+        <!-- Header -->
+        <div class="dialog-header">
+          <div class="d-flex align-center">
+            <div>
+              <div class="text-h6 font-weight-bold">Add New City</div>
+            </div>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label>Password</label>
-            <!-- Edit လုပ်နေချိန် Password ကို ချန်ထားနိုင်ရန် required ကို dynamic လုပ်ထားပါသည် -->
-            <input 
-              type="password" 
-              v-model="userForm.password" 
-              placeholder="••••••••" 
-              :required="!isEditing" 
-            />
-          </div>
+        <v-card-text class="pa-6">
+          <v-text-field
+            v-model="townshipDto.townshipName"
+            class="cinput"
+            label="Township Name"
+            variant="outlined"
+            density="compact"
+          />
+        </v-card-text>
 
-          <div class="form-group flex-1">
-            <label>Role</label>
-            <select v-model="userForm.role" required>
-              <option value="" disabled>--- Select Role---</option>
-              <option value="Admin">Admin (Manager / Owner)</option>
-              <option value="Cashier">Cashier (Sales Staff)</option>
-            </select>
-          </div>
-        </div>
+        <v-divider />
 
-        <div class="form-actions">
-          <button type="submit" class="btn-submit">
-            {{ isEditing ? 'Save New Account' : 'Save New Account' }}
-          </button>
-          <button type="button" v-if="isEditing" @click="resetForm" class="btn-cancel">Delete</button>
-        </div>
-      </form>
-    </div>
+        <v-card-actions class="pa-4">
+          <v-spacer />
 
-    <!-- 2. Read, Update, Delete Table (အကောင့်စာရင်းပြ ဇယား) -->
-    <div class="table-card">
-      <h2>Staff Account List</h2>
-      <div class="table-responsive">
-        <table class="user-table">
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>Staff Name</th>
-              <th>Username / Email</th>
-              <th>Role</th>
-              <th class="text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(user, index) in users" :key="user.id">
-              <td>{{ index + 1 }}</td>
-              <td class="font-bold">{{ user.name }}</td>
-              <td class="username-text">{{ user.username }}</td>
-              <td>
-                <span :class="['role-badge', user.role.toLowerCase()]">
-                  {{ user.role }}
-                </span>
-              </td>
-              <td class="text-left py-2 px-4">
-                <button @click="editUser(user)" class="btn-action edit">📝 </button>
-                <button @click="deleteUser(user.id)" class="btn-action delete">🗑️ </button>
-              </td>
-            </tr>
-            <tr v-if="users.length === 0">
-              <td colspan="5" class="text-center no-data">No Staff Account</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+          <v-btn variant="tonal" rounded="pill" class="mr-2" @click="dialog = false">
+            Cancel
+          </v-btn>
+
+          <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Dialog  -->
+    <v-col>
+      <v-dialog v-model="dialogDelete" width="500">
+        <v-card>
+          <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
+
+          <v-card-text class="text-h6">
+            Are you sure to delete({{ selectedOne.name }})?
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn class="black" text @click="dialogDelete = false"> CANCEL </v-btn>
+            <v-btn dark class="bg-red" text @click="clickDeleteDialog()"> DELETE </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-col>
+  </v-container>
 </template>
 
 <script>
+import cityService from '../../service/CityService.js'
 export default {
-  name: 'UserAccountManagement',
   data() {
     return {
-      // နမူနာ စတင်သတ်မှတ်ထားသော ဝန်ထမ်းစာရင်းများ
-      users: [
-        { id: 1, name: 'Snowy', username: 'snowy@glowskin.com', role: 'Admin' },
-        { id: 2, name: 'မမေသူ', username: 'maythu@glowskin.com', role: 'Cashier' },
-        { id: 3, name: 'ကိုထက်', username: 'kohtet@glowskin.com', role: 'Cashier' }
+      dialog: false,
+      cityName: '',
+      townshipDto: {},
+      selectedOne: {},
+      saveOrUpdate: 'SAVE',
+      dialogDelete: false,
+      townshipList: [
+        {
+          townshipId: 1,
+          townshipName: 'Yangon',
+        },
+        {
+          townshipId: 2,
+          townshipName: 'Mandalay',
+        },
+        {
+          townshipId: 3,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 4,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 5,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 6,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 7,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 8,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 9,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 10,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 11,
+          townshipName: 'Naypyidaw',
+        },
+        {
+          townshipId: 12,
+          townshipName: 'Naypyidaw',
+        },
       ],
-      userForm: {
-        id: null,
-        name: '',
-        username: '',
-        password: '',
-        role: ''
-      },
-      isEditing: false
-    };
-  },
-  methods: {
-    handleSubmit() {
-      if (this.isEditing) {
-        // --- UPDATE ---
-        const index = this.users.findIndex(u => u.id === this.userForm.id);
-        if (index !== -1) {
-          // Password ကို လုံခြုံရေးအရ Update Object ထဲ ထည့်မပြထားပါ (Real system တွင် API က ကိုင်တွယ်ပါမည်)
-          this.users[index] = { 
-            id: this.userForm.id,
-            name: this.userForm.name,
-            username: this.userForm.username,
-            role: this.userForm.role
-          };
-          // alert('ဝန်ထမ်းအကောင့်ကို ပြင်ဆင်ပြီးပါပြီ။');
-        }
-      } else {
-        // --- CREATE ---
-        const newUser = {
-          id: Date.now(),
-          name: this.userForm.name,
-          username: this.userForm.username,
-          role: this.userForm.role
-        };
-        this.users.push(newUser);
-        // alert('ဝန်ထမ်းအကောင့်အသစ်ကို အောင်မြင်စွာ ဖွင့်လှစ်ပြီးပါပြီ။');
-      }
-      this.resetForm();
-    },
-    editUser(user) {
-      this.isEditing = true;
-      // Form ထဲသို့ လက်ရှိအချက်အလက်များ ထည့်သွင်းခြင်း (လုံခြုံရေးအရ password ကို ကွက်လပ်ချန်ထားပါမည်)
-      this.userForm = { ...user, password: '' };
-    },
-    deleteUser(id) {
-      if (confirm('ဤဝန်ထမ်းအကောင့်ကို စနစ်ထဲမှ အပြီးဖျက်လိုပါသလား?')) {
-        this.users = this.users.filter(u => u.id !== id);
-        // alert('ပယ်ဖျက်ပြီးပါပြီ။');
-        if (this.userForm.id === id) this.resetForm();
-      }
-    },
-    resetForm() {
-      this.userForm = { id: null, name: '', username: '', password: '', role: '' };
-      this.isEditing = false;
     }
-  }
-};
+  },
+  props: {},
+  mounted: function () {},
+  methods: {
+    cityListMethod() {
+      cityService
+        .getCity()
+        .then((response) => {
+          this.townshipList.splice(0, this.townshipList.length)
+          this.townshipList.push(...response)
+        })
+        .catch((error) => {
+          this.$swal('Fail!', error.response.data.message, 'error')
+        })
+    },
+    saveCity() {
+      if (this.saveOrUpdate == 'SAVE') {
+        console.log(this.saveOrUpdate)
+
+        cityService
+          .addCity(this.townshipDto)
+          .then((response) => {})
+          .catch((error) => {
+            // this.$swal('Fail!', error.response.data.message, 'error')
+          })
+      } else {
+        console.log(this.saveOrUpdate)
+
+        cityService
+          .updateCity(this.townshipDto)
+          .then((response) => {})
+          .catch((error) => {
+            // this.$swal('Fail!', error.response.data.message, 'error')
+          })
+      }
+    },
+    editCity(item) {
+      console.log(item)
+      this.dialog = true
+      this.saveOrUpdate = 'UPDATE'
+      this.townshipDto = { ...item }
+    },
+    deletCity(item) {
+      this.dialogDelete = true
+      this.selectedOne = { ...item }
+      console.log(item)
+    },
+    clickDeleteDialog() {
+      cityService
+        .deleteCity(this.selectedOne)
+        .then((response) => {
+          this.dialogDelete = false
+        })
+        .catch((error) => {
+          // this.$swal('Fail!', error.response.data.message, 'error')
+        })
+    },
+  },
+  watch: {},
+  components: {},
+}
 </script>
 
 <style scoped>
-.user-container {
-  padding: 24px;
-  background-color: #f9fafb;
-  min-height: 100vh;
-  font-family: sans-serif;
-}
-.user-header h1 {
-  font-size: 24px;
-  color: #1f2937;
-  margin: 0 0 4px 0;
-}
-.subtitle {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0 0 24px 0;
+.v-table {
+  background: transparent;
 }
 
-/* Form Styles */
-.form-card {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  margin-bottom: 24px;
-}
-.form-card h2, .table-card h2 {
-  font-size: 16px;
-  color: #1f2937;
-  margin: 0 0 16px 0;
-  border-bottom: 1px solid #f3f4f6;
-  padding-bottom: 10px;
-}
-.user-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.form-row {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.flex-1 { flex: 1; min-width: 200px; }
-
-.form-group label {
-  font-size: 13px;
-  color: #4b5563;
-  font-weight: 500;
-}
-.form-group input, 
-.form-group select {
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
-  outline: none;
-  background-color: #fff;
-}
-.form-group input:focus, 
-.form-group select:focus { 
-  border-color: pink; 
+.v-table thead th {
+  font-weight: 700;
+  background: #f8fafc;
 }
 
-/* Buttons */
-.form-actions { 
-  display: flex; 
-  gap: 8px; 
-  margin-top: 8px; 
-}
-.btn-submit {
-  padding: 10px 20px;
-  background-color: rgb(243, 131, 150);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-}
-.btn-cancel {
-  padding: 10px 16px;
-  background-color: rgb(243,131,150);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
+.v-table tbody tr:hover {
+  background: #f8fafc;
+  transition: 0.2s;
 }
 
-/* Table Styles */
-.table-card {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-}
-.table-responsive { 
-  overflow-x: auto; 
-}
-.user-table {
-  width: 100%;
+table,
+th,
+td {
+  border: 1px solid rgb(215, 215, 215);
   border-collapse: collapse;
-  font-size: 14px;
-}
-.user-table th {
-  background-color: #f9fafb;
-  color: #4b5563;
-  padding: 12px;
-  border-bottom: 2px solid #e5e7eb;
-  text-align: left;
-}
-.user-table td {
-  padding: 14px 12px;
-  border-bottom: 1px solid #f3f4f6;
-  color: #374151;
-}
-.user-table tr:hover { 
-  background-color: #f9fafb; 
+  padding: 0 3px !important;
 }
 
-.font-bold { 
-  font-weight: 600; 
-  color: #111827; 
-}
-.username-text { 
-  color: #4b5563; 
-}
-
-/* Role Badges */
-.role-badge {
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 12px;
+.add-btn {
+  background: linear-gradient(135deg, #e48494 0%, rgb(214, 96, 130) 100%) !important;
+  color: white;
   font-weight: 600;
-  display: inline-block;
-}
-.role-badge.admin { 
-  background-color: #fee2e2; 
-  color: #ef4444; 
-}
-.role-badge.cashier { 
-  background-color: #e0f2fe; 
-  color: #0369a1; 
+  text-transform: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  box-shadow: 0 8px 20px rgba(228, 132, 148, 0.35);
+
+  transition: all 0.25s ease;
 }
 
-.text-center { 
-  text-align: center; 
-}
-.no-data { 
-  color: #9ca3af; 
-  padding: 24px; 
+.add-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(228, 132, 148, 0.45);
 }
 
-/* Action Buttons */
-.btn-action { 
-  padding: 6px 12px; 
-  border: none; 
-  border-radius: 4px; 
-  font-size: 12px; 
-  cursor: pointer; 
-  margin: 0 4px; 
+.add-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 6px 14px rgba(228, 132, 148, 0.3);
 }
-.edit { 
-  background-color: #fef3c7; 
-  color: #d97706; 
+
+.c-table thead th {
+  background: #d66182 !important;
+  font-weight: 700;
+
+  text-transform: none;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
-.delete { 
-  background-color: #fee2e2; 
-  color: #ef4444; 
+
+/* .c-table tbody tr:hover {
+  background: #f5e2e5;
+  transition: 0.2s ease;
+} */
+
+.cdialog {
+  overflow: hidden;
+  border: 1px solid #f4d7de;
+}
+
+.dialog-header {
+  background: linear-gradient(135deg, #e48494 0%, #d66182 100%);
+  padding: 22px;
+  color: white;
+}
+
+.cinput :deep(.v-field) {
+  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
+  padding-left: 12px;
+}
+
+.cinput :deep(.v-field--focused) {
+  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
+  padding-left: 12px;
+}
+
+.cinput :deep(.v-label.v-field-label) {
+  background: white;
+  padding: 0 3px;
 }
 </style>

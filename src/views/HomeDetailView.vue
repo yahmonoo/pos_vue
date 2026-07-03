@@ -28,50 +28,50 @@
       <v-col cols="12" md="6">
         <h1 class="headline font-weight-bold grey--text text--darken-3 mb-2">{{ product.title }}</h1>
         <p class="caption grey--text mb-4">Ks {{ product.priceOne }}</p>
-<!-- 
+
         <div class="mb-6">
-          Selected Color/Size: <strong class="pink--text">{{ selectedVariant }}</strong>
+          Selected Color/Size: <strong class="pink--text">{{ product.selectedVariant }}</strong>
         </div>
 
         <div class="mb-6">
           <v-btn
             v-for="vOption in variantOptions"
-            :key="vOption.name"
+            :key="vOption.size"
             outlined
             small
-            :color="selectedVariant === vOption.name ? 'pink darken-1' : 'grey'"
-            :class="selectedVariant === vOption.name ? 'pink--text font-weight-bold' : 'grey--text'"
+            :color="selectedVariant === vOption.sizeOne ? 'pink darken-1' : 'grey'"
+            :class="selectedVariant === vOption.sizeTwo ? 'pink--text font-weight-bold' : 'grey--text'"
             class="mr-2 mb-2 text-none"
             @click="changeVariant(vOption)"
           >
-            {{ vOption.name }}
+            {{ vOption.size }}
           </v-btn>
         </div>
 
         <v-card flat class="pa-4 grey lighten-4 mb-6" style="border-radius: 8px;">
           
-          <h4 class="subtitle-2 font-weight-bold grey--text text--darken-3 mb-1">Product Description</h4>
+          <h4 class="subtitle-2 font-weight-bold grey--text text--darken-3 mb-1">detail</h4>
           <p class="body-2 grey--text text--darken-1 mb-0">
-            {{ productData.description || 'High-quality cosmetic product imported directly. Safe for all skin types and long-lasting.' }}
+            {{ detail || 'High-quality cosmetic product imported directly. Safe for all skin types and long-lasting.' }}
           </p>
-        </v-card> -->
+        </v-card> 
 
-        <!-- <div class="mb-6">
-          <div class="body-2 grey--text mb-2">Quantity to buy:</div>
+        <div class="mb-6">
+          <div class="body-2 grey--text mb-2">count:</div>
           <div class="d-flex align-center">
-            <v-btn outlined small :disabled="(quantity || 1) <= 1" @click.native="quantity--">
+            <v-btn outlined small :disabled="(count || 1) <= 1" @click.native="count--">
               <v-icon>mdi-minus</v-icon>
             </v-btn>
-            <div class="mx-4 font-weight-bold">{{ quantity || 1 }}</div>
-            <v-btn outlined small @click.native="quantity++">
+            <div class="mx-4 font-weight-bold">{{ count || 1 }}</div>
+            <v-btn outlined small @click.native="count++">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </div>
-        </div> -->
+        </div>
         
-        <!-- <v-btn color="#d78f99" dark large block depressed style="border-radius: 6px;" class="text-none" @click="addToCart">
+        <v-btn color="#d78f99" dark large block depressed style="border-radius: 6px;" class="text-none" @click="addToCart">
           <v-icon left>mdi-cart-plus</v-icon> Add to Cart
-        </v-btn> -->
+        </v-btn>
       </v-col>
     </v-row>
   

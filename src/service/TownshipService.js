@@ -6,20 +6,20 @@ class TownshipService {
     this.axios = axios;
   }
 
-  getCity() {
-    let url = `/city`;
+  getTownship() {
+    let url = `/township`;
     return axios.get(url).then((request) => request.data);
   }
-  addCity(city) {
-    let url = `/city`;
-    return this.axios.post(url, city).then((request) => request.data);
+  addTownship(township) {
+    let url = `/township`;
+    return this.axios.post(url, township).then((request) => request.data);
   }
-  updateCity(city) {
-    let url = `/city/${city.cityId}`;
-    return this.axios.put(url, note).then((request) => request.data);
+  updateTownship(township) {
+    let url = `/township/${township.townshipId}`;
+    return this.axios.put(url, township).then((request) => request.data);
   }
-  deleteCity(city) {
-    let url = `/city/${city.cityId}`;
+  deleteCity(township) {
+    let url = `/township/${township.townshipId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
 

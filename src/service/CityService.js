@@ -16,7 +16,7 @@ class CityService {
   }
   updateCity(city) {
     let url = `/city/${city.cityId}`;
-    return this.axios.put(url, note).then((request) => request.data);
+    return this.axios.put(url, city).then((request) => request.data);
   }
   deleteCity(city) {
     let url = `/city/${city.cityId}`;

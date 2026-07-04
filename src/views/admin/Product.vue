@@ -1,382 +1,262 @@
 <template>
-  <div class="product-container">
-    <div class="product-header">
-      <h1>Products Management</h1>
-      <p class="subtitle">Add and edit product lists for Glow Skin Cosmetics</p>
+  <v-container fluid>
+    <!-- Header -->
+
+    <div class="d-flex justify-end mb-4">
+      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true"> Add Product </v-btn>
     </div>
 
-    <!-- 1. Create & Update Form -->
-    <div class="form-card">
-      <h2>{{ isEditing ? 'Add New Product' : 'Add New Product' }}</h2>
-      <form @submit.prevent="handleSubmit" class="product-form">
-        
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label>Product Name</label>
-            <input type="text" v-model="productForm.name" placeholder="e.g., Glow Serum" required />
-          </div>
+    <!-- Table Card -->
+    <v-card rounded="lg" elevation="0">
+      <v-table fixed-header height="400px" density="compact" class="c-table">
+        <thead>
+          <tr>
+            <th class="text-center">No.</th>
+            <th class="text-center">Township Name</th>
+            <th class="text-center" width="150">Action</th>
+          </tr>
+        </thead>
 
-          <!-- 🔴 Category Dropdown (အရှေ့က Category List နဲ့ ချိတ်ဆက်ရန်) -->
-          <div class="form-group flex-1">
-            <label>Category</label>
-            <select v-model="productForm.category" required>
-              <option value="" disabled>--- Select ---</option>
-              <option v-for="cat in categories" :key="cat.id" :value="cat.name">
-                {{ cat.name }}
-              </option>
-            </select>
-          </div>
+        <tbody>
+          <tr
+            v-for="(item, index) in townshipList"
+            :key="item.townshipId"
+            @click="selectedOne = item"
+            :style="{
+              backgroundColor:
+                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
+            }"
+          >
+            <td class="text-center">{{ index + 1 }}</td>
 
-          <div class="form-group flex-1">
-            <label>SKU / Barcode</label>
-            <input type="text" v-model="productForm.sku" placeholder="e.g., GSC-001" required />
-          </div>
-        </div>
+            <td class="text-center">{{ item.townshipName }}</td>
 
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label>Cost</label>
-            <input type="number" v-model.number="productForm.cost" placeholder="e.g., 25,000" required />
-          </div>
+            <td class="text-center">
+              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
+              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-card>
 
-          <div class="form-group flex-1">
-            <label>Price</label>
-            <input type="number" v-model.number="productForm.price" placeholder="e.g., 35,000" required />
-          </div>
-
-          <div class="form-group flex-1">
-            <label>Stock</label>
-            <input type="number" v-model.number="productForm.stock" placeholder="e.g., 50" required />
-          </div>
-        </div>
-
-        <!-- 📸 Image Upload (နမူနာအနေဖြင့် Link သုံးထားပါသည်) -->
-        <div class="form-row">
-          <div class="form-group flex-2">
-            <label>Product Image URL</label>
-            <input type="text" v-model="productForm.image" placeholder="https://example.com/image.jpg" />
+    <!-- Add Dialog -->
+    <v-dialog v-model="dialog" max-width="500" persistent>
+      <v-card rounded="xl" class="cdialog">
+        <!-- Header -->
+        <div class="dialog-header">
+          <div class="d-flex align-center">
+            <div>
+              <div class="text-h6 font-weight-bold">Add New City</div>
+            </div>
           </div>
         </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn-submit">
-            {{ isEditing ? 'Save Product' : 'Save Product' }}
-          </button>
-          <button type="button" v-if="isEditing" @click="resetForm" class="btn-cancel">Delete</button>
-        </div>
-      </form>
-    </div>
+        <v-card-text class="pa-6">
+          <v-text-field
+            v-model="townshipDto.townshipName"
+            class="cinput"
+            label="Township Name"
+            variant="outlined"
+            density="compact"
+          />
+        </v-card-text>
 
-    <!-- 2. Read, Update, Delete Table -->
-    <div class="table-card">
-      <h2>Product List</h2>
-      <div class="table-responsive">
-        <table class="product-table">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Product Name</th>
-              <th>SKU</th>
-              <th>Category</th>
-              <th>Cost</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="prod in products" :key="prod.id">
-              <td>
-                <!-- ပုံမရှိရင် နမူနာ Emoji ပြရန် -->
-                <span v-if="!prod.image" class="img-placeholder">🧴</span>
-                <img v-else :src="prod.image" alt="product" class="prod-img" />
-              </td>
-              <td class="font-bold">{{ prod.name }}</td>
-              <td class="sku-text">{{ prod.sku }}</td>
-              <td><span class="cat-badge">{{ prod.category }}</span></td>
-              <td>{{ prod.cost.toLocaleString() }} MMK</td>
-              <td class="price-text">{{ prod.price.toLocaleString() }} MMK</td>
-              <td>
-                <!-- Stock နည်းနေရင် အနီရောင်ပြောင်းရန် -->
-                <span :class="['stock-text', prod.stock <= 5 ? 'low-stock' : '']">
-                  {{ prod.stock }} pcs {{ prod.stock <= 5 ? '(Low Stock)' : '' }}
-                </span>
-              </td>
-              <td class="text-left py-2 px-4">
-                <button @click="editProduct(prod)" class="btn-action edit">📝 </button>
-                <button @click="deleteProduct(prod.id)" class="btn-action delete">🗑️ </button>
-              </td>
-            </tr>
-            <tr v-if="products.length === 0">
-              <td colspan="8" class="text-center no-data">No Product List</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+        <v-divider />
+
+        <v-card-actions class="pa-4">
+          <v-spacer />
+
+          <v-btn variant="tonal" rounded="pill" class="mr-2" @click="dialog = false">
+            Cancel
+          </v-btn>
+
+          <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Dialog  -->
+    <v-col>
+      <v-dialog v-model="dialogDelete" width="500">
+        <v-card>
+          <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
+
+          <v-card-text class="text-h6">
+            Are you sure to delete({{ selectedOne.name }})?
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn class="black" text @click="dialogDelete = false"> CANCEL </v-btn>
+            <v-btn dark class="bg-red" text @click="clickDeleteDialog()"> DELETE </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-col>
+  </v-container>
 </template>
 
 <script>
+import cityService from '../../service/CityService.js'
 export default {
-  name: 'ProductManagement',
   data() {
     return {
-      
-      categories: [
-        { id: 1, name: 'Skincare' },
-        { id: 2, name: 'Makeup' },
-        { id: 3, name: 'Haircare' }
-      ],
-     
-      products: [
-        { id: 1, name: 'Glow Serum', category: 'Skincare', sku: 'GSC-001', cost: 25000, price: 35000, stock: 24, image: '' },
-        { id: 2, name: 'Sunscreen SPF50', category: 'Skincare', sku: 'GSC-002', cost: 18000, price: 28000, stock: 3, image: '' },
-        { id: 3, name: 'Matte Lipstick', category: 'Makeup', sku: 'GSC-003', cost: 10000, price: 15000, stock: 15, image: '' }
-      ],
-      productForm: {
-        id: null,
-        name: '',
-        category: '',
-        sku: '',
-        cost: null,
-        price: null,
-        stock: null,
-        image: ''
-      },
-      isEditing: false
-    };
+      dialog: false,
+      cityName: '',
+      townshipDto: {},
+      selectedOne: {},
+      saveOrUpdate: 'SAVE',
+      dialogDelete: false,
+      townshipList: [],
+    }
+  },
+  props: {},
+  mounted: function () {
+    this.productListMethod()
   },
   methods: {
-    handleSubmit() {
-      if (this.isEditing) {
-        const index = this.products.findIndex(p => p.id === this.productForm.id);
-        if (index !== -1) {
-          this.products[index] = { ...this.productForm };
-          // alert('ပစ္စည်းအချက်အလက်ကို ပြင်ဆင်ပြီးပါပြီ။');
-        }
+    productListMethod() {
+      productService
+        .getProduct()
+        .then((response) => {
+          this.townshipList.splice(0, this.townshipList.length)
+          this.townshipList.push(...response)
+        })
+        .catch((error) => {
+          this.$swal('Fail!', error.response.data.message, 'error')
+        })
+    },
+    saveCity() {
+      if (this.saveOrUpdate == 'SAVE') {
+        console.log(this.saveOrUpdate)
+
+        cityService
+          .addCity(this.townshipDto)
+          .then((response) => {})
+          .catch((error) => {
+            // this.$swal('Fail!', error.response.data.message, 'error')
+          })
       } else {
-        const newProduct = {
-          id: Date.now(),
-          ...this.productForm
-        };
-        this.products.push(newProduct);
-        // alert('ပစ္စည်းအသစ်ကို စာရင်းထဲ ထည့်သွင်းပြီးပါပြီ။');
-      }
-      this.resetForm();
-    },
-    editProduct(product) {
-      this.isEditing = true;
-      this.productForm = { ...product };
-    },
-    deleteProduct(id) {
-      if (confirm('Are you sure want to delete?')) {
-        this.products = this.products.filter(p => p.id !== id);
-        // alert('ပယ်ဖျက်ပြီးပါပြီ။');
-        if (this.productForm.id === id) this.resetForm();
+        console.log(this.saveOrUpdate)
+
+        cityService
+          .updateCity(this.townshipDto)
+          .then((response) => {})
+          .catch((error) => {
+            // this.$swal('Fail!', error.response.data.message, 'error')
+          })
       }
     },
-    resetForm() {
-      this.productForm = { id: null, name: '', category: '', sku: '', cost: null, price: null, stock: null, image: '' };
-      this.isEditing = false;
-    }
-  }
-};
+    editCity(item) {
+      console.log(item)
+      this.dialog = true
+      this.saveOrUpdate = 'UPDATE'
+      this.townshipDto = { ...item }
+    },
+    deletCity(item) {
+      this.dialogDelete = true
+      this.selectedOne = { ...item }
+      console.log(item)
+    },
+    clickDeleteDialog() {
+      cityService
+        .deleteCity(this.selectedOne)
+        .then((response) => {
+          this.dialogDelete = false
+        })
+        .catch((error) => {
+          // this.$swal('Fail!', error.response.data.message, 'error')
+        })
+    },
+  },
+  watch: {},
+  components: {},
+}
 </script>
 
 <style scoped>
-.product-container {
-  padding: 24px;
-  background-color: #f9fafb;
-  min-height: 100vh;
-  font-family: sans-serif;
-}
-.product-header h1 {
-  font-size: 24px;
-  color: #1f2937;
-  margin: 0 0 4px 0;
-}
-.subtitle {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0 0 24px 0;
+.v-table {
+  background: transparent;
 }
 
-/* Form Styles */
-.form-card {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  margin-bottom: 24px;
-}
-.form-card h2, .table-card h2 {
-  font-size: 16px;
-  color: #1f2937;
-  margin: 0 0 16px 0;
-  border-bottom: 1px solid #f3f4f6;
-  padding-bottom: 10px;
-}
-.product-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.form-row {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.flex-1 { 
-  flex: 1; 
-  min-width: 200px; 
-}
-.flex-2 { 
-  flex: 2; 
-  min-width: 400px; 
+.v-table thead th {
+  font-weight: 700;
+  background: #f8fafc;
 }
 
-.form-group label {
-  font-size: 13px;
-  color: #4b5563;
-  font-weight: 500;
-}
-.form-group input, .form-group select {
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
-  outline: none;
-  background-color: #fff;
-}
-.form-group input:focus, 
-.form-group select:focus { 
-  border-color: pink; 
+.v-table tbody tr:hover {
+  background: #f8fafc;
+  transition: 0.2s;
 }
 
-/* Buttons */
-.form-actions { 
-  display: flex; 
-  gap: 8px; 
-  margin-top: 8px; 
-}
-.btn-submit {
-  padding: 10px 20px;
-  background-color: rgb(225, 131, 147);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-}
-.btn-cancel {
-  padding: 10px 16px;
-  background-color: #9ca3af;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-/* Table Styles */
-.table-card {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-}
-.table-responsive { overflow-x: auto; }
-.product-table {
-  width: 100%;
+table,
+th,
+td {
+  border: 1px solid rgb(215, 215, 215);
   border-collapse: collapse;
-  font-size: 14px;
-}
-.product-table th {
-  background-color: #f9fafb;
-  color: #4b5563;
-  padding: 12px;
-  border-bottom: 2px solid #e5e7eb;
-  text-align: left;
-}
-.product-table td {
-  padding: 12px;
-  border-bottom: 1px solid #f3f4f6;
-  color: #374151;
-}
-.product-table tr:hover { 
-  background-color: #f9fafb; 
+  padding: 0 3px !important;
 }
 
-/* Product Image & Badges */
-.prod-img { 
-  width: 40px; 
-  height: 40px; 
-  border-radius: 6px; 
-  object-fit: cover; 
-}
-.img-placeholder { 
-  font-size: 24px; 
-  display: inline-block; 
-  width: 40px; 
-  text-align: 
-  center; 
-}
-.font-bold { 
-  font-weight: 600; 
-  color: #111827; 
-}
-.sku-text { 
-  font-family: monospace; 
-  color: #4b5563; 
-  font-weight: 600; 
-}
-.cat-badge { 
-  background-color: #f3f4f6; 
-  padding: 2px 8px; 
-  border-radius: 4px; 
-  font-size: 12px; 
-}
-.price-text { 
-  font-weight: bold; 
-  color: #2563eb; 
-}
-.stock-text { 
-  font-weight: 500; 
-}
-.low-stock { 
-  color: #ef4444; 
-  font-weight: bold; 
-}
-.text-center { 
-  text-align: center; 
-}
-.no-data { 
-  color: #9ca3af; 
-  padding: 24px; 
+.add-btn {
+  background: linear-gradient(135deg, #e48494 0%, rgb(214, 96, 130) 100%) !important;
+  color: white;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  box-shadow: 0 8px 20px rgba(228, 132, 148, 0.35);
+
+  transition: all 0.25s ease;
 }
 
-/* Action Buttons */
-.btn-action { 
-  padding: 6px 12px; 
-  border: none; 
-  border-radius: 4px; 
-  font-size: 12px; 
-  cursor: pointer; 
-  margin: 0 4px; 
+.add-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(228, 132, 148, 0.45);
 }
-.edit { 
-  background-color: #fef3c7; 
-  color: #d97706; 
+
+.add-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 6px 14px rgba(228, 132, 148, 0.3);
 }
-.delete { 
-  background-color: #fee2e2; 
-  color: #ef4444; 
+
+.c-table thead th {
+  background: #d66182 !important;
+  font-weight: 700;
+
+  text-transform: none;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* .c-table tbody tr:hover {
+  background: #f5e2e5;
+  transition: 0.2s ease;
+} */
+
+.cdialog {
+  overflow: hidden;
+  border: 1px solid #f4d7de;
+}
+
+.dialog-header {
+  background: linear-gradient(135deg, #e48494 0%, #d66182 100%);
+  padding: 22px;
+  color: white;
+}
+
+.cinput :deep(.v-field) {
+  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
+  padding-left: 12px;
+}
+
+.cinput :deep(.v-field--focused) {
+  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
+  padding-left: 12px;
+}
+
+.cinput :deep(.v-label.v-field-label) {
+  background: white;
+  padding: 0 3px;
 }
 </style>

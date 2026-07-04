@@ -3,7 +3,7 @@
     
     <v-col cols="12" sm="4" md="3" lg="2" class="white" style="border-right: 1px solid #e0e0e0;">
       <v-list dense class="pa-0">
-        <v-list-item @click="selectedCategory = 'All'" :class="selectedCategory === 'All' ? 'primary white--text font-weight-bold' : ''">
+       <v-list-item @click="selectedCategory = 0" :class="selectedCategory === 0 ? 'primary white--text font-weight-bold' : ''">
           <v-list-item-content>
             <v-list-item-title>All Products</v-list-item-title>
           </v-list-item-content>
@@ -12,12 +12,12 @@
         <v-list-item 
           v-for="(cat, index) in categoriesList" 
           :key="index"
-          @click="selectedCategory = cat"
-          :class="selectedCategory === cat ? 'primary white--text font-weight-bold' : ''"
+          @click="selectedCategory = cat.categoryId"
+          :class="selectedCategory === cat.categoryId? 'primary white--text font-weight-bold' : ''"
           style="border-bottom: 1px solid #f0f0f0;"
         >
           <v-list-item-content>
-            <v-list-item-title>{{ cat }}</v-list-item-title>
+            <v-list-item-title>{{ cat.name}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -28,13 +28,13 @@
         
         <div v-for="product in filteredProducts" :key="product.id" class="product-item-wrapper">
           <v-card 
-            @click="goToDetail(product.id)"
+            @click="goToDetail(product)"
             class="custom-product-card" 
             outlined
           >
             <div class="card-image-box">
               <img 
-                :src="getProductImage(product.imageName)" 
+                :src="getProductImage(product.photoOne)" 
                 class="pure-product-img"
                 @error="handleImageError"
                 alt="Product Image"
@@ -42,13 +42,13 @@
             </div>
 
             <div class="card-content-box">
-              <h3 class="product-title" :title="product.name">
-                {{ product.name }}
+              <h3 class="product-title" :title="product.title">
+                {{ product.title }}
               </h3>
-              <p class="product-code">Code: #{{ product.id }}</p>
+              <p class="product-code">Code: #{{ product.code }}</p>
               
               <div class="price-btn-row">
-                <span class="product-price">Ks {{ product.price.toLocaleString() }}</span>
+                <span class="product-price">Ks {{ product.priceOne.toLocaleString() }}</span>
                 
                 <v-btn 
                   @click.stop="addToCart(product)" 
@@ -71,65 +71,111 @@
 </template>
 
 <script>
+import productService from "../service/ProductService";
+
+import axios from "@/config";
 export default {
   name: 'ProductView',
   data() {
     return {
-      selectedCategory: 'All',
-      categoriesList: [
-        'Cleanser', 'Concelar', 'Mascara', 'BB Cream', 'Hair Removal', 'Clay Stick',
-        'Eyebrow', 'Lipstick & Lipblam', 'Hair care', 'Fiber', 'Dress', 'Lotion',
-        'Toner & Emulsion', 'Toner', 'Hair color', 'Moisture', 'Shower',
-        'Collagen', 'Suncream', 'Serum', 'Scrub'
-      ],
+      selectedCategory: 0,
+      categoriesList: [],
+      //   'Cleanser', 'Concelar', 'Mascara', 'BB Cream', 'Hair Removal', 'Clay Stick',
+      //   'Eyebrow', 'Lipstick & Lipblam', 'Hair care', 'Fiber', 'Dress', 'Lotion',
+      //   'Toner & Emulsion', 'Toner', 'Hair color', 'Moisture', 'Shower',
+      //   'Collagen', 'Suncream', 'Serum', 'Scrub'
+      // ],
       productsList: []
     };
   },
   computed: {
-    filteredProducts() {
-      if (this.selectedCategory === 'All') return this.productsList;
-      return this.productsList.filter(p => p.category === this.selectedCategory);
+    filteredProducts(){
+      if(this.selectedCategory===0){
+        return this.productsList;
+      }
+      return this.productsList.filter(product =>{
+        return product.categoryId === this.selectedCategory;
+      })
     }
   },
-  mounted() {
-    this.generateProducts();
+  mounted: function(){
+    this.getCategories();
+    this.getProductHome();
+   
   },
   methods: {
-    generateProducts() {
-      this.productsList = [
-        { id: 201, name: "Lancome Tonique Douceur", category: "Toner", price: 32000, imageName: "product-1.jpg" },
-        { id: 202, name: "Media Cream Foundation", category: "Concelar", price: 48000, imageName: "product-2.png" },
-        { id: 203, name: "Red Earth Nude Wear Powder", category: "BB Cream", price: 42000, imageName: "product-3.webp" },
-        { id: 204, name: "Blackrouge Eye Stamp", category: "Mascara", price: 19900, imageName: "product-4.webp" },
-        { id: 205, name: "Matte Velvet Lip Balm Romand", category: "Lipstick & Lipblam", price: 28500, imageName: "product-5.jpg" },
-        { id: 206, name: "Perfect Eyebrow Pencil 02", category: "Eyebrow", price: 8500, imageName: "product-6.webp" },
-        { id: 207, name: "Smooth Hair Repair Treatment", category: "Hair care", price: 18500, imageName: "product-7.webp" },
-        { id: 208, name: "Organic Fiber Diet Drink", category: "Fiber", price: 29000, imageName: "product-8.webp" },
-        { id: 209, name: "Whitening Body Milk Lotion", category: "Lotion", price: 16500, imageName: "product-9.avif" },
-        { id: 210, name: "Cuta Pro Gentle Cleanser", category: "Clay Stick", price: 33000, imageName: "product-10.webp" },
-        { id: 211, name: "Centella Skin1004 Probio-cica Bakuchio", category: "Toner", price: 45000, imageName: "product-11.webp" },
-        { id: 212, name: "Medicube salmon DNA collagen", category: "Collagen", price: 48000, imageName: "product-12.webp" },
-        { id: 213, name: "Rice Water", category: "Scrub", price: 12000, imageName: "product-13.webp" },
-        { id: 214, name: "Centella skin1004", category: "Cleanser", price: 35000, imageName: "product-14.webp" },
-        { id: 215, name: "3CE lip tint ", category: "Lipstick & Lipblam", price: 48000, imageName: "product-15.png" },
-        { id: 216, name: "Yoonskin serum", category: "Serum", price: 49000, imageName: "product-16.jpg" },
-        { id: 217, name: "SomeByMi hair care", category: "Hair care", price: 43000, imageName: "product-17.avif" },
-        { id: 218, name: "Loreal shower", category: "Shower", price: 18600, imageName: "product-18.jpg" },
-        { id: 219, name: "VITA-C moisture", category: "Moisture", price: 56000, imageName: "product-19.webp" },
-        { id: 220, name: "Pantene shampoo", category: "Shampoo", price: 23000, imageName: "product-20.avif" }
-      ];
+
+     getCategories: function(){
+      //const category=this.selectedCategory === 'All' ? 'all' : this.selectedCategory;
+      axios.get('/category').then((response) => {
+      this.categoriesList.splice(0);
+      this.categoriesList.push(...response.data);
+      console.log("categories loaded:" , this.categoriesList);
+   })
+     .catch((error)=>{
+     // this.$swal("Fail!",error.response.data.message,"error");
+     });
+   },
+
+
+   getProductHome: function(){
+     //const category=this.selectedCategory === 'All' ? 'all' : this.selectedCategory;
+     productService.getProductHome('c',0).then((response) => {
+     this.productsList.splice(0);
+     this.productsList.push(...response);
+     console.log("products loaded:" , this.productsList);
+  })
+    .catch((error)=>{
+     // this.$swal("Fail!",error.response.data.message,"error");
+    });
+  },
+    // generateProducts() {
+    //  this.productsList = [
+    //   { id: 201, name: "Lancome Tonique Douceur", category: "Toner", price: 32000, imageName: "product-1.jpg" },
+    //   { id: 202, name: "Media Cream Foundation", category: "Concelar", price: 48000, imageName: "product-2.png" },
+    //     { id: 203, name: "Red Earth Nude Wear Powder", category: "BB Cream", price: 42000, imageName: "product-3.webp" },
+    //     { id: 204, name: "Blackrouge Eye Stamp", category: "Mascara", price: 19900, imageName: "product-4.webp" },
+    //     { id: 205, name: "Matte Velvet Lip Balm Romand", category: "Lipstick & Lipblam", price: 28500, imageName: "product-5.jpg" },
+    //     { id: 206, name: "Perfect Eyebrow Pencil 02", category: "Eyebrow", price: 8500, imageName: "product-6.webp" },
+    //     { id: 207, name: "Smooth Hair Repair Treatment", category: "Hair care", price: 18500, imageName: "product-7.webp" },
+    //     { id: 208, name: "Organic Fiber Diet Drink", category: "Fiber", price: 29000, imageName: "product-8.webp" },
+    //     { id: 209, name: "Whitening Body Milk Lotion", category: "Lotion", price: 16500, imageName: "product-9.avif" },
+    //     { id: 210, name: "Cuta Pro Gentle Cleanser", category: "Clay Stick", price: 33000, imageName: "product-10.webp" },
+    //     { id: 211, name: "Centella Skin1004 Probio-cica Bakuchio", category: "Toner", price: 45000, imageName: "product-11.webp" },
+    //     { id: 212, name: "Medicube salmon DNA collagen", category: "Collagen", price: 48000, imageName: "product-12.webp" },
+    //     { id: 213, name: "Rice Water", category: "Scrub", price: 12000, imageName: "product-13.webp" },
+    //     { id: 214, name: "Centella skin1004", category: "Cleanser", price: 35000, imageName: "product-14.webp" },
+    //     { id: 215, name: "3CE lip tint ", category: "Lipstick & Lipblam", price: 48000, imageName: "product-15.png" },
+    //     { id: 216, name: "Yoonskin serum", category: "Serum", price: 49000, imageName: "product-16.jpg" },
+    //     { id: 217, name: "SomeByMi hair care", category: "Hair care", price: 43000, imageName: "product-17.avif" },
+    //     { id: 218, name: "Loreal shower", category: "Shower", price: 18600, imageName: "product-18.jpg" },
+    //     { id: 219, name: "VITA-C moisture", category: "Moisture", price: 56000, imageName: "product-19.webp" },
+    //     { id: 220, name: "Pantene shampoo", category: "Shampoo", price: 23000, imageName: "product-20.avif" }
+     //];
+     //},
+    getProductImage(photo) {
+      console.log("photo");
+      console.log(photo);
+      const baseURL=axios?.defaults?.baseURL || "";
+      return photo ? `${baseURL}/productphoto/${photo}` : "";
+
+
+
     },
-    getProductImage(name) {
-      return new URL(`../assets/products/${name}`, import.meta.url).href;
-    },
-    goToDetail(productId) {
+    goToDetail(product) {
+      console.log("no found product", product);
+
+
       this.$router.push({ 
-        path: '/product-detail', 
-        query: { id: productId } 
+        
+
+        path: '/home-detail', 
+        query: { id: product.id } 
       });
     },
     addToCart(product) {
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
       cart.push({ ...product, chosenVariant: 'Default', buyQuantity: 1 });
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));

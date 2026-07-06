@@ -226,7 +226,7 @@ export default {
 
     openDetail(product) {
       this.$router.push({
-       path:'/product-detail',
+       path:'/home-detail',
        query:{id:product.id}
       });
     },

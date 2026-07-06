@@ -10,7 +10,7 @@
   class="mb-4 text-none font-weight-medium back-btn" 
   @click="goBack"
 >
-  <v-icon left class="mr-1">mdi-chevron-left</v-icon> Back to Home
+  <v-icon left class="mr-1">mdi-chevron-left</v-icon> Back
 </v-btn>
 
     <v-row >
@@ -27,24 +27,26 @@
 
       <v-col cols="12" md="6">
         <h1 class="headline font-weight-bold grey--text text--darken-3 mb-2">{{ product.title }}</h1>
-        <p class="caption grey--text mb-4">Ks {{ product.priceOne }}</p>
+        <p class="caption grey--text mb-4" >Ks {{ currentDisplayPrice ? currentDisplayPrice.toLocaleString() : (product.productOne || 0).toLocaleString }}</p>
+
+
 
         <div class="mb-6">
-          Selected Color/Size: <strong class="pink--text">{{ product.selectedVariant }}</strong>
+          Selected Color/Size: <strong class="pink--text">{{ selectedVariant }}</strong>
         </div>
 
         <div class="mb-6">
           <v-btn
             v-for="vOption in variantOptions"
-            :key="vOption.size"
+            :key="vOption.name"
             outlined
             small
-            :color="selectedVariant === vOption.sizeOne ? 'pink darken-1' : 'grey'"
-            :class="selectedVariant === vOption.sizeTwo ? 'pink--text font-weight-bold' : 'grey--text'"
+            :color="selectedVariant === vOption.name ? 'pink darken-1' : 'grey'"
+            :class="selectedVariant === vOption.name ? 'pink--text font-weight-bold' : 'grey--text'"
             class="mr-2 mb-2 text-none"
             @click="changeVariant(vOption)"
           >
-            {{ vOption.size }}
+            {{ vOption.name }}
           </v-btn>
         </div>
 
@@ -59,11 +61,11 @@
         <div class="mb-6">
           <div class="body-2 grey--text mb-2">count:</div>
           <div class="d-flex align-center">
-            <v-btn outlined small :disabled="(count || 1) <= 1" @click.native="count--">
+            <v-btn outlined small :disabled="quantity <= 1" @click="quantity--">
               <v-icon>mdi-minus</v-icon>
             </v-btn>
-            <div class="mx-4 font-weight-bold">{{ count || 1 }}</div>
-            <v-btn outlined small @click.native="count++">
+            <div class="mx-4 font-weight-bold">{{ quantity}}</div>
+            <v-btn outlined small @click="quantity++">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </div>
@@ -93,11 +95,11 @@ export default {
   data() {
     return {
       // productData: null, // UI ပေါ်မှာ အချက်အလက်ပြဖို့ သုံးပါမည်
-      // selectedVariant: '',
-      // currentImageName: '',
-      // currentDisplayPrice: 0,
-      // quantity: 1,
-      // variantOptions: [],
+         selectedVariant: 'Standard',
+       currentImageName: '',
+       currentDisplayPrice: 0,
+       quantity: 1,
+       variantOptions: [],
       productId:0,
       product:{},
     };
@@ -126,6 +128,7 @@ export default {
         .getProductDetail(this.productId)
         .then((response) => {
           this.product = response;
+          this.setupVariants(response);
         })
         .catch((error) => {
           // this.$swal("Fail!", error.response.data.message, "error");
@@ -178,21 +181,56 @@ export default {
         this.$router.push('/');
       }
     },
-    setupProductDetails(found) {
-      this.productData = found;
+    
+     setupVariants(product) {
+      this.variantOptions = [];
 
-      if (found.category === 'Lipstick'|| found.category === 'Lip Tint' || found.category === 'Velvet Tint' || found.category==='Matte') {
-        this.variantOptions = [
-          { name: '06', imageName: 'dior.jpg', price: found.price }, 
-          { name: '07', imageName: 'dior1.webp', price: found.price },
-          { name: '08', imageName: 'dior2.webp', price: found.price },
-          { name: '09', imageName: 'dior3.jpg', price: found.price }
-        ];
+      // ၁။ API ကလာတဲ့ size နှစ်ခုလုံးကို ဂဏန်းအဖြစ် ပြောင်းပြီး အရင်စစ်မယ်
+      const num1 = parseInt(product.sizeOne) || 0;
+      const num2 = parseInt(product.sizeTwo) || 0;
+
+      // ၂။ sizeTwo က ပိုသေးနေရင် (ဥပမာ sizeOne က 250၊ sizeTwo က 100 ဖြစ်နေရင်) ရှေ့နောက် ပြောင်းထည့်မယ်
+      if (product.sizeTwo && num2 < num1) {
+        // အသေးဆုံး (100ml) ကို အရင်ထည့်မယ်
+        this.variantOptions.push({
+          name: product.sizeTwo,
+          imageName: product.photoTwo || product.photoOne,
+          price: product.priceTwo  || product.priceOne || product.price
+        });
+        // အကြီး (250ml) ကို ဒုတိယ ထည့်မယ်
+        this.variantOptions.push({
+          name: product.sizeOne,
+          imageName: product.photoOne,
+          price: product.priceOne || product.price
+        });
       } else {
-        this.variantOptions = [
-          { name: 'Standard', imageName: found.img, price: found.price }
-        ];
+        // ပုံမှန်အတိုင်း sizeOne က ပိုသေးရင် သို့မဟုတ် size တစ်ခုတည်းပဲ ရှိရင်
+        if (product.sizeOne) {
+          this.variantOptions.push({
+            name: product.sizeOne,
+            imageName: product.photoOne,
+            price: product.priceOne || product.price
+          });
+        }
+        if (product.sizeTwo) {
+          this.variantOptions.push({
+            name: product.sizeTwo,
+            imageName: product.photoTwo || product.photoOne,
+            price: product.priceTwo || product.priceOne || product.price
+          });
+        }
       }
+
+      // ၃။ အကယ်၍ size လုံးဝမပါလာရင် Standard ပြပေးမယ်
+      if (this.variantOptions.length === 0) {
+        this.variantOptions.push({
+          name: 'Standard',
+          imageName: product.photoOne,
+          price: product.priceOne || product.price
+        });
+      }
+      
+      // ၄။ စီပြီးသား Variant ထဲက ပထမဆုံး အသေးဆုံး size ကို default အနေနဲ့ ရွေးပေးထားမယ်
       this.selectedVariant = this.variantOptions[0].name;
       this.currentImageName = this.variantOptions[0].imageName;
       this.currentDisplayPrice = this.variantOptions[0].price;
@@ -207,15 +245,15 @@ isPopular(product) {
       this.currentDisplayPrice = vOption.price;   
     },
     goBack() {
-      this.$router.push('/');
+      this.$router.go(-1);
     },
     addToCart() {
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
       const cartItem = {
-        ...this.productData,
+        ...this.product,
         chosenVariant: this.selectedVariant, 
-        price: this.currentDisplayPrice,
-        imageName: this.currentImageName,
+        price: this.currentDisplayPrice || this.product.priceOne,
+        imageName: this.currentImageName || this.product.photoOne,
         buyQuantity: this.quantity
       };
       cart.push(cartItem);

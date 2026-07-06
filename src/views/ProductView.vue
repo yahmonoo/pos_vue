@@ -165,12 +165,11 @@ export default {
     goToDetail(product) {
       console.log("no found product", product);
 
-
       this.$router.push({ 
         
 
         path: '/home-detail', 
-        query: { id: product.id } 
+        query: { id: product.productId } 
       });
     },
     addToCart(product) {

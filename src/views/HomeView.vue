@@ -62,14 +62,14 @@
       <div class="slider-wrapper">
         <button class="arrow-btn prev-btn" @click="scrollSlider('discountSlider', -300)">&#10094;</button>
       <div class="card-container" ref="discountSlider">
-        <div v-for="(product, index) in discountProducts" :key="'discount-' + product.name + index" class="card" @click="openDetail(product)">
-          <span class="discount-badge">{{ product.discountOne }}</span>
-          <img :src="getImageUrl(product.img)" :alt="product.name" />
-          <h3>{{ product.name }}</h3>
-          <p class="product-code">Code: #{{ product.id }}</p>
+        <div v-for="(product, index) in discountProducts" :key="'discount-' + product.title + index" class="card" @click="openDetail(product)">
+          <span class="discount-badge">{{ product.percent }}</span>
+          <img :src="getImageUrl(product.img)" :alt="product.title" />
+          <h3>{{ product.title }}</h3>
+          <p class="product-code">Code: #{{ product.code }}</p>
           <div class="price-container">
-            <span class="new-price">{{ product.newPrice.toLocaleString() }}MMK</span>
-            <span class="old-price">{{ product.oldPrice.toLocaleString() }}MMK</span>
+            <span class="new-price">{{ product.discountPriceOne.toLocaleString() }}MMK</span>
+            <span class="old-price">{{ product.normalPriceOne.toLocaleString() }}MMK</span>
           </div>
           <div class="add-btn-dis">
             <button class="add-to-cart-btn" @click.stop="addToCart(product)">
@@ -91,14 +91,14 @@
       <div class="card-container" ref="bestsellerSlider">
         <div v-for="(product, index) in bestsellerProducts" :key="'bestseller-' + index" class="card" @click="openDetail(product)">
           <img :src="getImageUrl(product.img)" :alt="product.name" />
-          <h3>{{ product.name }}</h3>
-          <p class="product-code">Code: #{{ product.id }}</p>
+          <h3>{{ product.title }}</h3>
+          <!-- <p class="product-code">Code: #{{ product.id }}</p>
           <div class="add-btn">
             <span class="price-container">{{ product.price.toLocaleString() }}MMK</span>
             <button class="add-to-cart-btn" @click.stop="addToCart(product)">
               + Add
             </button>
-          </div>
+          </div> -->
         </div>
       </div>
       <button class="arrow-btn next-btn" @click="scrollSlider('bestsellerSlider', 300)">&#10095;</button>
@@ -168,12 +168,12 @@ export default {
 
       // Best Seller Products Data
       bestsellerProducts: [
-        { id: 118, name: '345 relief cream', price: 58000, img: '345.jpg', qty: 0, maxQty: 11 },
-        { id: 119, name: 'Skin1004 Tone Brightening Ampoule', price: 56000, img: 'sk1004.jpg', qty: 0, maxQty: 25, category: 'Cream' },
-        { id: 120, name: 'Anua Niacinamide serum', price: 82000, img: 'an.jpg', qty: 0, maxQty: 5, category: 'serum' },
-        { id: 121, name: 'Laneige lip Sleeping mask', price: 44000, img: 'la.jpg', qty: 0, maxQty: 13 },
-        { id: 122, name: 'Medicube Collegen Night Warping Mask', price: 98000, img: 'nw.jpg', qty: 0, maxQty: 7 },
-        { id: 123, name: 'Axis-Y Dark Spot Glow Serum', price: 44000, img: 'axis.jpg', qty: 0, maxQty: 11 }
+        // { id: 118, name: '345 relief cream', price: 58000, img: '345.jpg', qty: 0, maxQty: 11 },
+        // { id: 119, name: 'Skin1004 Tone Brightening Ampoule', price: 56000, img: 'sk1004.jpg', qty: 0, maxQty: 25, category: 'Cream' },
+        // { id: 120, name: 'Anua Niacinamide serum', price: 82000, img: 'an.jpg', qty: 0, maxQty: 5, category: 'serum' },
+        // { id: 121, name: 'Laneige lip Sleeping mask', price: 44000, img: 'la.jpg', qty: 0, maxQty: 13 },
+        // { id: 122, name: 'Medicube Collegen Night Warping Mask', price: 98000, img: 'nw.jpg', qty: 0, maxQty: 7 },
+        // { id: 123, name: 'Axis-Y Dark Spot Glow Serum', price: 44000, img: 'axis.jpg', qty: 0, maxQty: 11 }
       ]
     }
   },
@@ -225,10 +225,16 @@ export default {
     },
 
     openDetail(product) {
-      this.$router.push({
-       path:'/home-detail',
-       query:{id:product.id}
+      this.$router.push({ 
+        
+
+        path: '/home-detail', 
+        query: { id: product.productId } 
       });
+      // this.$router.push({
+      //  path:'/home-detail',
+      //  query:{id:product.id}
+      // });
     },
      
     addToCart(product) {

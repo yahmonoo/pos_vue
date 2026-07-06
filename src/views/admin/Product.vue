@@ -12,28 +12,39 @@
         <thead>
           <tr>
             <th class="text-center">No.</th>
-            <th class="text-center">Township Name</th>
+            <th class="text-center">Category Name</th>
+            <th class="text-center">Title</th>
+            <th class="text-center">Detail</th>
+            <th class="text-center">Code</th>
+            <th class="text-center">ColorOne</th>
+            <th class="text-center">NormalPriceOne</th>
+            <th class="text-center">Percent</th>
+            <th class="text-center">DiscountPriceOne</th>
+            <th class="text-center">Percennt</th>
+            <th class="text-center">DiscountPriceTwo</th>
+            <th class="text-center">SizeOne</th>
+            <th class="text-center">Rating</th>
             <th class="text-center" width="150">Action</th>
           </tr>
         </thead>
 
         <tbody>
           <tr
-            v-for="(item, index) in townshipList"
-            :key="item.townshipId"
+            v-for="(item, index) in productList"
+            :key="item.productId"
             @click="selectedOne = item"
             :style="{
               backgroundColor:
-                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
+                item.productId == selectedOne.productId ? '#f5e2e5' : 'transparent',
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
 
-            <td class="text-center">{{ item.townshipName }}</td>
+            <td class="text-center">{{ item.productName }}</td>
 
             <td class="text-center">
-              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
-              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
+              <v-btn density="compact" icon="mdi-pencil" @click="editProduct(item)"></v-btn>
+              <v-btn density="compact" icon="mdi-delete" @click="deleteProduct(item)"></v-btn>
             </td>
           </tr>
         </tbody>
@@ -47,16 +58,16 @@
         <div class="dialog-header">
           <div class="d-flex align-center">
             <div>
-              <div class="text-h6 font-weight-bold">Add New City</div>
+              <div class="text-h6 font-weight-bold">Add New Product</div>
             </div>
           </div>
         </div>
 
         <v-card-text class="pa-6">
           <v-text-field
-            v-model="townshipDto.townshipName"
+            v-model="productDto.productName"
             class="cinput"
-            label="Township Name"
+            label="Product Name"
             variant="outlined"
             density="compact"
           />
@@ -71,7 +82,7 @@
             Cancel
           </v-btn>
 
-          <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
+          <v-btn rounded="pill" class="add-btn" @click="saveProduct"> {{ saveOrUpdate }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -97,17 +108,17 @@
 </template>
 
 <script>
-import cityService from '../../service/CityService.js'
+import productService from '../../service/ProductService.js'
 export default {
   data() {
     return {
       dialog: false,
-      cityName: '',
-      townshipDto: {},
+      productName: '',
+      productDto: {},
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
-      townshipList: [],
+      productList: [],
     }
   },
   props: {},
@@ -119,19 +130,19 @@ export default {
       productService
         .getProduct()
         .then((response) => {
-          this.townshipList.splice(0, this.townshipList.length)
-          this.townshipList.push(...response)
+          this.productList.splice(0, this.productList.length)
+          this.productList.push(...response)
         })
         .catch((error) => {
           this.$swal('Fail!', error.response.data.message, 'error')
         })
     },
-    saveCity() {
+    saveProduct() {
       if (this.saveOrUpdate == 'SAVE') {
         console.log(this.saveOrUpdate)
 
-        cityService
-          .addCity(this.townshipDto)
+        productService
+          .addProduct(this.productDto)
           .then((response) => {})
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
@@ -139,28 +150,28 @@ export default {
       } else {
         console.log(this.saveOrUpdate)
 
-        cityService
-          .updateCity(this.townshipDto)
+        productService
+          .updateProduct(this.productDto)
           .then((response) => {})
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
           })
       }
     },
-    editCity(item) {
+    editProduct(item) {
       console.log(item)
       this.dialog = true
       this.saveOrUpdate = 'UPDATE'
-      this.townshipDto = { ...item }
+      this.productDto = { ...item }
     },
-    deletCity(item) {
+    deleteProduct(item) {
       this.dialogDelete = true
       this.selectedOne = { ...item }
       console.log(item)
     },
     clickDeleteDialog() {
-      cityService
-        .deleteCity(this.selectedOne)
+      productService
+        .deleteProduct(this.selectedOne)
         .then((response) => {
           this.dialogDelete = false
         })

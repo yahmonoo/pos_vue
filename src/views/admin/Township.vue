@@ -12,6 +12,7 @@
         <thead>
           <tr>
             <th class="text-center">No.</th>
+            <th class="text-center">City Name</th>
             <th class="text-center">Township Name</th>
             <th class="text-center" width="150">Action</th>
           </tr>
@@ -28,7 +29,7 @@
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
-
+            <td class="text-center">{{ item.cityDto?.cityName }}</td>
             <td class="text-center">{{ item.townshipName }}</td>
 
             <td class="text-center">

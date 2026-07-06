@@ -23,7 +23,7 @@
             :key="item.catgoryId"
             @click="selectedOne = item"
             :style="{
-              backgroundColor: item.catgoryId == selectedOne.catgoryId ? '#f5e2e5' : 'transparent',
+              backgroundColor: item.categoryId == selectedOne.categoryId ? '#f5e2e5' : 'transparent',
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
@@ -32,7 +32,7 @@
 
             <td class="text-center">
               <v-btn density="compact" icon="mdi-pencil" @click="editCategory(item)"></v-btn>
-              <v-btn density="compact" icon="mdi-delete" @click="deletCategory(item)"></v-btn>
+              <v-btn density="compact" icon="mdi-delete" @click="deleteCategoryMethod(item)"></v-btn>
             </td>
           </tr>
         </tbody>
@@ -170,10 +170,10 @@ export default {
       this.saveOrUpdate = 'UPDATE'
       this.categoryDto = { ...item }
     },
-    deleteCategory(item) {
+    deleteCategoryMethod(item) {
       this.dialogDelete = true
-      this.selectedOne = { ...item }
-      console.log(item)
+      // this.selectedOne = { ...item }
+      // console.log(item)
     },
     clickDeleteDialog() {
       categoryService
@@ -249,10 +249,10 @@ td {
   z-index: 1;
 }
 
-/* .c-table tbody tr:hover {
-  background: #f5e2e5;
+.c-table tbody tr:hover {
+  background: #e85067;
   transition: 0.2s ease;
-} */
+} 
 
 .cdialog {
   overflow: hidden;

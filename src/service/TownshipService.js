@@ -18,7 +18,7 @@ class TownshipService {
     let url = `/township/${township.townshipId}`;
     return this.axios.put(url, township).then((request) => request.data);
   }
-  deleteCity(township) {
+  deleteTownship(township) {
     let url = `/township/${township.townshipId}`;
     return this.axios.delete(url).then((request) => request.data);
   }

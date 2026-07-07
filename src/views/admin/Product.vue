@@ -3,7 +3,7 @@
     <!-- Header -->
 
     <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true"> Add Product </v-btn>
+      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="openAddDialog"> Add Product </v-btn>
     </div>
 
     <!-- Table Card -->
@@ -12,22 +12,22 @@
         <thead>
           <tr>
             <th class="text-center">No.</th>
-            <th class="text-center">Category Name</th>
-            <th class="text-center">Title</th>
-            <th class="text-center">Detail</th>
-            <th class="text-center">Code</th>
-            <th class="text-center">ColorOne</th>
-            <th class="text-center">NormalPriceOne</th>
-            <th class="text-center">Percent</th>
-            <th class="text-center">DiscountPriceOne</th>
-            <th class="text-center">Percennt</th>
-            <th class="text-center">DiscountPriceTwo</th>
-            <th class="text-center">SizeOne</th>
-            <th class="text-center">Rating</th>
+            <th class="text-center">name</th>
+            <th class="text-center">title</th>
+            <th class="text-center">detail</th>
+            <th class="text-center">code</th>
+            <th class="text-center">colorOne</th>
+            <th class="text-center">normalPriceOne</th>
+            <th class="text-center">percent</th>
+            <th class="text-center">discountPriceOne</th>
+            <th class="text-center">percent</th>
+            <th class="text-center">discountPriceTwo</th>
+            <th class="text-center">sizeOne</th>
+            <th class="text-center">rating</th>
             <th class="text-center" width="150">Action</th>
           </tr>
         </thead>
-
+        
         <tbody>
           <tr
             v-for="(item, index) in productList"
@@ -39,9 +39,19 @@
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
-
-            <td class="text-center">{{ item.productName }}</td>
-
+            <td class="text-center">{{ item.name }}</td>
+            <td class="text-center">{{ item.title }}</td>
+            <td class="text-center">{{ item.detail }}</td>
+            <td class="text-center">{{ item.code }}</td>
+            <td class="text-center">{{ item.colorOne }}</td>
+            <td class="text-center">{{item.normalPriceOne }}</td>
+            <td class="text-center">{{ item.percent }}%</td>
+            <td class="text-center">{{ item.discountPriceOne }}</td>
+            <td class="text-center">{{ item.percent }}%</td>
+            <td class="text-center">{{ item.discountPriceTwo }}</td>
+            <td class="text-center">{{ item.sizeOne}}</td>
+            <td class="text-center">{{ item.rating }}</td>
+          
             <td class="text-center">
               <v-btn density="compact" icon="mdi-pencil" @click="editProduct(item)"></v-btn>
               <v-btn density="compact" icon="mdi-delete" @click="deleteProduct(item)"></v-btn>
@@ -62,15 +72,85 @@
             </div>
           </div>
         </div>
-
-        <v-card-text class="pa-6">
-          <v-text-field
-            v-model="productDto.productName"
+        <v-card-text class="pa-6">   
+            <v-text-field
+            v-model="productDto.title"
             class="cinput"
-            label="Product Name"
+            label="Product Title"
             variant="outlined"
             density="compact"
           />
+          <v-text-field
+            v-model="productDto.detail"
+            class="cinput"
+            label="Product detail"
+            variant="outlined"
+            density="compact"
+          />
+          <v-text-field
+            v-model="productDto.code"
+            class="cinput"
+            label="Product Code"
+            variant="outlined"
+            density="compact"
+          />
+          <v-autocomplete
+                v-model="productDto.color"
+                label="Select Color"
+                :items="['Color One', 'Color Two', 'Color Three', 'Color Four']"
+                variant="outlined"
+                density="compact"
+              />
+          <v-autocomplete
+               v-model="productDto.normalPriceOne"
+               label="Select Price"
+              :items="['normalPriceOne','normalPriceTwo']"
+               variant="outlined"
+               density="compact"
+              />
+            <v-text-field
+            v-model="productDto.percent"
+            class="cinput"
+            label="Product Percent"
+            variant="outlined"
+            density="compact"
+          />
+            <v-text-field
+            v-model="productDto.normalPriceOne"
+            class="cinput"
+            label="Product Normal PriceOne"
+            variant="outlined"
+            density="compact"
+          />
+          <v-text-field
+            v-model="productDto.percent"
+            class="cinput"
+            label="Product Percent"
+            variant="outlined"
+            density="compact"
+          />
+          <v-text-field
+            v-model="productDto.normalPriceTwo"
+            class="cinput"
+            label="Product Normal PriceTwo"
+            variant="outlined"
+            density="compact"
+          />
+          <v-autocomplete
+               v-model="productDto.sizeOne"
+               label="Select Size"
+              :items="['sizeOne','sizeTwo']"
+               variant="outlined"
+               density="compact"
+              />
+          <v-text-field
+            v-model="productDto.rating"
+            class="cinput"
+            label="Product rating"
+            variant="outlined"
+            density="compact"
+          />
+    
         </v-card-text>
 
         <v-divider />
@@ -114,18 +194,28 @@ export default {
     return {
       dialog: false,
       productName: '',
-      productDto: {},
+      productDto: {
+        colorOne:'Color One'
+      },
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
       productList: [],
     }
   },
+
   props: {},
   mounted: function () {
     this.productListMethod()
   },
   methods: {
+    openAddDialog(){
+      this.productDto={
+        colorOne:'Color One'
+      }
+      this.saveOrUpdate='SAVE'
+      this.dialog=true
+    },
     productListMethod() {
       productService
         .getProduct()
@@ -246,7 +336,7 @@ td {
 } */
 
 .cdialog {
-  overflow: hidden;
+  /*overflow: hidden;*/
   border: 1px solid #f4d7de;
 }
 

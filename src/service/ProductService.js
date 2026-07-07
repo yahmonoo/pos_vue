@@ -17,7 +17,10 @@ getProductHome(type,categoryId) {
     let url = `/product/detail/${productId}`;
     return axios.get(url).then((request) => request.data);
   }
-
+getProduct(){
+   let url = `/product`;
+    return axios.get(url).then((request) => request.data);
+}
 
   
 }

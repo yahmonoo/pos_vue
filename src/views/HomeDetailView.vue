@@ -1,8 +1,8 @@
 <template>
-  <v-container fluid class="pa-6" style="background-color: #f3eae8; min-height: 100vh;">
+  <!-- <v-container fluid class="pa-6" style="background-color: #f3eae8; min-height: 100vh;">
     <v-btn text color="grey darken-2" class="mb-4 text-none" @click="goBack">
       <v-icon left>mdi-arrow-left</v-icon> Back to Home
-    </v-btn>
+    </v-btn> -->
 
     <v-btn 
   text 
@@ -82,7 +82,7 @@
         <p class="grey--text">Product data not found.</p>
       </v-col>
     </v-row> -->
-  </v-container>
+  <!-- </v-container> -->
 </template>
 
 <script>

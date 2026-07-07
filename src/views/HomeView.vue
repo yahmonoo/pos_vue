@@ -27,14 +27,14 @@
         <div class="card-container" ref="popularSlider">
           <div v-for="(product, index) in popularProducts" :key="'popular-' + index" class="card" @click="openDetail(product)">
             <div class="image-box">
-              <img :src="getImageUrl(product.photoOne)"  width="100vh" height="100vh" />
-              <div class="rating-container" v-if="product.ratingCount">
+              <img :src="getImageUrl(product.photoOne)"  />
+              <div class="rating-container" v-if="product.rating">
                 <span class="stars">
-                  <span v-for="star in Math.floor(product.ratingCount)" :key="'filled-' + star" class="star filled">★</span>
-                  <span v-if="product.ratingCount % 1 !== 0" class="star half">★</span>
-                  <span v-for="star in (5 - Math.ceil(product.ratingCount))" :key="'empty-' + star" class="star empty">★</span>
+                  <span v-for="star in Math.floor(product.rating)" :key="'filled-' + star" class="star filled">★</span>
+                  <span v-if="product.rating % 1 !== 0" class="star half">★</span>
+                  <span v-for="star in (5 - Math.ceil(product.rating))" :key="'empty-' + star" class="star empty">★</span>
                 </span>
-                <span class="rating-text">({{ product.ratingCount }})</span>
+                <span class="rating-text">({{ product.rating }})</span>
               </div>
               <!-- <div class="product-desc" v-if="product.description">
                 <p>{{ product.description }}</p>
@@ -90,15 +90,15 @@
         <button class="arrow-btn prev-btn" @click="scrollSlider('bestsellerSlider', -300)">&#10094;</button>
       <div class="card-container" ref="bestsellerSlider">
         <div v-for="(product, index) in bestsellerProducts" :key="'bestseller-' + index" class="card" @click="openDetail(product)">
-          <img :src="getImageUrl(product.img)" :alt="product.name" />
+          <img :src="getImageUrl(product.img)" :alt="product.title" />
           <h3>{{ product.title }}</h3>
-          <!-- <p class="product-code">Code: #{{ product.id }}</p>
+          <p class="product-code">Code: #{{ product.code }}</p>
           <div class="add-btn">
-            <span class="price-container">{{ product.price.toLocaleString() }}MMK</span>
+            <span class="price-container">{{ product.priceOne.toLocaleString() }}MMK</span>
             <button class="add-to-cart-btn" @click.stop="addToCart(product)">
               + Add
             </button>
-          </div> -->
+          </div>
         </div>
       </div>
       <button class="arrow-btn next-btn" @click="scrollSlider('bestsellerSlider', 300)">&#10095;</button>
@@ -183,6 +183,7 @@ export default {
     //this.popularProducts.splice(0,this.popularProducts.length);
     this.getProductHome();
     this.getDiscountProduct();
+    this.getBestsellerProduct();
   },
   methods: {
     getDiscountProduct:function(){
@@ -195,6 +196,14 @@ export default {
         .catch((error) => {
           // this.$swal("Fail!", error.response.data.message, "error");
         });
+    },
+    getBestsellerProduct:function(){
+      productService
+      .getProductHome("b",0)
+      .then((response)=>{
+        this.bestsellerProducts.splice(0);
+        this.bestsellerProducts.push(...response);
+      })
     },
     scrollSlider(containerRef, distance) {
   const container = this.$refs[containerRef];

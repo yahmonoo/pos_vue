@@ -36,9 +36,9 @@
                 </span>
                 <span class="rating-text">({{ product.ratingCount }})</span>
               </div>
-              <!-- <div class="product-desc" v-if="product.description">
+              <div class="product-desc" v-if="product.description">
                 <p>{{ product.description }}</p>
-              </div> -->
+              </div>
             </div>
             <h3>{{ product.title }}</h3>
             <p class="product-code">Code: #{{ product.code }}</p>
@@ -90,15 +90,15 @@
         <button class="arrow-btn prev-btn" @click="scrollSlider('bestsellerSlider', -300)">&#10094;</button>
       <div class="card-container" ref="bestsellerSlider">
         <div v-for="(product, index) in bestsellerProducts" :key="'bestseller-' + index" class="card" @click="openDetail(product)">
-          <img :src="getImageUrl(product.img)" :alt="product.name" />
+          <img :src="getImageUrl(product.photoOne)" :alt="product.title" width="100vh" height="100vh" />
           <h3>{{ product.title }}</h3>
-          <!-- <p class="product-code">Code: #{{ product.id }}</p>
+          <p class="product-code">Code: #{{ product.code }}</p>
           <div class="add-btn">
-            <span class="price-container">{{ product.price.toLocaleString() }}MMK</span>
+            <span class="price-container">{{ product.priceOne? product.priceOne.toLocaleString() :0}}MMK</span>
             <button class="add-to-cart-btn" @click.stop="addToCart(product)">
               + Add
             </button>
-          </div> -->
+          </div>
         </div>
       </div>
       <button class="arrow-btn next-btn" @click="scrollSlider('bestsellerSlider', 300)">&#10095;</button>
@@ -183,8 +183,20 @@ export default {
     //this.popularProducts.splice(0,this.popularProducts.length);
     this.getProductHome();
     this.getDiscountProduct();
+    this.getBestsellerProduct();
   },
   methods: {
+  getBestsellerProduct: function(){
+      productService
+        .getProductHome("b", 0)
+        .then((response) => {
+          this.bestsellerProducts.splice(0);
+          this.bestsellerProducts.push(...response);
+        })
+        .catch((error) => {
+          //console.error(error);
+        });
+    },
     getDiscountProduct:function(){
       productService
         .getProductHome("d",0)

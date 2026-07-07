@@ -15,27 +15,43 @@
           <tr>
             <th class="text-center">No.</th>
             <th class="text-center">Township Name</th>
+            <th class="text-center">Profile Name</th>
+            <th class="text-center"> Phone</th>
+            <th class="text-center">Address </th>
+            <th class="text-center">Username</th>
+            <th class="text-center">Password </th>
+                        <th class="text-center">userType </th>
+
             <th class="text-center" width="150">Action</th>
           </tr>
         </thead>
 
         <tbody>
           <tr
-            v-for="(item, index) in townshipList"
-            :key="item.townshipId"
+            v-for="(item, index) in userAccountList"
+            :key="item.userAccountId"
             @click="selectedOne = item"
             :style="{
               backgroundColor:
-                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
+                item.userAccountId == selectedOne.userAccountId ? '#f5e2e5' : 'transparent',
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
 
             <td class="text-center">{{ item.townshipName }}</td>
+            <td class="text-center">{{ item.profileName }}</td>
+            <td class="text-center">{{ item.phone }}</td>
+            <td class="text-center">{{ item.address }}</td>
+            <td class="text-center">{{ item.userName }}</td>
+            <td class="text-center">{{ item.password }}</td>
+           <td class="text-center">{{ item.userType }}</td>
+
 
             <td class="text-center">
-              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
-              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
+             <v-btn density="compact" icon="mdi-image" @click="viewPhoto(item)"></v-btn>
+
+              <v-btn density="compact" icon="mdi-pencil" @click="editUseraccount(item)"></v-btn>
+              <v-btn density="compact" icon="mdi-delete" @click="deleteUseraccount(item)"></v-btn>
             </td>
           </tr>
         </tbody>
@@ -49,16 +65,67 @@
         <div class="dialog-header">
           <div class="d-flex align-center">
             <div>
-              <div class="text-h6 font-weight-bold">Add New City</div>
+              <div class="text-h6 font-weight-bold">Add New Useraccount</div>
             </div>
           </div>
         </div>
 
         <v-card-text class="pa-6">
           <v-text-field
-            v-model="townshipDto.townshipName"
+            v-model.number="userForm.townshipId"
+            class="cinput mb-3"
+            label="Township Id"
+            type="number"
+            variant="outlined"
+            density="compact"
+          />
+          <v-text-field
+            v-model="userForm.profileName"
+            class="cinput mb-3"
+            label="Profile Name"
+            variant="outlined"
+            density="compact"
+          />
+          <v-text-field
+            v-model="userForm.phone"
+            class="cinput mb-3"
+            label="Phone"
+            variant="outlined"
+            density="compact"
+          />
+          <v-text-field
+            v-model="userForm.address"
+            class="cinput mb-3"
+            label=" Address"
+            variant="outlined"
+            density="compact"
+          />
+          <v-row dense class="mb-3">
+            <v-col cols="6">
+              <v-text-field
+            v-model="userForm.userName"
             class="cinput"
-            label="Township Name"
+            label="Username"
+            variant="outlined"
+            density="compact"
+          />
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+            v-model="userForm.password"
+            class="cinput "
+            label="Password"
+            variant="outlined"
+            density="compact"
+            type="password"
+          />
+            </v-col>
+          </v-row>
+          <v-select
+            v-model="userForm.userType"
+            :items="['ADMIN','ACCOUNTANT','CUSTOMER']"
+            class="cinput"
+            label="User Type"
             variant="outlined"
             density="compact"
           />
@@ -73,7 +140,7 @@
             Cancel
           </v-btn>
 
-          <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
+          <v-btn rounded="pill" class="add-btn" @click="saveuseraccount"> {{ saveOrUpdate }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -85,7 +152,7 @@
           <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
 
           <v-card-text class="text-h6">
-            Are you sure to delete({{ selectedOne.name }})?
+            Are you sure to delete({{ selectedOne.profileName || selectedOne.userName }})?
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -99,117 +166,99 @@
 </template>
 
 <script>
-import cityService from '../../service/CityService.js'
+import UserAccountService from '../../service/UserAccountService'
 export default {
   data() {
     return {
       dialog: false,
-      cityName: '',
-      townshipDto: {},
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
-      townshipList: [
-        {
-          townshipId: 1,
-          townshipName: 'Yangon',
-        },
-        {
-          townshipId: 2,
-          townshipName: 'Mandalay',
-        },
-        {
-          townshipId: 3,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 4,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 5,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 6,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 7,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 8,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 9,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 10,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 11,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 12,
-          townshipName: 'Naypyidaw',
-        },
-      ],
+      userAccountList: [],
+      userForm:{
+        userAccountId:0,
+        townshipId:null,
+        townshipName:'',
+        profileName:'',
+        phone:'',
+        address:'',
+        userName:'',
+        password:'',
+        userType:'ADMIN',
+        }
+      
+        
     }
   },
   props: {},
-  mounted: function () {},
-  methods: {
-    cityListMethod() {
-      cityService
-        .getCity()
-        .then((response) => {
-          this.townshipList.splice(0, this.townshipList.length)
-          this.townshipList.push(...response)
-        })
-        .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
-        })
-    },
-    saveCity() {
-      if (this.saveOrUpdate == 'SAVE') {
-        console.log(this.saveOrUpdate)
+  mounted: function () {
+        this.userAccountListMethod()
 
-        cityService
-          .addCity(this.townshipDto)
-          .then((response) => {})
+  },
+  methods: {
+    userAccountListMethod() {
+      UserAccountService
+        .getUserAccount()
+        .then((response) => {
+          this.userAccountList.splice(0, this.userAccountList.length)
+          this.userAccountList.push(...response)
+        })
+        // .catch((error) => {
+        //   this.$swal('Fail!', error.response.data.message, 'error')
+       // })
+    },
+    saveuseraccount() {
+
+      const payload={
+        ...this.userForm, date:new Date().toISOString()
+      };
+      if (this.saveOrUpdate == 'SAVE') {
+        delete payload.userAccountId;
+        console.log(this.saveOrUpdate)
+                            console.log(this.userForm);
+
+
+        UserAccountService
+          .addUseraccount(this.userForm)
+          .then((response) => {this.dialog=false
+            this.userAccountListMethod()}
+        )
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
+            
           })
       } else {
+        if(!payload.userAccountId){
+          alert("Error");
+          return;
+        }
         console.log(this.saveOrUpdate)
 
-        cityService
-          .updateCity(this.townshipDto)
-          .then((response) => {})
+        UserAccountService
+          .updateUseraccount(this.userForm)
+          .then((response) => {
+         this.dialog=false
+            this.userAccountListMethod()})
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
           })
       }
     },
-    editCity(item) {
+    editUseraccount(item) {
       console.log(item)
-      this.dialog = true
+      
       this.saveOrUpdate = 'UPDATE'
-      this.townshipDto = { ...item }
+      this.userForm = { ...item };
+      this.dialog = true
     },
-    deletCity(item) {
+    deleteUseraccount(item) {
       this.dialogDelete = true
       this.selectedOne = { ...item }
       console.log(item)
     },
     clickDeleteDialog() {
-      cityService
-        .deleteCity(this.selectedOne)
+      UserAccountService
+        .deleteUseraccount(this.selectedOne)
         .then((response) => {
           this.dialogDelete = false
         })

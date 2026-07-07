@@ -6,20 +6,20 @@ class UserAccountService {
     this.axios = axios;
   }
 
-  getCity() {
-    let url = `/city`;
+  getUserAccount(userType='ALL') {
+    let url = `/useraccount?userType=${userType}`;
     return axios.get(url).then((request) => request.data);
   }
-  addCity(city) {
-    let url = `/city`;
-    return this.axios.post(url, city).then((request) => request.data);
+  addUseraccount(useraccount) {
+    let url = `/useraccount`;
+    return this.axios.post(url, useraccount).then((request) => request.data);
   }
-  updateCity(city) {
-    let url = `/city/${city.cityId}`;
-    return this.axios.put(url, note).then((request) => request.data);
+  updateUseraccount(useraccount) {
+    let url = `/useraccount/${useraccount.userAccountId}`;
+    return this.axios.put(url, useraccount).then((request) => request.data);
   }
-  deleteCity(city) {
-    let url = `/city/${city.cityId}`;
+  deleteUseraccount(useraccount) {
+    let url = `/useraccount/${useraccount.userAccountId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
 

@@ -3,7 +3,7 @@
     <!-- Header -->
 
     <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="openAddDialog"> Add Product </v-btn>
+      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog=true"> Add Product </v-btn>
     </div>
 
     <!-- Table Card -->
@@ -12,7 +12,7 @@
         <thead>
           <tr>
             <th class="text-center">No.</th>
-            <th class="text-center">name</th>
+            <th class="text-center">categoryName</th>
             <th class="text-center">title</th>
             <th class="text-center">detail</th>
             <th class="text-center">code</th>
@@ -39,7 +39,7 @@
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
-            <td class="text-center">{{ item.name }}</td>
+            <td class="text-center">{{ item.categorydto.name }}</td>
             <td class="text-center">{{ item.title }}</td>
             <td class="text-center">{{ item.detail }}</td>
             <td class="text-center">{{ item.code }}</td>
@@ -188,50 +188,91 @@
 </template>
 
 <script>
-import productService from '../../service/ProductService.js'
+import ProductService from '../../service/ProductService.js' 
+import CategoryService from '../../service/CategoryService.js'
+import UserAccountService from '../../service/UserAccountService.js';
+
 export default {
   data() {
     return {
       dialog: false,
-      productName: '',
-      productDto: {
-        colorOne:'Color One'
-      },
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
       productList: [],
+      productDto:{
+        name:'',
+        title:'',
+        detail:'',
+        code:'',
+        colorOne:'',
+        normalPriceOne:'',
+        percent:'',
+        discountPriceOne:'',
+        percent:'',
+        discountPriceTwo:'',
+        sizeOne:'',
+        rating:'',
+        }
     }
   },
 
   props: {},
   mounted: function () {
     this.productListMethod()
+    this.categoryListMethod()
+    this.userAccountListMethod()
+   
   },
   methods: {
-    openAddDialog(){
-      this.productDto={
-        colorOne:'Color One'
-      }
-      this.saveOrUpdate='SAVE'
-      this.dialog=true
-    },
+    // openAddDialog(){
+    //   this.productDto={
+    //     colorOne:'Color One'
+    //   }
+    //   this.saveOrUpdate='SAVE'
+    //   this.dialog=true
+    // },
     productListMethod() {
-      productService
+      ProductService
         .getProduct()
         .then((response) => {
+          console.log(response);
           this.productList.splice(0, this.productList.length)
           this.productList.push(...response)
         })
-        .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
+        // .catch((error) => {
+        //   this.$swal('Fail!', error.response.data.message, 'error')
+        // })
+    },
+    categoryListMethod() {
+      CategoryService
+        .getCategory()
+        .then((response) => {
+          console.log(response.data);
+          this.categoryList.splice(0, this.categoryList.length)
+          this.categoryList.push(...response)
         })
+        // .catch((error) => {
+        //   this.$swal('Fail!', error.response.data.message, 'error')
+        // })
+    },
+    userAccountListMethod() {
+      UserAccountService
+        .getUserAccount()
+        .then((response) => {
+          console.log(response.data);
+          this.userAccountList.splice(0, this.userAccountList.length)
+          this.userAccountList.push(...response)
+        })
+        // .catch((error) => {
+        //   this.$swal('Fail!', error.response.data.message, 'error')
+        // })
     },
     saveProduct() {
       if (this.saveOrUpdate == 'SAVE') {
         console.log(this.saveOrUpdate)
 
-        productService
+        ProductService
           .addProduct(this.productDto)
           .then((response) => {})
           .catch((error) => {
@@ -240,7 +281,7 @@ export default {
       } else {
         console.log(this.saveOrUpdate)
 
-        productService
+        ProductService
           .updateProduct(this.productDto)
           .then((response) => {})
           .catch((error) => {
@@ -260,10 +301,12 @@ export default {
       console.log(item)
     },
     clickDeleteDialog() {
-      productService
+      ProductService
         .deleteProduct(this.selectedOne)
-        .then((response) => {
-          this.dialogDelete = false
+        .then((response) => {n
+          console.log(response);
+          this.dialogDelete = false;
+          this.productListMethod();
         })
         .catch((error) => {
           // this.$swal('Fail!', error.response.data.message, 'error')

@@ -66,6 +66,7 @@
                   density="compact"
                   variant="outlined"
                   filled
+                  class="cinput"
                 >
                   
                 </v-autocomplete>

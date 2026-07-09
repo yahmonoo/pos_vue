@@ -53,6 +53,7 @@
             <td class="text-center">{{ item.rating }}</td>
           
             <td class="text-center">
+              <v-btn density="compact" icon="mdi-image" @click="viewPhoto(item)"></v-btn>
               <v-btn density="compact" icon="mdi-pencil" @click="editProduct(item)"></v-btn>
               <v-btn density="compact" icon="mdi-delete" @click="deleteProduct(item)"></v-btn>
             </td>
@@ -102,6 +103,7 @@
             density="compact"
           />
           <v-autocomplete
+                v-model="productDto.colorOne"
                 v-model="productDto.colorOne"
                 label="Select Color"
                 :items="['Color One', 'Color Two', 'Color Three', 'Color Four']"
@@ -174,7 +176,7 @@
           <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
 
           <v-card-text class="text-h6">
-            Are you sure to delete({{ selectedOne.name }})?
+            Are you sure to delete({{ selectedOne.title }})?
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -189,6 +191,8 @@
 
 <script>
 import productService from '../../service/ProductService.js'
+import categoryService from '../../service/CategoryService.js'
+import UserAccountService from '../../service/UserAccountService.js';
 export default {
   data() {
     return {
@@ -241,7 +245,7 @@ export default {
     saveProduct() {
       if (this.saveOrUpdate == 'SAVE') {
         console.log(this.saveOrUpdate)
-
+      
         productService
           .addProduct(this.productDto)
           .then((response) => {
@@ -256,6 +260,10 @@ export default {
 
         productService
           .updateProduct(this.productDto)
+          .then((response) => {
+            this.dialog = false;
+            this.productListMethod();
+          })
           .then((response) => {
             this.dialog = false;
             this.productListMethod();
@@ -280,6 +288,8 @@ export default {
       productService
         .deleteProduct(this.selectedOne)
         .then((response) => {
+         this.dialogDelete = false
+        this.productListMethod();
          this.dialogDelete = false
         this.productListMethod();
         })

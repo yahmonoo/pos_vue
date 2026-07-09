@@ -220,7 +220,9 @@ export default {
 
         UserAccountService
           .addUseraccount(this.userForm)
-          .then((response) => {this.dialog=false
+          .then((response) => {
+            this.dialog=false
+            this.userForm()
             this.userAccountListMethod()}
         )
           .catch((error) => {

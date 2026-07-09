@@ -33,7 +33,7 @@ updateProduct(product) {
 
 deleteProduct(product) {
     let url = `/product/${product.productId}`;
-    return this.axios.delete(url).then((request) => request.data);
+    return this.axios.delete(url,product).then((request) => request.data);
   }
 
 }

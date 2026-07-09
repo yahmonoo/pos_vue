@@ -3,7 +3,7 @@
     <!-- Header -->
 
     <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog=true"> Add Product </v-btn>
+      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="openAddDialog"> Add Product </v-btn>
     </div>
 
     <!-- Table Card -->
@@ -12,7 +12,7 @@
         <thead>
           <tr>
             <th class="text-center">No.</th>
-            <th class="text-center">categoryName</th>
+            <th class="text-center">name</th>
             <th class="text-center">title</th>
             <th class="text-center">detail</th>
             <th class="text-center">code</th>
@@ -39,7 +39,7 @@
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
-            <td class="text-center">{{ item.categorydto.name }}</td>
+            <td class="text-center">{{ item.name }}</td>
             <td class="text-center">{{ item.title }}</td>
             <td class="text-center">{{ item.detail }}</td>
             <td class="text-center">{{ item.code }}</td>
@@ -53,6 +53,7 @@
             <td class="text-center">{{ item.rating }}</td>
           
             <td class="text-center">
+              <v-btn density="compact" icon="mdi-image" @click="viewPhoto(item)"></v-btn>
               <v-btn density="compact" icon="mdi-pencil" @click="editProduct(item)"></v-btn>
               <v-btn density="compact" icon="mdi-delete" @click="deleteProduct(item)"></v-btn>
             </td>
@@ -72,7 +73,8 @@
             </div>
           </div>
         </div>
-        <v-card-text class="pa-6">   
+        <v-card-text class="pa-6"> 
+  
             <v-text-field
             v-model="productDto.title"
             class="cinput"
@@ -95,58 +97,64 @@
             density="compact"
           />
           <v-autocomplete
-                v-model="productDto.color"
+                v-model="productDto.colorOne"
                 label="Select Color"
-                :items="['Color One', 'Color Two', 'Color Three', 'Color Four']"
+                :items="['06', '07', '08', '09']"
                 variant="outlined"
                 density="compact"
               />
-          <v-autocomplete
-               v-model="productDto.normalPriceOne"
-               label="Select Price"
-              :items="['normalPriceOne','normalPriceTwo']"
+          <v-text-field
+               v-model.number="productDto.normalPriceOne"
+               type="number"
+               class="cinput"
+               label="Product Normal Price One"
+               variant="outlined"
+               density="compact"
+              />
+              <v-text-field
+               v-model.number="productDto.normalPriceTwo"
+               type="number"
+               class="cinput"
+               label="Product Normal Price Two"
                variant="outlined"
                density="compact"
               />
             <v-text-field
-            v-model="productDto.percent"
+            v-model.number="productDto.percent"
+            type="number"
             class="cinput"
-            label="Product Percent"
-            variant="outlined"
-            density="compact"
-          />
-            <v-text-field
-            v-model="productDto.normalPriceOne"
-            class="cinput"
-            label="Product Normal PriceOne"
+            label="Product Percent(%)"
             variant="outlined"
             density="compact"
           />
           <v-text-field
-            v-model="productDto.percent"
+            v-model.number="productDto.discountPriceOne"
+            type="number"
             class="cinput"
-            label="Product Percent"
+            label="Product Discount Price One"
             variant="outlined"
             density="compact"
           />
           <v-text-field
-            v-model="productDto.normalPriceTwo"
+            v-model.number="productDto.discountPriceTwo"
+            type="number"
             class="cinput"
-            label="Product Normal PriceTwo"
+            label="Product Discount Price Two"
             variant="outlined"
             density="compact"
           />
           <v-autocomplete
-               v-model="productDto.sizeOne"
+               v-model.number="productDto.sizeOne"
                label="Select Size"
-              :items="['sizeOne','sizeTwo']"
+              :items="[100,250]"
                variant="outlined"
                density="compact"
               />
           <v-text-field
-            v-model="productDto.rating"
+            v-model.number="productDto.rating"
+            type="number"
             class="cinput"
-            label="Product rating"
+            label="Product rating(1-5)"
             variant="outlined"
             density="compact"
           />
@@ -174,7 +182,7 @@
           <v-card-title class="text-h5 white--text bg-red"> Delete </v-card-title>
 
           <v-card-text class="text-h6">
-            Are you sure to delete({{ selectedOne.name }})?
+            Are you sure to delete({{ selectedOne.title }})?
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -188,102 +196,71 @@
 </template>
 
 <script>
-import ProductService from '../../service/ProductService.js' 
-import CategoryService from '../../service/CategoryService.js'
+import productService from '../../service/ProductService.js'
+import categoryService from '../../service/CategoryService.js'
 import UserAccountService from '../../service/UserAccountService.js';
-
 export default {
   data() {
     return {
       dialog: false,
+      productName: '',
+      productDto: {
+        colorOne:'Color One'
+      },
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
       productList: [],
-      productDto:{
-        name:'',
-        title:'',
-        detail:'',
-        code:'',
-        colorOne:'',
-        normalPriceOne:'',
-        percent:'',
-        discountPriceOne:'',
-        percent:'',
-        discountPriceTwo:'',
-        sizeOne:'',
-        rating:'',
-        }
     }
   },
 
   props: {},
   mounted: function () {
     this.productListMethod()
-    this.categoryListMethod()
-    this.userAccountListMethod()
-   
   },
   methods: {
-    // openAddDialog(){
-    //   this.productDto={
-    //     colorOne:'Color One'
-    //   }
-    //   this.saveOrUpdate='SAVE'
-    //   this.dialog=true
-    // },
+    openAddDialog(){
+      this.productDto={
+        colorOne:'Color One'
+      }
+      this.saveOrUpdate='SAVE'
+      this.dialog=true
+    },
     productListMethod() {
-      ProductService
+      productService
         .getProduct()
         .then((response) => {
-          console.log(response);
           this.productList.splice(0, this.productList.length)
           this.productList.push(...response)
         })
-        // .catch((error) => {
-        //   this.$swal('Fail!', error.response.data.message, 'error')
-        // })
-    },
-    categoryListMethod() {
-      CategoryService
-        .getCategory()
-        .then((response) => {
-          console.log(response.data);
-          this.categoryList.splice(0, this.categoryList.length)
-          this.categoryList.push(...response)
+        .catch((error) => {
+          this.$swal('Fail!', error.response.data.message, 'error')
         })
-        // .catch((error) => {
-        //   this.$swal('Fail!', error.response.data.message, 'error')
-        // })
-    },
-    userAccountListMethod() {
-      UserAccountService
-        .getUserAccount()
-        .then((response) => {
-          console.log(response.data);
-          this.userAccountList.splice(0, this.userAccountList.length)
-          this.userAccountList.push(...response)
-        })
-        // .catch((error) => {
-        //   this.$swal('Fail!', error.response.data.message, 'error')
-        // })
     },
     saveProduct() {
       if (this.saveOrUpdate == 'SAVE') {
         console.log(this.saveOrUpdate)
-
-        ProductService
+      
+        productService
           .addProduct(this.productDto)
-          .then((response) => {})
+          .then((response) => {
+            console.log(response)
+            this.dialog = false;
+            this.productListMethod();
+          })
           .catch((error) => {
+            console.error(error);
             // this.$swal('Fail!', error.response.data.message, 'error')
           })
       } else {
         console.log(this.saveOrUpdate)
 
-        ProductService
+        productService
           .updateProduct(this.productDto)
-          .then((response) => {})
+          .then((response) => {
+            this.dialog = false;
+            this.productListMethod();
+          })
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
           })
@@ -301,12 +278,11 @@ export default {
       console.log(item)
     },
     clickDeleteDialog() {
-      ProductService
+      productService
         .deleteProduct(this.selectedOne)
-        .then((response) => {n
-          console.log(response);
-          this.dialogDelete = false;
-          this.productListMethod();
+        .then((response) => {
+         this.dialogDelete = false
+        this.productListMethod();
         })
         .catch((error) => {
           // this.$swal('Fail!', error.response.data.message, 'error')

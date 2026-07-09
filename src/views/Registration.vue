@@ -1,7 +1,8 @@
+
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router' 
-
+import userAccountService from '../service/UserAccountService.js'
 const router = useRouter() 
 const name = ref('')
 const email = ref('')
@@ -15,16 +16,31 @@ const handleRegister = () => {
   if (password.value !== confirmPassword.value) {
     alert('Password များ တူညီမှု မရှိပါရှင်။ ပြန်လည်စစ်ဆေးပေးပါ။')
     return ;
-    
   }
+  let obj = {};
+  obj.profileName = name.value;
+  obj.townshipId = 1;
+  obj.userName = email.value;
+  obj.password = password.value;
+  obj.userType = "CUSTOMER";
+  obj.phone = "";
+  obj.address = "";
+  userAccountService
+        .addUseraccount(obj)
+        .then(() => {
+          router.push('/login')
+        })
+        .catch((error) => {
+          this.$swal('Fail!', error.response.data.message, 'error')
+        })
 
   
-  localStorage.setItem('user_name', name.value)
-  localStorage.setItem('user_password', password.value)
-  localStorage.setItem('user_role', 'CUSTOMER')
+  // localStorage.setItem('user_name', name.value)
+  // localStorage.setItem('user_password', password.value)
+  // localStorage.setItem('user_role', 'CUSTOMER')
 
   
-  router.push('/login')
+  
 }
 </script>
 <template>

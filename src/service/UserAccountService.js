@@ -22,7 +22,14 @@ class UserAccountService {
     let url = `/useraccount/${useraccount.userAccountId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
-
+getLogin(userName,password) {
+    let url = `/useraccount/login`;
+    return axios.get(url,{
+      params:{
+        userName,password
+      }
+    }).then((request) => request.data);
+  }
   
 }
 

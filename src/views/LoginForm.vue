@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-
+import userAccountService from '../service/UserAccountService.js'
 const router = useRouter()
 
 const name = ref('')
@@ -13,24 +13,31 @@ const errorMessage = ref('')
 
 const handleLogin = () => {
   
-  const savedName = localStorage.getItem('user_name')
-  const savedPassword = localStorage.getItem('user_password')
-  const savedRole = localStorage.getItem('user_role')
+  // const savedName = localStorage.getItem('user_name')
+  // const savedPassword = localStorage.getItem('user_password')
+  // const savedRole = localStorage.getItem('user_role')
 
   
-  if (name.value === savedName && password.value === savedPassword) {
-    errorMessage.value = ''
-    localStorage.setItem('user_role', savedRole)
-    // alert('Login အောင်မြင်ပါတယ်ရှင်!')
-    if (savedRole == 'CUSTOMER') {
-     window.location.href = '/' // Home Page သို့ သွားမည်
-    } else {
-      window.location.href = '/‌admin'
-    }
-  } else {
-    errorMessage.value =
-      'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
-  }
+  //if (name.value === savedName && password.value === savedPassword) {
+     userAccountService
+        .getLogin(name.value,password.value)
+        .then((response) => {
+          if(response.userAccountId==0){
+            errorMessage.value =
+       'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
+          }else{
+            localStorage.setItem("loginUser", JSON.stringify(response));
+            localStorage.setItem('user_role',response.userType);
+            router.push('/')
+          }
+        })
+        .catch((error) => {
+          this.$swal('Fail!', error.response.data.message, 'error')
+        })
+  // } else {
+  //   errorMessage.value =
+  //     'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
+  // }
 }
 </script>
 

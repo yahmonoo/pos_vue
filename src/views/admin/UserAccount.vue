@@ -162,6 +162,29 @@
         </v-card>
       </v-dialog>
     </v-col>
+    
+    <v-dialog v-model="dialogPhoto" max-width="500" persistent>
+      <v-card rounded="xl" class="cdialog">
+        <!-- Header -->
+        <div class="dialog-header">
+          <div class="d-flex align-center">
+            <div>
+              <div class="text-h6 font-weight-bold">Photo</div>
+            </div>
+          </div>
+        </div>
+
+        <v-card-actions class="pa-4">
+          <v-spacer />
+
+          <v-btn variant="tonal" rounded="pill" class="mr-2" @click="dialogPhoto = false">
+            Cancel
+          </v-btn>
+
+          <v-btn rounded="pill" class="add-btn" @click="saveuseraccount"> {{ saveOrUpdate }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -170,6 +193,7 @@ import UserAccountService from '../../service/UserAccountService'
 export default {
   data() {
     return {
+      dialogPhoto:false,
       dialog: false,
       selectedOne: {},
       saveOrUpdate: 'SAVE',
@@ -196,6 +220,9 @@ export default {
 
   },
   methods: {
+    viewPhoto(){
+        this.dialogPhoto = true;
+    },
     userAccountListMethod() {
       UserAccountService
         .getUserAccount()

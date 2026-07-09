@@ -72,7 +72,14 @@
             </div>
           </div>
         </div>
-        <v-card-text class="pa-6">   
+        <v-card-text class="pa-6">  
+            <v-text-field
+            v-model="productDto.name"
+            class="cinput"
+            label="Category Name"
+            variant="outlined"
+            density="compact"
+            /> 
             <v-text-field
             v-model="productDto.title"
             class="cinput"
@@ -95,62 +102,55 @@
             density="compact"
           />
           <v-autocomplete
-                v-model="productDto.color"
+                v-model="productDto.colorOne"
                 label="Select Color"
                 :items="['Color One', 'Color Two', 'Color Three', 'Color Four']"
                 variant="outlined"
                 density="compact"
               />
-          <v-autocomplete
-               v-model="productDto.normalPriceOne"
-               label="Select Price"
-              :items="['normalPriceOne','normalPriceTwo']"
-               variant="outlined"
-               density="compact"
-              />
-            <v-text-field
-            v-model="productDto.percent"
-            class="cinput"
-            label="Product Percent"
+              <v-text-field
+               v-model.number="productDto.normalPriceOne"
+              type="number"
+              class="cinput"
+              label="Product Normal Price One"
+              variant="outlined"
+              density="compact"
+            />
+              <v-text-field
+             v-model.number="productDto.discountPriceOne"
+             type="number"
+             class="cinput"
+             label="Product Discount Price One"
             variant="outlined"
             density="compact"
+            />
+
+           <v-text-field
+           v-model.number="productDto.percent"
+           type="number"
+           class="cinput"
+           label="Product Percent"
+           variant="outlined"
+           density="compact"
           />
-            <v-text-field
-            v-model="productDto.normalPriceOne"
-            class="cinput"
-            label="Product Normal PriceOne"
-            variant="outlined"
-            density="compact"
-          />
+           
+          
           <v-text-field
-            v-model="productDto.percent"
-            class="cinput"
-            label="Product Percent"
-            variant="outlined"
-            density="compact"
-          />
-          <v-text-field
-            v-model="productDto.normalPriceTwo"
-            class="cinput"
-            label="Product Normal PriceTwo"
-            variant="outlined"
-            density="compact"
-          />
-          <v-autocomplete
-               v-model="productDto.sizeOne"
-               label="Select Size"
-              :items="['sizeOne','sizeTwo']"
-               variant="outlined"
-               density="compact"
-              />
-          <v-text-field
-            v-model="productDto.rating"
-            class="cinput"
-            label="Product rating"
-            variant="outlined"
-            density="compact"
-          />
-    
+          v-model="productDto.sizeOne"
+          class="cinput"
+          label="Product Size One"
+          variant="outlined"
+          density="compact"
+         />
+         <v-text-field
+          v-model.number="productDto.rating"
+          type="number"
+          class="cinput"
+          label="Product rating"
+          variant="outlined"
+          density="compact"
+         />
+
         </v-card-text>
 
         <v-divider />
@@ -209,13 +209,24 @@ export default {
     this.productListMethod()
   },
   methods: {
-    openAddDialog(){
-      this.productDto={
-        colorOne:'Color One'
-      }
-      this.saveOrUpdate='SAVE'
-      this.dialog=true
-    },
+   openAddDialog(){
+  this.productDto = {
+    title: '',
+    detail: '',
+    code: '',
+    colorOne: 'Color One',
+    normalPriceOne: 0,
+    discountPriceOne: 0,
+    percent: 0,
+    sizeOne: '',
+    rating: 0,
+    categorydto: { 
+      categoryId: 1 
+        }
+  }
+  this.saveOrUpdate = 'SAVE'
+  this.dialog = true
+},
     productListMethod() {
       productService
         .getProduct()
@@ -233,16 +244,22 @@ export default {
 
         productService
           .addProduct(this.productDto)
-          .then((response) => {})
+          .then((response) => {
+            this.dialog = false;
+            this.productListMethod();
+          })
           .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
+            this.$swal('Fail!', error.response.data.message, 'error')
           })
       } else {
         console.log(this.saveOrUpdate)
 
         productService
           .updateProduct(this.productDto)
-          .then((response) => {})
+          .then((response) => {
+            this.dialog = false;
+            this.productListMethod();
+          })
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
           })
@@ -263,7 +280,8 @@ export default {
       productService
         .deleteProduct(this.selectedOne)
         .then((response) => {
-          this.dialogDelete = false
+         this.dialogDelete = false
+        this.productListMethod();
         })
         .catch((error) => {
           // this.$swal('Fail!', error.response.data.message, 'error')

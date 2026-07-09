@@ -97,18 +97,16 @@
         </v-badge>
       </v-btn>
 
-      <v-btn icon to="/login" v-if="!role">
-        <v-icon>mdi-login</v-icon>
-      </v-btn>
+      
 
-      <v-menu v-if="role" class="ma-4 pl-5">
+      <v-menu v-if="loginUser.userAccountId>0" class="ma-4 pl-5">
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" class="profile-btn" variant="text">
             <v-avatar size="32" class="mr-2">
               <v-img src="https://i.pravatar.cc/100" />
             </v-avatar>
 
-            <span class="username">Snowy</span>
+            <span class="username">{{ loginUser.profileName }}</span>
 
             <v-icon size="18" class="ml-1">mdi-chevron-down</v-icon>
           </v-btn>
@@ -126,6 +124,9 @@
           </v-list-item>
         </v-list>
       </v-menu>
+      <v-btn icon to="/login" v-else>
+        <v-icon>mdi-login</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <!-- Sidebar / Drawer -->
@@ -221,6 +222,7 @@ export default {
           to: '/admin/useraccount',
         },
       ],
+      loginUser:{},
       saleMenus: [
         {
           title: 'Sale',
@@ -237,6 +239,7 @@ export default {
     }
   },
   mounted() {
+    this.loginUser = JSON.parse(localStorage.getItem("loginUser"));
     this.role = localStorage.getItem('user_role')
 
     this.updateCartGlobalCount()
@@ -254,12 +257,9 @@ export default {
       }, 0)
     },
     logout() {
-      localStorage.removeItem('user_email')
-      localStorage.removeItem('user_password')
-      localStorage.removeItem('user_role')
-
-      this.role = null
-
+      this.loginUser.userAccountId = 0;
+     localStorage.setItem("loginUser", JSON.stringify(this.loginUser));
+     localStorage.setItem('user_role',null);
       this.$router.push('/login')
     },
   },

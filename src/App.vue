@@ -240,16 +240,24 @@ export default {
   },
   mounted() {
     this.loginUser = JSON.parse(localStorage.getItem("loginUser"));
-    this.role = localStorage.getItem('user_role')
+    this.role = localStorage.getItem('user_role');
+    this.checkLoginState()
 
     this.updateCartGlobalCount()
     window.addEventListener('cart-local-storage-changed', this.updateCartGlobalCount)
+    window.addEventListener('login-state-changed',this.checkLoginState)
   },
   beforeUnmount() {
     window.removeEventListener('cart-local-storage-changed', this.updateCartCount)
+    window.removeEventListener('login-state-changed',this.checkLoginState)
   },
 
   methods: {
+    checkLoginState(){
+      const savedUser=localStorage.getItem("loginUser");
+      this.loginUser=savedUser ? JSON.parse(savedUser) : {userAccountId:0};
+      this.role=this.loginUser.role || localStorage.getItem('user-role')
+    },
     updateCartGlobalCount() {
       const cart = JSON.parse(localStorage.getItem('cart')) || []
       this.cartCount = cart.reduce((total, item) => {
@@ -272,6 +280,8 @@ export default {
   //   }
   created() {
     // အကယ်၍ local storage ထဲမှာ cart ရှိရင် ကောင်တာ တန်းတွက်ဖို့
+        this.checkLoginState()
+
     this.updateCartGlobalCount()
     this.role = localStorage.getItem('user_role')
   },

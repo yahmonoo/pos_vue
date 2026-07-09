@@ -1,8 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter,useRoute } from 'vue-router'
 import userAccountService from '../service/UserAccountService.js'
 const router = useRouter()
+const route=useRoute()
 
 const name = ref('')
 const password = ref('')
@@ -27,8 +28,12 @@ const handleLogin = () => {
        'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
           }else{
             localStorage.setItem("loginUser", JSON.stringify(response));
-            localStorage.setItem('user_role',response.userType);
-            router.push('/')
+            //localStorage.setItem('user_role')
+                        localStorage.setItem('user-token','true');
+                        window.dispatchEvent(new CustomEvent('login-state-changed'));
+                        const redirectTo=route.query.redirect || '/';
+                        router.push(redirectTo);
+
           }
         })
         .catch((error) => {

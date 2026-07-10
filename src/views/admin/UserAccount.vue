@@ -10,7 +10,7 @@
 
     <!-- Table Card -->
     <v-card rounded="lg" elevation="0">
-      <v-table fixed-header height="400px" density="compact" class="c-table">
+      <v-table fixed-header height="470px" density="compact" class="c-table">
         <thead>
           <tr>
             <th class="text-center">No.</th>
@@ -20,7 +20,7 @@
             <th class="text-center">Address </th>
             <th class="text-center">Username</th>
             <th class="text-center">Password </th>
-                        <th class="text-center">userType </th>
+            <th class="text-center">userType </th>
 
             <th class="text-center" width="150">Action</th>
           </tr>

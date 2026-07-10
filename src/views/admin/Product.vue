@@ -8,11 +8,11 @@
 
     <!-- Table Card -->
     <v-card rounded="lg" elevation="0">
-      <v-table fixed-header height="400px" density="compact" class="c-table">
+      <v-table fixed-header height="470px" density="compact" class="c-table">
         <thead>
           <tr>
             <th class="text-center">No.</th>
-            <th class="text-center">name</th>
+            <th class="text-center">Category name</th>
             <th class="text-center">title</th>
             <th class="text-center">detail</th>
             <th class="text-center">code</th>
@@ -39,7 +39,7 @@
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
-            <td class="text-center">{{ item.name }}</td>
+            <td class="text-center">{{ item.categoryDto?.name}}</td>
             <td class="text-center">{{ item.title }}</td>
             <td class="text-center">{{ item.detail }}</td>
             <td class="text-center">{{ item.code }}</td>
@@ -74,13 +74,20 @@
           </div>
         </div>
         <v-card-text class="pa-6">  
-            <v-text-field
-            v-model="productDto.name"
-            class="cinput"
-            label="Category Name"
-            variant="outlined"
-            density="compact"
-            /> 
+           <v-autocomplete
+                  v-model="productDto.categorydto"
+                  item-text="name"
+                  item-title="name"
+                  :items="categoryList"
+                  label="Category Name"
+                  name="categoryName"
+                  return-object
+                  required
+                  density="compact"
+                  variant="outlined"
+                  filled
+                  class="cinput"
+                />
             <v-text-field
             v-model="productDto.title"
             class="cinput"
@@ -102,14 +109,44 @@
             variant="outlined"
             density="compact"
           />
-          <v-autocomplete
-                v-model="productDto.colorOne"
-                v-model="productDto.colorOne"
-                label="Select Color"
-                :items="['Color One', 'Color Two', 'Color Three', 'Color Four']"
+          <v-input
+                label="Product Type"
                 variant="outlined"
+                class="cinput mb-4 pa-3"
+                hide-details
+              >
+              <div class="w-100">
+              <v-radio-group
+              v-model="productDto.type"
+              label="Product Type"
+              inline
+              density="compact"
+              variant="outlined"
+              color="#d66182"
+              class="cinput mb-4"
+              @update:model-value="productDto.type === 'none' ? productDto.colorOne = 'None' : null"
+              >
+              <v-radio label="lip" value="lip" color="#d66182" class="mr-4"></v-radio>
+              <v-radio label="none" value="none" color="#d66182"></v-radio>
+               </v-radio-group>
+               <v-expand-transition>
+                <div v-if="productDto.type === 'lip'" class="mt-2 pt-2" style="border-top: 1px dashed #d66182;">
+                <v-radio-group
+                v-model="productDto.colorOne"
+                label="Select Lip Color:"
+                inline
                 density="compact"
-              />
+                color="#d66182"
+                >
+          <v-radio label="06" value="06" class="mr-2"></v-radio>
+      <v-radio label="07" value="07" class="mr-2"></v-radio>
+      <v-radio label="08" value="08" class="mr-2"></v-radio>
+      <v-radio label="09" value="09"></v-radio>
+    </v-radio-group>
+    </div>
+    </v-expand-transition>
+   </div>
+   </v-input>
               <v-text-field
                v-model.number="productDto.normalPriceOne"
               type="number"
@@ -136,14 +173,15 @@
            density="compact"
           />
            
-          
-          <v-text-field
-          v-model="productDto.sizeOne"
+          <v-autocomplete
+          v-model.number="productDto.sizeOne"
           class="cinput"
-          label="Product Size One"
+          label="Product Size"
+          :items="[100,250]"
           variant="outlined"
           density="compact"
          />
+         
          <v-text-field
           v-model.number="productDto.rating"
           type="number"
@@ -151,6 +189,8 @@
           label="Product rating"
           variant="outlined"
           density="compact"
+          hint="Rating must be between 1 and 5"
+          persistent-hint
          />
 
         </v-card-text>
@@ -198,35 +238,51 @@ export default {
     return {
       dialog: false,
       productName: '',
-      productDto: {
-        colorOne:'Color One'
-      },
+      productDto: {},
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
       productList: [],
+      categoryList:[],
     }
   },
 
   props: {},
   mounted: function () {
+    this.categoryListMethod()
     this.productListMethod()
   },
   methods: {
+    categoryListMethod() {
+    categoryService
+      .getCategory() 
+      .then((response) => {
+        this.categoryList.splice(0, this.categoryList.length)
+        this.categoryList.push(...response)
+        if(this.categoryList.length > 0) {
+          this.productDto.categorydto = this.categoryList[0]
+        }
+      })
+      .catch((error) => {
+        this.$swal('Fail!', error.response?.data?.message || 'Error loading categories', 'error')
+      })
+  },
    openAddDialog(){
   this.productDto = {
     title: '',
     detail: '',
     code: '',
-    colorOne: 'Color One',
+    colorOne: 'none',
     normalPriceOne: 0,
     discountPriceOne: 0,
     percent: 0,
     sizeOne: '',
     rating: 0,
-    categorydto: { 
-      categoryId: 1 
-        }
+    type:'none',
+    categorydto: this.categoryList.length > 0 ? this.categoryList[0] : null
+    // Categorydto: { 
+    //   categoryId: 1 
+    //     }
   }
   this.saveOrUpdate = 'SAVE'
   this.dialog = true
@@ -237,29 +293,37 @@ export default {
         .then((response) => {
           this.productList.splice(0, this.productList.length)
           this.productList.push(...response)
+          if(this.categoryList.length>0){
+          this.productDto.categoryDto = this.categoryList[0]
+          }
         })
         .catch((error) => {
           this.$swal('Fail!', error.response.data.message, 'error')
         })
     },
     saveProduct() {
+      const payload={...this.productDto};
+      payload.colorBox=this.productDto.type;
+      payload.type=0;
       if (this.saveOrUpdate == 'SAVE') {
         console.log(this.saveOrUpdate)
+        console.log(this.productDto);
       
         productService
-          .addProduct(this.productDto)
+          .addProduct(payload)
           .then((response) => {
             this.dialog = false;
+            this.productDto = {};
             this.productListMethod();
           })
-          .catch((error) => {
-            this.$swal('Fail!', error.response.data.message, 'error')
-          })
+          // .catch((error) => {
+          //   this.$swal('Fail!', error.response.data.message, 'error')
+          // })
       } else {
         console.log(this.saveOrUpdate)
 
         productService
-          .updateProduct(this.productDto)
+          .updateProduct(payload)
           .then((response) => {
             this.dialog = false;
             this.productListMethod();
@@ -277,8 +341,14 @@ export default {
       console.log(item)
       this.dialog = true
       this.saveOrUpdate = 'UPDATE'
-      this.productDto = { ...item }
+
+      const isLip=item.colorOne==='06' || item.colorBox==='lip';
+
+      this.productDto = { 
+        ...item,
+      type:isLip?'lip':'none' }
     },
+
     deleteProduct(item) {
       this.dialogDelete = true
       this.selectedOne = { ...item }

@@ -1,48 +1,50 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter,useRoute } from 'vue-router'
+<script>
 import userAccountService from '../service/UserAccountService.js'
-const router = useRouter()
-const route=useRoute()
 
-const name = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const rememberMe = ref(false)
-const errorMessage = ref('') 
+export default {
 
-
-const handleLogin = () => {
-  
-  // const savedName = localStorage.getItem('user_name')
-  // const savedPassword = localStorage.getItem('user_password')
-  // const savedRole = localStorage.getItem('user_role')
+  data() {
+    return {
+      name: '',
+      password: '',
+      showPassword: false,
+      rememberMe: false,
+      errorMessage: ''
+    }
+  },
 
   
-  //if (name.value === savedName && password.value === savedPassword) {
-     userAccountService
-        .getLogin(name.value,password.value)
+  methods: {
+    handleLogin() {
+      userAccountService
+        .getLogin(this.name, this.password) 
         .then((response) => {
-          if(response.userAccountId==0){
-            errorMessage.value =
-       'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
-          }else{
+          if (response.userAccountId == 0) {
+            this.errorMessage = 'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
+          } else {
             localStorage.setItem("loginUser", JSON.stringify(response));
-            //localStorage.setItem('user_role')
-                        localStorage.setItem('user-token','true');
-                        window.dispatchEvent(new CustomEvent('login-state-changed'));
-                        const redirectTo=route.query.redirect || '/';
-                        router.push(redirectTo);
+            localStorage.setItem('user-token', 'true');
+            window.dispatchEvent(new CustomEvent('login-state-changed'));
 
+           
+            if (response.userType === 'ADMIN') {
+              this.$router.push('/admin'); 
+            } else {
+              const redirectTo = this.$route.query.redirect || '/'; 
+              this.$router.push(redirectTo);
+            }
           }
         })
         .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
+          
+          if (this.$swal) {
+            this.$swal('Fail!', error.response?.data?.message || 'Error occurred', 'error')
+          } else {
+            console.error(error)
+          }
         })
-  // } else {
-  //   errorMessage.value =
-  //     'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
-  // }
+    }
+  }
 }
 </script>
 

@@ -255,9 +255,14 @@ export default {
   methods: {
     checkLoginState(){
       const savedUser=localStorage.getItem("loginUser");
-      this.loginUser=savedUser ? JSON.parse(savedUser) : {userAccountId:0};
-      this.role=this.loginUser.role || localStorage.getItem('user-role')
-    },
+      if (savedUser) {
+      this.loginUser = JSON.parse(savedUser);
+      this.role = this.loginUser.userType || this.loginUser.usertype || localStorage.getItem('user_role');
+    } else {
+      this.loginUser = { userAccountId: 0 };
+      this.role = null;
+    }
+  },
     updateCartGlobalCount() {
       const cart = JSON.parse(localStorage.getItem('cart')) || []
       this.cartCount = cart.reduce((total, item) => {
@@ -265,10 +270,14 @@ export default {
       }, 0)
     },
     logout() {
-      this.loginUser.userAccountId = 0;
-     localStorage.setItem("loginUser", JSON.stringify(this.loginUser));
-     localStorage.setItem('user_role',null);
-      this.$router.push('/login')
+     localStorage.removeItem("loginUser");
+    localStorage.removeItem("user_role");
+    localStorage.removeItem("user-token");
+    
+    this.loginUser = { userAccountId: 0 };
+    this.role = null;
+    
+    this.$router.push('/login');
     },
   },
   // created(){

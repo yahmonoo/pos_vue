@@ -23,11 +23,11 @@
           </div>
 
           <div class="d-flex justify-center mt-6">
-            <v-btn color="#4a69bd" dark depressed class="text-none px-6 mr-4 action-btn" @click="handleBack">
+            <v-btn color="#e48494" dark depressed class="text-white px-6 mr-4 action-btn" @click="handleBack">
               <v-icon left small>mdi-chevron-left</v-icon> Back
             </v-btn>
 
-            <v-btn color="#3867d6" dark depressed class="text-none px-6 action-btn" @click="handleNext">
+            <v-btn color="#e48494" dark depressed class="text-white px-6 action-btn" @click="handleNext">
               {{ currentStep === 4 ? 'Confirm Order' : 'Next' }}
               <v-icon right small v-if="currentStep < 4">mdi-chevron-right</v-icon>
             </v-btn>
@@ -192,14 +192,60 @@ export default {
 </script>
 
 <style scoped>
-.stepper-wrapper { display: flex; justify-content: space-between; position: relative; }
-.stepper-wrapper::before { content: ''; position: absolute; top: 15px; left: 30px; right: 30px; height: 2px; background-color: #cbd5e1; z-index: 0; }
-.stepper-item { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; flex: 1; }
-.step-counter { width: 32px; height: 32px; border-radius: 50%; background-color: #94a3b8; color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; }
-.step-name { font-size: 10px; color: #64748b; margin-top: 6px; text-align: center; }
-.stepper-item.active .step-counter { background-color: #3b82f6 !important; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
-.stepper-item.active .step-name { color: #1e3a8a; font-weight: bold; }
-.action-btn { border-radius: 6px !important; font-size: 13px !important; height: 36px !important; }
+.stepper-wrapper {
+ display: flex; 
+ justify-content: 
+ space-between; 
+ position: relative; 
+ }
+.stepper-wrapper::before { 
+ content: ''; 
+ position: absolute; 
+ top: 15px; left: 30px; 
+ right: 30px; 
+ height: 2px; 
+ background-color: #cbd5e1; 
+ z-index: 0; 
+}
+.stepper-item { 
+  position: relative; 
+  z-index: 1; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  flex: 1; 
+}
+.step-counter { 
+  width: 32px; 
+  height: 32px; 
+  border-radius: 50%; 
+  background-color: #94a3b8; 
+  color: white; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 13px; 
+  font-weight: bold; 
+}
+.step-name { 
+  font-size: 10px; 
+  color: #64748b; 
+  margin-top: 6px; 
+  text-align: center; 
+}
+.stepper-item.active .step-counter { 
+  background-color: #e48494 ; 
+  box-shadow: 0 0 0 4px rgba(242, 82, 170, 0.2); 
+}
+.stepper-item.active .step-name { 
+  color: #e48494; 
+  font-weight: bold; 
+}
+.action-btn { 
+  border-radius: 6px !important; 
+  font-size: 13px !important; 
+  height: 36px !important; 
+}
 
 .receipt-card {
   border-radius: 16px !important;

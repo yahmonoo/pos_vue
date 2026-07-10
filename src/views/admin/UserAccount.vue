@@ -71,11 +71,13 @@
         </div>
 
         <v-card-text class="pa-6">
-          <v-text-field
-            v-model.number="userForm.townshipId"
+          <v-select
+            v-model="userForm.townshipId"
+            :items="townshipList"
+            item-title="townshipName"
+            item-value="townshipId"
             class="cinput mb-3"
-            label="Township Id"
-            type="number"
+            label="Select Township"
             variant="outlined"
             density="compact"
           />
@@ -189,6 +191,7 @@
 </template>
 
 <script>
+import townshipService from '../../service/TownshipService.js'
 import UserAccountService from '../../service/UserAccountService'
 export default {
   data() {
@@ -199,29 +202,43 @@ export default {
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
       userAccountList: [],
-      userForm:{
-        userAccountId:0,
-        townshipId:null,
-        townshipName:'',
-        profileName:'',
-        phone:'',
-        address:'',
-        userName:'',
-        password:'',
-        userType:'ADMIN',
-        }
-      
-        
-    }
+      townshipList: [],
+      userForm : {
+              userAccountId: 0,
+              townshipId: null,
+              townshipName: '',
+              profileName: '',
+              phone: '',
+              address: '',
+              userName: '',
+              password: '',
+              userType: 'ADMIN',
+            }
+            
+          }        
+    
   },
   props: {},
   mounted: function () {
         this.userAccountListMethod()
-
+        this.townshipListMethod()
   },
   methods: {
     viewPhoto(){
         this.dialogPhoto = true;
+    },
+    
+     townshipListMethod() {
+      townshipService
+        .getTownship()
+        .then((response) => {
+          console.log(response);
+          this.townshipList.splice(0, this.townshipList.length)
+          this.townshipList.push(...response)
+        })
+        .catch((error) => {
+          this.$swal('Fail!', error.response.data.message, 'error')
+        })
     },
     userAccountListMethod() {
       UserAccountService
@@ -249,7 +266,17 @@ export default {
           .addUseraccount(this.userForm)
           .then((response) => {
             this.dialog=false
-            this.userForm()
+            this.userForm={
+              userAccountId: 0,
+              townshipId: null,
+              townshipName: '',
+              profileName: '',
+              phone: '',
+              address: '',
+              userName: '',
+              password: '',
+              userType: 'ADMIN',
+            }
             this.userAccountListMethod()}
         )
           .catch((error) => {
@@ -290,6 +317,7 @@ export default {
         .deleteUseraccount(this.selectedOne)
         .then((response) => {
           this.dialogDelete = false
+          this.userAccountListMethod()
         })
         .catch((error) => {
           // this.$swal('Fail!', error.response.data.message, 'error')

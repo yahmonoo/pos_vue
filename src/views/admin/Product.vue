@@ -104,7 +104,6 @@
           />
           <v-autocomplete
                 v-model="productDto.colorOne"
-                v-model="productDto.colorOne"
                 label="Select Color"
                 :items="['Color One', 'Color Two', 'Color Three', 'Color Four']"
                 variant="outlined"

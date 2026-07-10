@@ -92,7 +92,7 @@ export default {
     return this.cartItems.reduce((total, item) => {
       let rawPrice = item.price || item.variantPrice  || (item.product ? item.product.price : 0);
       
-      if (typeof rawPrice === 'string' && (rawPrice.includes('ml') || rawPrice.includes('g'))) {
+      if (typeof rawPrice === 'string' && (rawPrice.includes('ml') || rawPrice.includes('g') || rawPrice.toLowerCase().includes('Default'))) {
         rawPrice = item.product ? item.product.price : 32000; 
       }
 
@@ -104,7 +104,7 @@ export default {
       }
       
       if (!price || price === 0) {
-        price = 32000; 
+        price = item.product ? item.product.price : 32000; 
       }
       
       const qty = parseInt(item.buyQuantity) || 1;
@@ -121,7 +121,7 @@ export default {
       const token=localStorage.getItem('user-token');
       if(!token){
         
-      this.$router.push({path:'/LoginView', query:{fromCart :true}});
+      this.$router.push({path:'/login', query:{ redirect: '/checkOut'}});
     }
     else{
       this.$router.push('/checkOut');

@@ -188,6 +188,7 @@ export default {
           .updateTownship(this.townshipDto)
           .then((response) => {
           console.log(response);
+            this.saveOrUpdate ="SAVE"
             this.dialog = false;
             this.townshipDto ={};
             this.townshipListMethod();

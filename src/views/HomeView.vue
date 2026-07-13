@@ -64,7 +64,7 @@
       <div class="card-container" ref="discountSlider">
         <div v-for="(product, index) in discountProducts" :key="'discount-' + product.title + index" class="card" @click="openDetail(product)">
           <span class="discount-badge">{{ product.percent }}%</span>
-          <img :src="getImageUrl(product.img)" :alt="product.title" />
+          <img :src="getImageUrl(product.photoOne)" :alt="product.title" />
           <h3>{{ product.title }}</h3>
           <p class="product-code">Code: #{{ product.code }}</p>
           <div class="price-container">
@@ -90,7 +90,7 @@
         <button class="arrow-btn prev-btn" @click="scrollSlider('bestsellerSlider', -300)">&#10094;</button>
       <div class="card-container" ref="bestsellerSlider">
         <div v-for="(product, index) in bestsellerProducts" :key="'bestseller-' + index" class="card" @click="openDetail(product)">
-          <img :src="getImageUrl(product.img)" :alt="product.title" />
+          <img :src="getImageUrl(product.photoOne)" :alt="product.title" />
           <h3>{{ product.title }}</h3>
           <p class="product-code">Code: #{{ product.code }}</p>
           <div class="add-btn">

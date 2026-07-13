@@ -128,6 +128,7 @@ export default {
           this.$swal('Fail!', error.response.data.message, 'error')
         })
     },
+
     saveCity() {
       if (this.saveOrUpdate == 'SAVE') {
         console.log(this.saveOrUpdate)
@@ -151,8 +152,10 @@ export default {
           .updateCity(this.cityDto)
           .then((response) => {
             console.log(response);
+            this.saveOrUpdate = "SAVE"
             this.dialog = false;
             this.cityDto ={};
+
             this.cityListMethod();
           })
           .catch((error) => {

@@ -154,6 +154,7 @@ export default {
           .updateCategory(this.categoryDto)
           .then((response) => {
             console.log(response);
+            this.saveOrUpdate ="SAVE"
             this.dialog = false;
             this.categoryDto ={};
             this.categoryListMethod();

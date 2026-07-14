@@ -17,7 +17,7 @@
             <v-col cols="5" sm="5">
               <div class="subtitle-2 font-weight-bold grey--text text--darken-3 text-truncate">{{ item.name }}</div>
               <div class="caption pink--text font-weight-bold">Variant: {{ item.chosenVariant }}</div>
-              <div class="body-2 grey--text">Ks {{ item.price}}</div>
+              <div class="body-2 grey--text">Ks {{ getItemDisplayPrice(item)}}</div>
             </v-col>
 
             <v-col cols="4" sm="3" class="text-center">
@@ -90,10 +90,10 @@ export default {
   totalPrice() {
     if (!this.cartItems) return 0;
     return this.cartItems.reduce((total, item) => {
-      let rawPrice = item.price || item.variantPrice  || (item.product ? item.product.price : 0);
+      let rawPrice= (item.product && item.product.priceOne) || item.priceOne || (item.product ? item.product.price : 0);
       
       if (typeof rawPrice === 'string' && (rawPrice.includes('ml') || rawPrice.includes('g') || rawPrice.toLowerCase().includes('Default'))) {
-        rawPrice = item.product ? item.product.price : 32000; 
+        rawPrice = item.product && item.product.priceOne ? item.product.priceOne : (item.product ? item.product.price : 32000); 
       }
 
       let price = 0;
@@ -133,6 +133,13 @@ export default {
         ...item,
         buyQuantity: item.buyQuantity ? parseInt(item.buyQuantity) : 1
       }));
+    },
+
+    getItemDisplayPrice(item){
+      let rawPrice=(item.product && item.product.priceOne) || item.priceOne || 32000;
+      let price=typeof rawPrice==='string' ? Number(rawPrice.replace(/[]/g),'') : Number(rawPrice);
+      return price.toLocaleString();
+
     },
     getProductImage(name) {
   if (!name) return '';

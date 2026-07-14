@@ -1,7 +1,7 @@
 <template>
-  <v-row no-gutters style="background-color: #f3eae8; min-height: 100vh;">
+  <v-row no-gutters class="layout-container" style="background-color: #f3eae8;">
     
-    <v-col cols="12" sm="4" md="3" lg="2" class="white" style="border-right: 1px solid #e0e0e0;">
+    <v-col cols="12" sm="4" md="3" lg="2" class="white category-scroll" style="border-right: 1px solid #e0e0e0;">
       <v-list dense class="pa-0">
        <v-list-item @click="selectedCategory = 0" :class="selectedCategory === 0 ? 'primary white--text font-weight-bold' : ''">
           <v-list-item-content>
@@ -12,8 +12,8 @@
         <v-list-item 
           v-for="(cat, index) in categoriesList" 
           :key="index"
-          @click="selectedCategory = cat.categoryId"
-          :class="selectedCategory === cat.categoryId? 'primary white--text font-weight-bold' : ''"
+          @click="selectedCategoryHandler(cat.categoryId)"
+          :class="selectedCategory == cat.categoryId? 'primary white--text font-weight-bold' : ''"
           style="border-bottom: 1px solid #f0f0f0;"
         >
           <v-list-item-content>
@@ -23,7 +23,7 @@
       </v-list>
     </v-col>
 
-    <v-col cols="12" sm="8" md="9" lg="10" class="pa-4">
+    <v-col cols="12" sm="8" md="9" lg="10" class="pa-4 product-scroll;">
       <div class="products-flex-container">
         
         <div v-for="product in filteredProducts" :key="product.id" class="product-item-wrapper">
@@ -90,11 +90,16 @@ export default {
   },
   computed: {
     filteredProducts(){
-      if(this.selectedCategory===0){
+      console.log("selected category ID" ,this.selectedCategory);
+      //console.log("First product Data Structure:", this.productsList[0]);
+      if(this.selectedCategory=== 0 || this.selectedCategory === '0'){
         return this.productsList;
       }
       return this.productsList.filter(product =>{
-        return product.categoryId === this.selectedCategory;
+        if(product.categorydto){
+          console.log(`${product.title} -> ID: ${product.categorydto.categoryId}`)
+        }
+        return product.categorydto && product.categorydto.categoryId == this.selectedCategory;
       })
     }
   },
@@ -104,13 +109,16 @@ export default {
    
   },
   methods: {
+    selectedCategoryHandler(categoryId){
+      this.selectedCategory=categoryId;
+    },
 
      getCategories: function(){
       //const category=this.selectedCategory === 'All' ? 'all' : this.selectedCategory;
       axios.get('/category').then((response) => {
       this.categoriesList.splice(0);
       this.categoriesList.push(...response.data);
-      console.log("categories loaded:" , this.categoriesList);
+      console.log("categories loaded:" , this.categoriesList.map(c => ({ name: c.name, id: c.categoryId})));
    })
      .catch((error)=>{
      // this.$swal("Fail!",error.response.data.message,"error");
@@ -123,7 +131,7 @@ export default {
      productService.getProductHome('c',0).then((response) => {
      this.productsList.splice(0);
      this.productsList.push(...response);
-     console.log("products loaded:" , this.productsList);
+     console.log("products loaded:" , this.productsList.map(p => ({title: p.title,catId: p.categorydto?.categoryId})));
   })
     .catch((error)=>{
      // this.$swal("Fail!",error.response.data.message,"error");
@@ -190,6 +198,30 @@ export default {
 </script>
 
 <style scoped>
+::-webkit-scrollbar{
+  width: 6px;
+}
+::-webkit-scrollbar-track{
+  background:  #f1f1f1;
+}
+::-webkit-scrollbar-thumb{
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+.category-scroll {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.product-scroll {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 .products-flex-container {
   display: flex;
   flex-wrap: wrap;
@@ -285,4 +317,5 @@ export default {
   height: 24px !important;
   text-transform: none !important;
 }
+
 </style>

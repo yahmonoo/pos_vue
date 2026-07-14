@@ -30,7 +30,16 @@ getLogin(userName,password) {
       }
     }).then((request) => request.data);
   }
-  
+      updateUserPhoto(formData, userAccountId) {
+    let url = `userAccount/${userAccountId}/photo`;
+    return axios
+      .put(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((request) => request.data);
+  }
 }
 
 const service = new UserAccountService();

@@ -227,6 +227,18 @@
         </v-card>
       </v-dialog>
     </v-col>
+<v-col cols="12" md="12">
+      <v-bottom-sheet v-model="userPhotoDialog" fullscreen scrollable>
+        <v-sheet class="information-window-v-sheet">
+          <userPhoto
+            @closeDialog="userPhotoDialog=false"
+            :selectedOne="selectedOne"
+          />
+        </v-sheet>
+      </v-bottom-sheet>
+    </v-col>
+
+
   </v-container>
 </template>
 
@@ -234,6 +246,7 @@
 import productService from '../../service/ProductService.js'
 import categoryService from '../../service/CategoryService.js'
 import UserAccountService from '../../service/UserAccountService.js';
+import userPhoto from "@/components/UserPhotoDialog.vue";
 export default {
   data() {
     return {
@@ -245,6 +258,8 @@ export default {
       dialogDelete: false,
       productList: [],
       categoryList:[],
+      userPhotoDialog:false,
+
     }
   },
 
@@ -254,6 +269,9 @@ export default {
     this.productListMethod()
   },
   methods: {
+    viewPhoto:function(item){
+      this.userPhotoDialog = true;
+    },
     categoryListMethod() {
     categoryService
       .getCategory() 
@@ -386,7 +404,7 @@ export default {
     },
   },
   watch: {},
-  components: {},
+  components: {userPhoto},
 }
 </script>
 

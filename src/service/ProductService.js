@@ -33,7 +33,7 @@ addProduct(product) {
     let url = `/product/${product.productId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
-  
+
 }
 
 const service = new ProductService();

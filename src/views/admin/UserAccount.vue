@@ -187,12 +187,23 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-col cols="12" md="12">
+      <v-bottom-sheet v-model="userPhotoDialog" fullscreen scrollable>
+        <v-sheet class="information-window-v-sheet">
+          <userPhoto
+            @closeDialog="userPhotoDialog=false"
+            :selectedOne="selectedOne"
+          />
+        </v-sheet>
+      </v-bottom-sheet>
+    </v-col>
   </v-container>
 </template>
 
 <script>
 import townshipService from '../../service/TownshipService.js'
 import UserAccountService from '../../service/UserAccountService.js'
+import userPhoto from "@/components/UserPhotoDialog.vue";
 export default {
   data() {
     return {
@@ -213,7 +224,8 @@ export default {
               userName: '',
               password: '',
               userType: 'ADMIN',
-            }
+            },
+             userPhotoDialog:false,
             
           }        
     
@@ -224,6 +236,9 @@ export default {
         this.townshipListMethod()
   },
   methods: {
+    viewPhoto:function(item){
+      this.userPhotoDialog = true;
+    },
     openAddDialog() {
     this.saveOrUpdate = 'SAVE';
     this.resetForm();          
@@ -242,10 +257,7 @@ export default {
       userType: 'ADMIN',
     };
   },
-    viewPhoto(){
-        this.dialogPhoto = true;
-    },
-    
+
      townshipListMethod() {
       townshipService
         .getTownship()
@@ -335,7 +347,7 @@ export default {
     },
   },
   watch: {},
-  components: {},
+  components: {userPhoto},
 }
 </script>
 

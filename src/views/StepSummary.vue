@@ -26,12 +26,12 @@
             class="d-flex justify-space-between align-center mb-2 item-row"
           >
             <div class="text-body-2 grey--text text--darken-3">
-              • {{ item.name }} 
+              • {{ item.title }} 
               <span class="grey--text text--darken-1 font-weight-bold ml-1">x{{ item.quantity || 1 }}</span>
             </div>
             
             <div class="text-body-2 font-weight-bold">
-              {{ (Number(item.price ||  0) * Number(item.quantity ||  1)).toLocaleString() }} MMK
+              {{ (Number(item.priceOne ||  0) * Number(item.quantity ||  1)).toLocaleString() }} MMK
             </div>
           </div>
         </div>

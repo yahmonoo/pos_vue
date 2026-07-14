@@ -71,11 +71,11 @@
           
           <div 
             v-for="item in cartItems" 
-            :key="item.id" 
+            :key="item.productId" 
             class="d-flex justify-space-between text-body-2 mb-1"
           >
-            <span>{{ item.name }} x {{ item.quantity || 1 }}</span>
-            <span>Ks {{ (Number(item.price  || 0) * Number(item.quantity  || 1)).toLocaleString() }}</span>
+            <span>{{ item.title }} x {{ item.quantity || 1 }}</span>
+            <span>Ks {{ (Number(item.priceOne  || 0) * Number(item.quantity  || 1)).toLocaleString() }}</span>
           </div>
 
           <div class="d-flex justify-space-between text-body-2 mt-2">
@@ -144,7 +144,7 @@ export default {
     subTotal() {
       if (!this.cartItems || this.cartItems.length === 0) return 0;
       return this.cartItems.reduce((sum, item) => {
-        return sum + (Number(item.price  || 0) * Number(item.quantity ||  1));
+        return sum + (Number(item.priceOne  || 0) * Number(item.quantity ||  1));
       }, 0);
     },
     totalAmount() {

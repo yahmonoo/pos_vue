@@ -1,9 +1,14 @@
 <template>
-  <v-row no-gutters class="layout-container" style="background-color: #f3eae8;">
+  <!-- 
+    ပြင်ဆင်ချက်- class ထဲမှာ page-container-lock ကို ထည့်ပြီး style ကို ညှိထားပါတယ်။ 
+    ဒါကြောင့် ဒီကောင်က သူ့အလိုလို အပြင် scroll bar ကို ဖျောက်ပေးသွားမှာဖြစ်ပြီး တခြား page တွေကို မထိခိုက်ပါဘူး။
+  -->
+  <v-row no-gutters class="layout-container page-container-lock" style="background-color: #f3eae8;">
     
+    <!-- Category Section: သီးသန့် scroll -->
     <v-col cols="12" sm="4" md="3" lg="2" class="white category-scroll" style="border-right: 1px solid #e0e0e0;">
       <v-list dense class="pa-0">
-       <v-list-item @click="selectedCategory = 0" :class="selectedCategory === 0 ? 'primary white--text font-weight-bold' : ''">
+       <v-list-item @click="selectedCategoryHandler(0)" :class="selectedCategory === 0 ? 'primary white--text font-weight-bold' : ''">
           <v-list-item-content>
             <v-list-item-title>All Products</v-list-item-title>
           </v-list-item-content>
@@ -11,7 +16,7 @@
         <v-divider></v-divider>
         <v-list-item 
           v-for="(cat, index) in categoriesList" 
-          :key="index"
+          :key="'cat-' + cat.categoryId"
           @click="selectedCategoryHandler(cat.categoryId)"
           :class="selectedCategory == cat.categoryId? 'primary white--text font-weight-bold' : ''"
           style="border-bottom: 1px solid #f0f0f0;"
@@ -23,10 +28,11 @@
       </v-list>
     </v-col>
 
-    <v-col cols="12" sm="8" md="9" lg="10" class="pa-4 product-scroll;">
+    <!-- Product Section: သီးသန့် scroll -->
+    <v-col cols="12" sm="8" md="9" lg="10" class="pa-4 product-scroll" ref="productContainer">
       <div class="products-flex-container">
         
-        <div v-for="product in filteredProducts" :key="product.id" class="product-item-wrapper">
+        <div v-for="product in filteredProducts" :key="product.productId" class="product-item-wrapper">
           <v-card 
             @click="goToDetail(product)"
             class="custom-product-card" 
@@ -72,33 +78,23 @@
 
 <script>
 import productService from "../service/ProductService";
-
 import axios from "@/config";
+
 export default {
   name: 'ProductView',
   data() {
     return {
       selectedCategory: 0,
       categoriesList: [],
-      //   'Cleanser', 'Concelar', 'Mascara', 'BB Cream', 'Hair Removal', 'Clay Stick',
-      //   'Eyebrow', 'Lipstick & Lipblam', 'Hair care', 'Fiber', 'Dress', 'Lotion',
-      //   'Toner & Emulsion', 'Toner', 'Hair color', 'Moisture', 'Shower',
-      //   'Collagen', 'Suncream', 'Serum', 'Scrub'
-      // ],
       productsList: []
     };
   },
   computed: {
     filteredProducts(){
-      console.log("selected category ID" ,this.selectedCategory);
-      //console.log("First product Data Structure:", this.productsList[0]);
-      if(this.selectedCategory=== 0 || this.selectedCategory === '0'){
+      if(this.selectedCategory === 0 || this.selectedCategory === '0'){
         return this.productsList;
       }
       return this.productsList.filter(product =>{
-        if(product.categorydto){
-          console.log(`${product.title} -> ID: ${product.categorydto.categoryId}`)
-        }
         return product.categorydto && product.categorydto.categoryId == this.selectedCategory;
       })
     }
@@ -106,87 +102,53 @@ export default {
   mounted: function(){
     this.getCategories();
     this.getProductHome();
-   
+    // JavaScript နဲ့ body ကို ပိတ်ထားတဲ့ ကုတ်တွေကို လုံးဝ ဖြုတ်ပစ်လိုက်ပါပြီ။
   },
   methods: {
     selectedCategoryHandler(categoryId){
-      this.selectedCategory=categoryId;
+      this.selectedCategory = categoryId;
+      
+      this.$nextTick(() => {
+        const container = this.$refs.productContainer;
+        if (container) {
+          const el = container.$el || container;
+          el.scrollTop = 0;
+        }
+      });
     },
-
-     getCategories: function(){
-      //const category=this.selectedCategory === 'All' ? 'all' : this.selectedCategory;
+    getCategories: function(){
       axios.get('/category').then((response) => {
-      this.categoriesList.splice(0);
-      this.categoriesList.push(...response.data);
-      console.log("categories loaded:" , this.categoriesList.map(c => ({ name: c.name, id: c.categoryId})));
-   })
-     .catch((error)=>{
-     // this.$swal("Fail!",error.response.data.message,"error");
-     });
-   },
-
-
-   getProductHome: function(){
-     //const category=this.selectedCategory === 'All' ? 'all' : this.selectedCategory;
-     productService.getProductHome('c',0).then((response) => {
-     this.productsList.splice(0);
-     this.productsList.push(...response);
-     console.log("products loaded:" , this.productsList.map(p => ({title: p.title,catId: p.categorydto?.categoryId})));
-  })
-    .catch((error)=>{
-     // this.$swal("Fail!",error.response.data.message,"error");
-    });
-  },
-    // generateProducts() {
-    //  this.productsList = [
-    //   { id: 201, name: "Lancome Tonique Douceur", category: "Toner", price: 32000, imageName: "product-1.jpg" },
-    //   { id: 202, name: "Media Cream Foundation", category: "Concelar", price: 48000, imageName: "product-2.png" },
-    //     { id: 203, name: "Red Earth Nude Wear Powder", category: "BB Cream", price: 42000, imageName: "product-3.webp" },
-    //     { id: 204, name: "Blackrouge Eye Stamp", category: "Mascara", price: 19900, imageName: "product-4.webp" },
-    //     { id: 205, name: "Matte Velvet Lip Balm Romand", category: "Lipstick & Lipblam", price: 28500, imageName: "product-5.jpg" },
-    //     { id: 206, name: "Perfect Eyebrow Pencil 02", category: "Eyebrow", price: 8500, imageName: "product-6.webp" },
-    //     { id: 207, name: "Smooth Hair Repair Treatment", category: "Hair care", price: 18500, imageName: "product-7.webp" },
-    //     { id: 208, name: "Organic Fiber Diet Drink", category: "Fiber", price: 29000, imageName: "product-8.webp" },
-    //     { id: 209, name: "Whitening Body Milk Lotion", category: "Lotion", price: 16500, imageName: "product-9.avif" },
-    //     { id: 210, name: "Cuta Pro Gentle Cleanser", category: "Clay Stick", price: 33000, imageName: "product-10.webp" },
-    //     { id: 211, name: "Centella Skin1004 Probio-cica Bakuchio", category: "Toner", price: 45000, imageName: "product-11.webp" },
-    //     { id: 212, name: "Medicube salmon DNA collagen", category: "Collagen", price: 48000, imageName: "product-12.webp" },
-    //     { id: 213, name: "Rice Water", category: "Scrub", price: 12000, imageName: "product-13.webp" },
-    //     { id: 214, name: "Centella skin1004", category: "Cleanser", price: 35000, imageName: "product-14.webp" },
-    //     { id: 215, name: "3CE lip tint ", category: "Lipstick & Lipblam", price: 48000, imageName: "product-15.png" },
-    //     { id: 216, name: "Yoonskin serum", category: "Serum", price: 49000, imageName: "product-16.jpg" },
-    //     { id: 217, name: "SomeByMi hair care", category: "Hair care", price: 43000, imageName: "product-17.avif" },
-    //     { id: 218, name: "Loreal shower", category: "Shower", price: 18600, imageName: "product-18.jpg" },
-    //     { id: 219, name: "VITA-C moisture", category: "Moisture", price: 56000, imageName: "product-19.webp" },
-    //     { id: 220, name: "Pantene shampoo", category: "Shampoo", price: 23000, imageName: "product-20.avif" }
-     //];
-     //},
+        this.categoriesList.splice(0);
+        this.categoriesList.push(...response.data);
+      })
+      .catch((error)=>{
+        console.error(error);
+      });
+    },
+    getProductHome: function(){
+      productService.getProductHome('c',0).then((response) => {
+        this.productsList.splice(0);
+        this.productsList.push(...response);
+      })
+      .catch((error)=>{
+        console.error(error);
+      });
+    },
     getProductImage(photo) {
-      console.log("photo");
-      console.log(photo);
-      const baseURL=axios?.defaults?.baseURL || "";
+      const baseURL = axios?.defaults?.baseURL || "";
       return photo ? `${baseURL}/productphoto/${photo}` : "";
-
-
-
     },
     goToDetail(product) {
-      console.log("no found product", product);
-
       this.$router.push({ 
-        
-
         path: '/home-detail', 
         query: { id: product.productId } 
       });
     },
     addToCart(product) {
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
       cart.push({ ...product, chosenVariant: 'Default', buyQuantity: 1 });
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
-      // alert(`${product.name} added  to cart။`);
     },
     handleImageError(event) {
       if (event && event.target) {
@@ -198,30 +160,47 @@ export default {
 </script>
 
 <style scoped>
-::-webkit-scrollbar{
+/* Scrollbar လှပအောင် ပြင်ဆင်မှုများ */
+::-webkit-scrollbar {
   width: 6px;
 }
-::-webkit-scrollbar-track{
-  background:  #f1f1f1;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
-::-webkit-scrollbar-thumb{
+::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
-.category-scroll {
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+
+/* 
+  ဒီနည်းလမ်းက အဓိက အသက်ပါပဲ။ 
+  ပင်မ Wrapper ကိုပဲ အမြင့် ကန့်သတ်ပြီး အပြင် scroll ထွက်မလာအောင် ညှိထားတာဖြစ်လို့
+  ဒီစာမျက်နှာထဲမှာတင် Scroll ကိစ္စ အားလုံး ပြီးပြတ်သွားပါတယ်။
+*/
+.page-container-lock {
+  height: calc(100vh - 64px) !important; /* Header အမြင့်ကို နှုတ်ပြီး view အပြည့် ယူပါတယ် */
+  overflow: hidden !important; /* အပြင်ဘက် Page scroll bar ကို လုံးဝ ပိတ်ချလိုက်တာပါ */
 }
 
-.product-scroll {
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+/* Category ဘက်ခြမ်း သီးသန့် scroll အမြဲပေါ်စေပါတယ် */
+.category-scroll {
+  height: 100% !important; /* အပေါ်က အမြင့် calc အတိုင်း တစ်ပုံစံတည်း ယူပါတယ် */
+  overflow-y: scroll !important; 
+  overflow-x: hidden !important;
+  padding-bottom: 40px !important;
 }
+
+/* Product ဘက်ခြမ်း သီးသန့် scroll အမြဲပေါ်စေပါတယ် */
+.product-scroll {
+  height: 100% !important; 
+  overflow-y: scroll !important; 
+  overflow-x: hidden !important;
+  padding-bottom: 60px !important;
+}
+
 .products-flex-container {
   display: flex;
   flex-wrap: wrap;
@@ -238,6 +217,10 @@ export default {
   .product-item-wrapper {
     width: 50%;
     padding: 4px;
+  }
+  /* ဖုန်းမျက်နှာပြင်အတွက် Header အမြင့် လျှော့တွက်ပေးတာပါ */
+  .page-container-lock {
+    height: calc(100vh - 56px) !important;
   }
 }
 
@@ -317,5 +300,4 @@ export default {
   height: 24px !important;
   text-transform: none !important;
 }
-
 </style>

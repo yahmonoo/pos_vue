@@ -16,7 +16,7 @@
             <th class="text-center">title</th>
             <th class="text-center">detail</th>
             <th class="text-center">code</th>
-            <th class="text-center">colorOne</th>
+            <th class="text-center">colorBox</th>
             <th class="text-center">normalPriceOne</th>
             <th class="text-center">percent</th>
             <th class="text-center">discountPriceOne</th>
@@ -39,11 +39,12 @@
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
-            <td class="text-center">{{ item.categoryDto?.name}}</td>
+            <td class="text-center">{{ item.categorydto?.name}}</td>
             <td class="text-center">{{ item.title }}</td>
             <td class="text-center">{{ item.detail }}</td>
             <td class="text-center">{{ item.code }}</td>
-            <td class="text-center">{{ item.colorOne }}</td>
+            <td class="text-center" v-if="item.colorBox===1">{{ item.colorOne }}</td>
+            <td class="text-center" v-else>None</td>
             <td class="text-center">{{item.normalPriceOne }}</td>
             <td class="text-center">{{ item.percent }}%</td>
             <td class="text-center">{{ item.discountPriceOne }}</td>
@@ -109,6 +110,7 @@
             variant="outlined"
             density="compact"
           />
+          
           <v-input
                 label="Product Type"
                 variant="outlined"
@@ -124,7 +126,6 @@
               variant="outlined"
               color="#d66182"
               class="cinput mb-4"
-              @update:model-value="productDto.type === 'none' ? productDto.colorOne = 'None' : null"
               >
               <v-radio label="lip" value="lip" color="#d66182" class="mr-4"></v-radio>
               <v-radio label="none" value="none" color="#d66182"></v-radio>
@@ -291,11 +292,13 @@ export default {
       productService
         .getProduct()
         .then((response) => {
+          console.log(response);
+          
           this.productList.splice(0, this.productList.length)
           this.productList.push(...response)
-          if(this.categoryList.length>0){
-          this.productDto.categoryDto = this.categoryList[0]
-          }
+          // if(this.categoryList.length>0){
+          // this.productDto.categoryDto = this.categoryList[0]
+          
         })
         .catch((error) => {
           this.$swal('Fail!', error.response.data.message, 'error')
@@ -303,8 +306,21 @@ export default {
     },
     saveProduct() {
       const payload={...this.productDto};
-      payload.colorBox=this.productDto.type;
-      payload.type=0;
+      // payload.colorBox=this.productDto.type;
+      // payload.type=0;
+      if(this.productDto.type ==='lip'){
+        payload.colorBox=1;
+        payload.type=1;
+        payload.colorOne=this.productDto.colorOne || '06';
+      }else{
+        payload.colorBox=0;
+        payload.type=0;
+        payload.colorOne='none';
+      }
+       payload.colorTwo='none';
+       payload.colorThree='none';
+       payload.colorFour='none';
+
       if (this.saveOrUpdate == 'SAVE') {
         console.log(this.saveOrUpdate)
         console.log(this.productDto);
@@ -342,11 +358,12 @@ export default {
       this.dialog = true
       this.saveOrUpdate = 'UPDATE'
 
-      const isLip=item.colorOne==='06' || item.colorBox==='lip';
+      const isLip=item.colorBox===1 ||['06','07','08','09'].includes(item.colorOne);
 
       this.productDto = { 
         ...item,
-      type:isLip?'lip':'none' }
+      type:isLip?'lip':'none',
+    colorOne:isLip ? item.colorOne :'06' }
     },
 
     deleteProduct(item) {

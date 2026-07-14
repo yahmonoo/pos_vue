@@ -6,47 +6,19 @@
       <p>Today's business activities of Glow Skin Cosmetics</p>
     </div>
 
-    <!-- ၄ ကတ်တွဲ Stats Section -->
+    
     <div class="stats-grid">
       <div v-for="stat in stats" :key="stat.id" class="stat-card">
         <div class="stat-info">
           <span class="stat-name">{{ stat.name }}</span>
           <span class="stat-value">{{ stat.value }}</span>
         </div>
-        <!-- Icon အစား စာသား/အီမိုဂျီ သုံးထားခြင်း -->
+        
         <div class="stat-icon-box" :style="{ backgroundColor: stat.color }">
           <span class="emoji-icon">{{ stat.icon }}</span>
         </div>
       </div>
-    </div>
-
-    <!-- Main Content: Graph & Table -->
-    <div class="main-content-grid">
-      <div class="chart-section">
-        <h2>Sales Trend Graph</h2>
-        <div class="chart-placeholder">
-
-        </div>
-      </div>
-
-      <div class="orders-section">
-        <h2>Latest Orders</h2>
-        <div class="orders-list">
-          <div v-for="order in recentOrders" :key="order.id" class="order-item">
-            <div class="order-customer-details">
-              <p class="customer-name">{{ order.customer }}</p>
-              <p class="product-info">{{ order.product }} • {{ order.id }}</p>
-            </div>
-            <div class="order-price-details">
-              <p class="price-text">{{ order.price }}</p>
-              <span :class="['status-badge', order.status.toLowerCase()]">
-                {{ order.status }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </div>  
   </div>
 </template>
 
@@ -58,15 +30,11 @@ export default {
       stats: [
         
         { id: 1, name: 'Total Price', value: '1,250,000 MMK', icon: '💰', color: '#10b981' },
-        { id: 2, name: 'New Order', value: '45 pcs', icon: '🛍️', color: '#3b82f6' },
+        { id: 2, name: 'New Order', value: '45 Orders', icon: '🛍️', color: '#3b82f6' },
         { id: 3, name: 'New Member', value: '12 Members', icon: '👥', color: '#8b5cf6' },
         { id: 4, name: 'Low Stock', value: '5 Items', icon: '⚠️', color: '#ef4444' },
       ],
-      recentOrders: [
-        { id: 'ORD-001', customer: 'Ma May Thu', product: 'Glow Serum', price: '35,000 MMK', status: 'Pending' },
-        { id: 'ORD-002', customer: 'Ko Htet', product: 'Sunscreen SPF50', price: '28,000 MMK', status: 'Shipped' },
-        { id: 'ORD-003', customer: 'Ma Su Mon', product: 'Moisturizer Cream', price: '42,000 MMK', status: 'Delivered' },
-      ]
+     
     };
   }
 };
@@ -81,7 +49,8 @@ export default {
 }
 
 .dashboard-header {
-  margin-bottom: 24px;
+  margin-bottom: 70px;
+  margin-top: 20px;
 }
 .dashboard-header h1 {
   font-size: 24px;
@@ -114,16 +83,18 @@ export default {
 }
 
 .stat-card {
-  background-color: #ffffff;
-  padding: 20px;
+  background-color: #f0a3a3;
+  padding: 100px 60px 60px 60px;
   border-radius: 12px;
   border: 1px solid #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgba(225, 29, 29, 0.05);
 }
-
+.stat-card:hover  {
+  transform: scale(1.05);
+}
 .stat-info {
   display: flex;
   flex-direction: column;
@@ -141,8 +112,8 @@ export default {
 }
 
 .stat-icon-box {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 8px;
   display: flex;
   align-items: center;

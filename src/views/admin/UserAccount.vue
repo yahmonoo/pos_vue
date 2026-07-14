@@ -3,7 +3,7 @@
     <!-- Header -->
 
     <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true">
+      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="openAddDialog">
         Add UserAccount
       </v-btn>
     </div>
@@ -192,7 +192,7 @@
 
 <script>
 import townshipService from '../../service/TownshipService.js'
-import UserAccountService from '../../service/UserAccountService'
+import UserAccountService from '../../service/UserAccountService.js'
 export default {
   data() {
     return {
@@ -224,6 +224,24 @@ export default {
         this.townshipListMethod()
   },
   methods: {
+    openAddDialog() {
+    this.saveOrUpdate = 'SAVE';
+    this.resetForm();          
+    this.dialog = true;         
+  },
+  resetForm() {
+    this.userForm = {
+      userAccountId: 0,
+      townshipId: null,
+      townshipName: '',
+      profileName: '',
+      phone: '',
+      address: '',
+      userName: '',
+      password: '',
+      userType: 'ADMIN',
+    };
+  },
     viewPhoto(){
         this.dialogPhoto = true;
     },
@@ -259,26 +277,16 @@ export default {
       if (this.saveOrUpdate == 'SAVE') {
         delete payload.userAccountId;
         console.log(this.saveOrUpdate)
-                            console.log(this.userForm);
+        console.log(this.userForm);
 
 
         UserAccountService
           .addUseraccount(this.userForm)
           .then((response) => {
-            this.dialog=false
-            this.userForm={
-              userAccountId: 0,
-              townshipId: null,
-              townshipName: '',
-              profileName: '',
-              phone: '',
-              address: '',
-              userName: '',
-              password: '',
-              userType: 'ADMIN',
-            }
-            this.userAccountListMethod()}
-        )
+           this.dialog = false;
+          this.resetForm(); 
+          this.userAccountListMethod();
+        })
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
             
@@ -293,8 +301,10 @@ export default {
         UserAccountService
           .updateUseraccount(this.userForm)
           .then((response) => {
-         this.dialog=false
-            this.userAccountListMethod()})
+          this.dialog=false;
+          this.resetForm();
+          this.userAccountDto ={};
+          this.userAccountListMethod()})
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
           })

@@ -1,8 +1,5 @@
 <template>
-  <!-- 
-    ပြင်ဆင်ချက်- class ထဲမှာ page-container-lock ကို ထည့်ပြီး style ကို ညှိထားပါတယ်။ 
-    ဒါကြောင့် ဒီကောင်က သူ့အလိုလို အပြင် scroll bar ကို ဖျောက်ပေးသွားမှာဖြစ်ပြီး တခြား page တွေကို မထိခိုက်ပါဘူး။
-  -->
+  
   <v-row no-gutters class="layout-container page-container-lock" style="background-color: #f3eae8;">
     
     <!-- Category Section: သီးသန့် scroll -->
@@ -28,7 +25,6 @@
       </v-list>
     </v-col>
 
-    <!-- Product Section: သီးသန့် scroll -->
     <v-col cols="12" sm="8" md="9" lg="10" class="pa-4 product-scroll" ref="productContainer">
       <div class="products-flex-container">
         
@@ -102,7 +98,6 @@ export default {
   mounted: function(){
     this.getCategories();
     this.getProductHome();
-    // JavaScript နဲ့ body ကို ပိတ်ထားတဲ့ ကုတ်တွေကို လုံးဝ ဖြုတ်ပစ်လိုက်ပါပြီ။
   },
   methods: {
     selectedCategoryHandler(categoryId){
@@ -137,7 +132,9 @@ export default {
     getProductImage(photo) {
       const baseURL = axios?.defaults?.baseURL || "";
       return photo ? `${baseURL}/productphoto/${photo}` : "";
+       //return new URL(`../assets/images/${photo}`, import.meta.url).href;
     },
+    
     goToDetail(product) {
       this.$router.push({ 
         path: '/home-detail', 
@@ -145,8 +142,14 @@ export default {
       });
     },
     addToCart(product) {
+      console.log('product')
+      console.log(product)
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart.push({ ...product, chosenVariant: 'Default', buyQuantity: 1 });
+      cart.push({ 
+        imageName:product.photoOne,
+        price: product.priceOne,
+        title:product.title,
+         chosenVariant: product.sizeOne, buyQuantity: 1 });
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
     },
@@ -160,7 +163,6 @@ export default {
 </script>
 
 <style scoped>
-/* Scrollbar လှပအောင် ပြင်ဆင်မှုများ */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -175,25 +177,20 @@ export default {
   background: #a8a8a8;
 }
 
-/* 
-  ဒီနည်းလမ်းက အဓိက အသက်ပါပဲ။ 
-  ပင်မ Wrapper ကိုပဲ အမြင့် ကန့်သတ်ပြီး အပြင် scroll ထွက်မလာအောင် ညှိထားတာဖြစ်လို့
-  ဒီစာမျက်နှာထဲမှာတင် Scroll ကိစ္စ အားလုံး ပြီးပြတ်သွားပါတယ်။
-*/
+
 .page-container-lock {
-  height: calc(100vh - 64px) !important; /* Header အမြင့်ကို နှုတ်ပြီး view အပြည့် ယူပါတယ် */
-  overflow: hidden !important; /* အပြင်ဘက် Page scroll bar ကို လုံးဝ ပိတ်ချလိုက်တာပါ */
+  height: calc(100vh - 64px) !important; 
+  overflow: hidden !important; 
 }
 
-/* Category ဘက်ခြမ်း သီးသန့် scroll အမြဲပေါ်စေပါတယ် */
+
 .category-scroll {
-  height: 100% !important; /* အပေါ်က အမြင့် calc အတိုင်း တစ်ပုံစံတည်း ယူပါတယ် */
+  height: 100% !important; 
   overflow-y: scroll !important; 
   overflow-x: hidden !important;
   padding-bottom: 40px !important;
 }
 
-/* Product ဘက်ခြမ်း သီးသန့် scroll အမြဲပေါ်စေပါတယ် */
 .product-scroll {
   height: 100% !important; 
   overflow-y: scroll !important; 
@@ -218,7 +215,6 @@ export default {
     width: 50%;
     padding: 4px;
   }
-  /* ဖုန်းမျက်နှာပြင်အတွက် Header အမြင့် လျှော့တွက်ပေးတာပါ */
   .page-container-lock {
     height: calc(100vh - 56px) !important;
   }

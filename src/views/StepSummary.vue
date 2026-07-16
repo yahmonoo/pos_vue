@@ -27,11 +27,11 @@
           >
             <div class="text-body-2 grey--text text--darken-3">
               • {{ item.title }} 
-              <span class="grey--text text--darken-1 font-weight-bold ml-1">x{{ item.quantity || 1 }}</span>
+              <span class="grey--text text--darken-1 font-weight-bold ml-1">x{{ item.buyQuantity || 1 }}</span>
             </div>
             
             <div class="text-body-2 font-weight-bold">
-              {{ (Number(item.priceOne ||  0) * Number(item.quantity ||  1)).toLocaleString() }} MMK
+              {{ (Number(item.price) ||  0) * Number(item.buyQuantity ||  1).toLocaleString() }} MMK
             </div>
           </div>
         </div>
@@ -76,7 +76,6 @@ export default {
   },
   
   computed: {
-    // ၁။ ခြင်းတောင်းထဲက တကယ့်ပစ္စည်းစာရင်းကို LocalStorage (သို့မဟုတ်) Store ထဲကနေ ဆွဲထုတ်ခြင်း
     cartItems() {
       try {
         const localCart = localStorage.getItem('cart') || localStorage.getItem('cartItems');
@@ -86,32 +85,26 @@ export default {
       }
     },
 
-    // ၂။ ပစ္စည်းဖိုးစုစုပေါင်းကို NaN အမှားကင်းစင်စွာ တွက်ချက်ခြင်း
     subTotal() {
       if (!this.cartItems || this.cartItems.length === 0) return 0;
       return this.cartItems.reduce((sum, item) => {
         const price = Number(item.price) || 0;
-        const qty = Number(item.quantity) || 1; // quantity မပါလာခဲ့လျှင် ၁ ဟု သတ်မှတ်သည်
+        const qty = Number(item.buyQuantity) || 1; 
         return sum + (price * qty);
       }, 0);
     },
 
-    // 🌟 ၃။ လမ်းခုလတ်တွင် Deli ခ ပျောက်ဆုံးမသွားစေရန် အာမခံချက်ရှိရှိ ဖတ်ယူမည့်စနစ် 🌟
     currentShippingFee() {
-      // မူရင်း formData.shippingFee တွင်ရှိနေသော တန်ဖိုးကို ယူပါမည်၊ မရှိပါက LocalStorage သို့မဟုတ် ပုံသေ ၃၀၀၀ ကို ရှာဖတ်ပါမည်
       if (this.formData && this.formData.shippingFee) {
         return Number(this.formData.shippingFee) || 0;
       }
       
-      // အကယ်၍ Step 3 တွင် ရွေးချယ်စဉ်က localStorage ထဲ သိမ်းခဲ့လျှင် ပြန်ထုတ်ဖတ်ခြင်း
       const savedFee = localStorage.getItem('selected_shipping_fee');
       if (savedFee) return Number(savedFee);
       
-      // အကယ်၍ ဘာမှရှာမတွေ့ပါက ပုံထဲတွင် ၃၀၀၀ ယူထားသည်ဟု ဆရာကြီးပြောထားသောကြောင့် Default 3000 ထားပေးလိုက်ပါသည်
       return 3000; 
     },
 
-    // ၄။ ပစ္စည်းဖိုး နှင့် Deli ခ ပေါင်းစပ်ခြင်း
     finalTotalAmount() {
       return this.subTotal + this.currentShippingFee;
     }

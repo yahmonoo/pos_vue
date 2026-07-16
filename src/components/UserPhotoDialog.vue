@@ -1,7 +1,7 @@
 <template>
       <v-row no-gutters>
     <v-col cols="12" md="12">
-      <v-toolbar dark color="primary pl-2 pr-2" density="compact">
+      <v-toolbar dark color="pink-lighten-2 pl-2 pr-2" density="compact">
         <v-toolbar-title>{{ selectedOne.profileName }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon dark @click="$emit('closeDialog')">
@@ -45,7 +45,7 @@ export default {
   data: () => ({
     file:'',
   }),
-   props: {selectedOne:Object},
+   props: {selectedOne:Object,refreshIndex:Number},
   mounted: function() {
     console.log(this.selectedOne);
     this.getImageUrl();
@@ -72,6 +72,7 @@ export default {
           });
         })
         .catch((error) => {
+          const errMsg = error.response?.data?.message || error.message || "တစ်ခုခုမှားယွင်းနေပါသည်။";
           this.$swal("မအောင်မြင်ပါ", error.response.data.message, "error");
         });
     },
@@ -85,6 +86,18 @@ export default {
     },
 },
   watch: {
+    selectedOne: {
+    handler(newVal) {
+      if (newVal) {
+        this.getImageUrl();
+      }
+    },
+    deep: true,
+    immediate: true 
+  }
+  // refreshIndex(){
+  //   this.getImageUrl();
+  // }
 },
   components: {}
 };

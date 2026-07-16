@@ -237,8 +237,6 @@ export default {
         });
     },
     getImageUrl(photo) {
-      console.log("photo");
-      console.log(photo);
       const baseURL = axios?.defaults?.baseURL || "";
       return photo ? `${baseURL}/productphoto/${photo}` : "";
        //return new URL(`../assets/images/${photo}`, import.meta.url).href;
@@ -258,16 +256,19 @@ export default {
     },
      
     addToCart(product) {
+      console.log(" prodcut ");
+      console.log(product);
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
       
-      const targetPrice = product.price || product.newPrice;
+      const targetPrice = product.priceOne || product.newPrice;
       cart.push({ 
-        ...product, 
-        imageName: product.img,
+        imageName: product.photoOne,
         price: targetPrice,
-        chosenVariant: product.category === 'Lipstick' || product.category === 'Lipsticks' ? '06' : 'Standard', 
-        buyQuantity: 1 
+        buyQuantity: 1 ,
+        title:product.title,
+       chosenVariant: product.sizeOne, 
       });
+      //cart.push(product);
 
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));

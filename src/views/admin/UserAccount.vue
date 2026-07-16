@@ -191,8 +191,9 @@
       <v-bottom-sheet v-model="userPhotoDialog" fullscreen scrollable>
         <v-sheet class="information-window-v-sheet">
           <userPhoto
-            @closeDialog="userPhotoDialog=false"
+            @closeDialog="closeDialog()"
             :selectedOne="selectedOne"
+            :refreshIndex="refreshIndex"
           />
         </v-sheet>
       </v-bottom-sheet>
@@ -226,7 +227,7 @@ export default {
               userType: 'ADMIN',
             },
              userPhotoDialog:false,
-            
+            refreshIndex:0,
           }        
     
   },
@@ -236,8 +237,13 @@ export default {
         this.townshipListMethod()
   },
   methods: {
+    closeDialog:function(){
+      this.userPhotoDialog=false;
+      this.userAccountListMethod();
+    },
     viewPhoto:function(item){
       this.userPhotoDialog = true;
+      this.refreshIndex+=1;
     },
     openAddDialog() {
     this.saveOrUpdate = 'SAVE';

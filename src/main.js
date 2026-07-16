@@ -25,8 +25,6 @@ const vuetify = createVuetify({
 const app = createApp(App)
 
 app.use(VueAxios, axios)
-app.use(axios)
-app.use(VueAxios)
 app.use(router)
 
 app.use(vuetify)

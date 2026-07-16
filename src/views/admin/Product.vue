@@ -283,7 +283,7 @@ export default {
         }
       })
       .catch((error) => {
-        this.$swal('Fail!', error.response?.data?.message || 'Error loading categories', 'error')
+        //this.$swal('Fail!', error.response?.data?.message || 'Error loading categories', 'error')
       })
   },
    openAddDialog(){
@@ -319,7 +319,7 @@ export default {
           
         })
         .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
+          //this.$swal('Fail!', error.response.data.message, 'error')
         })
     },
     saveProduct() {

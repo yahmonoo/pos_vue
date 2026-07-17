@@ -6,33 +6,42 @@ class UserAccountService {
     this.axios = axios;
   }
 
+ 
   getUserAccount(userType='ALL') {
     let url = `/useraccount?userType=${userType}`;
-    return axios.get(url).then((request) => request.data);
+    return this.axios.get(url).then((request) => request.data);
   }
+  
   addUseraccount(useraccount) {
     let url = `/useraccount`;
     return this.axios.post(url, useraccount).then((request) => request.data);
   }
+  
   updateUseraccount(useraccount) {
     let url = `/useraccount/${useraccount.userAccountId}`;
     return this.axios.put(url, useraccount).then((request) => request.data);
   }
+  
   deleteUseraccount(useraccount) {
     let url = `/useraccount/${useraccount.userAccountId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
-getLogin(userName,password) {
+
+  // GET method အမှန်ဖြစ်ပြီး parameter များကို စနစ်တကျ ပို့ထားပါသည်
+  getLogin(userName, password) {
     let url = `/useraccount/login`;
-    return axios.get(url,{
-      params:{
-        userName,password
+    return this.axios.get(url, {
+      params: {
+        userName: userName,
+        password: password
       }
     }).then((request) => request.data);
   }
-      updateUserPhoto(formData, userAccountId) {
+
+  // global axios အစား this.axios သို့ ပြောင်းလဲထားပါသည်
+  updateUserPhoto(formData, userAccountId) {
     let url = `userAccount/${userAccountId}/photo`;
-    return axios
+    return this.axios
       .put(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",

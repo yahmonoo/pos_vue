@@ -28,6 +28,8 @@
       <v-select
         v-model="formData.city"
         :items="regions"
+        item-text="cityName"
+        item-value="cityName"
         placeholder="တိုင်းဒေသကြီး / ပြည်နယ် ရွေးချယ်ပါ"
         outlined
         dense
@@ -39,7 +41,9 @@
       <div class="input-label-hint">Township</div>
       <v-select
         v-model="formData.township"
-        :items="filteredTownships"
+        :items="townships"
+        item-text="townshipName"
+        item-value="townshipName"
         :disabled="!formData.city"
         :placeholder="formData.city ? 'မြို့နယ် ရွေးချယ်ပါ' : 'တိုင်းဒေသကြီးကို အရင်ရွေးချယ်ပေးပါ'"
         outlined
@@ -53,51 +57,70 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   props: ['formData'],
   data() {
     return {
-      regions: [
-        'Mandalay', 'Yangon', 'Ayeyarwady', 'Bago', 'Magway', 'Sagaing', 'Tanintharyi', 'Naypyidaw',
-        'Kachin', 'Kayah', 'Kayin', 'Chin', 'Mon', 'Rakhine', 'Shan (South)', 'Shan (North)'
-      ],
-      townshipData: {
-        'Shan (South)': ['Taunggyi', 'Kalaw', 'Aungban', 'Nyaungshwe', 'Phekon'],
-        'Mandalay': ['Chanayethazan', 'Mahaaungmye', 'Pyigyidagun', 'Chanmyathazi', 'Aungmyethazan', 'Patheingyi', 'Pyinoolwin'],
-        'Yangon': ['Kamayut', 'Latha', 'Sanchaung', 'Mayangone', 'Hledan', 'Tamwe', 'Bahan'],
-        'Naypyidaw': ['Zabuthiri', 'Pobbathiri', 'Ottarathiri', 'Dekkhinathiri'],
-        'Shan (North)': ['Lashio', 'Muse', 'Kyaukme'],
-        'Kachin': ['Myitkyina', 'Bhamo', 'Waingmaw'],
-        'Sagaing': ['Monywa', 'Sagaing Town', 'Shwebo'],
-        'Magway': ['Magway Town', 'Pakokku', 'Chauk'],
-        'Bago': ['Bago Town', 'Taungoo', 'Pyay'],
-        'Ayeyarwady': ['Pathein', 'Hinthada', 'Maubin'],
-        'Mon': ['Mawlamyine', 'Thaton', 'Mudon'],
-        'Kayin': ['Hpa-an', 'Myawaddy'],
-        'Rakhine': ['Sittwe', 'Thandwe', 'Kyaukpyu'],
-        'Kayah': ['Loikaw'],
-        'Chin': ['Hakha', 'Falam'],
-        'Tanintharyi': ['Dawei', 'Myeik']
-      }
+      regions: [],       
+      townships: []      
     };
   },
   watch: {
     'formData.city': {
-      handler(newCity, oldCity) {
-        if (newCity !== oldCity && oldCity !== undefined) {
+      async handler(newCity, oldCity) {
+        // ၁။ တန်ဖိုး တကယ်ပြောင်းမှသာ township ကို reset လုပ်မယ် (undefined ဖြစ်နေရင် ကျော်မယ်)
+        if (oldCity !== undefined && newCity !== oldCity) {
           this.formData.township = null;
         }
+
+        // ၂။ newCity ထဲမှာ တန်ဖိုးအမှန်တကယ် ရှိမှသာ backend ကို ခေါ်မယ်
+        if (newCity) {
+          await this.fetchTownships(newCity);
+        } else {
+          this.townships = [];
+        }
       },
-      immediate: true
+      immediate: true // initial check အတွက် ထားပေးရပါမယ်
     }
   },
-  computed: {
-    filteredTownships() {
-      if (!this.formData || !this.formData.city) return [];
-      return this.townshipData[this.formData.city] || [];
+  mounted() {
+    this.fetchRegions();
+  },
+ methods: {
+  async fetchRegions() {
+    try {
+      // 💡 မိမိ Backend port အမှန်ကို ပြောင်းရန် (ဥပမာ- 3000 သို့မဟုတ် 5000)
+      const response = await axios.get('http://localhost:8088/api/useraccount');
+      
+      // backend က တိုက်ရိုက် array ပြန်ပေးရင် response.data ဖြစ်ပြီး၊ { data: [...] } နဲ့လာရင် response.data.data ပါ
+      const resData = response.data.data || response.data;
+      
+      this.regions = resData; 
+      console.log("Regions data ဝင်လာပါပြီ-", this.regions);
+    } catch (error) {
+      console.error("Regions ဆွဲရယူရာတွင် အမှားအယွင်းရှိနေပါသည်-", error);
+    }
+  },
+
+  async fetchTownships(regionName) {
+    try {
+      // 💡 မိမိ Backend port အမှန်ကို ပြောင်းရန်
+      const response = await axios.get(`http://localhost:8088/api/townships?region=${regionName}`);
+      
+      const resData = response.data.data || response.data;
+      
+      this.townships = resData;
+      console.log("Townships data ဝင်လာပါပြီ-", this.townships);
+    } catch (error) {
+      console.error("Townships ဆွဲရယူရာတွင် အမှားအယွင်းရှိနေပါသည်-", error);
     }
   }
+
+  }
 }
+
 </script>
 
 <style scoped>

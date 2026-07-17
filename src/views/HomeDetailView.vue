@@ -17,7 +17,7 @@
       <v-col cols="12" md="6" class="d-flex justify-center">
         <div class="detail-image-box-container">
           <img 
-          :src="getImageUrl(product.photoOne)"
+          :src="imgPhoto"
             class="detail-pure-product-img" 
             @error="handleImageError"
             alt="Product Image"
@@ -27,7 +27,7 @@
 
       <v-col cols="12" md="6">
         <h1 class="headline font-weight-bold grey--text text--darken-3 mb-2">{{ product.title }}</h1>
-        <p class="caption grey--text mb-4" >Ks {{ currentDisplayPrice ? currentDisplayPrice.toLocaleString() : (product.priceOne || 0).toLocaleString() }}</p>
+        <p class="caption grey--text mb-4" >Ks {{ product.priceOne }}</p>
 
 
 
@@ -36,7 +36,31 @@
         </div> -->
 
         <div class="mb-6">
-          <v-btn
+          <span v-if="product.sizeOne>0">
+          <v-btn @click="clickSizeColor(0)">
+            {{product.sizeOne}}
+          </v-btn>
+          <v-btn v-if="product.sizeTwo>0" @click="clickSizeColor(1)">
+            {{product.sizeTwo}}
+          </v-btn>
+          </span>
+          <span v-else-if="product.colorOne!=undefined && product.colorOne!=''">
+          <v-btn @click="clickSizeColor(2)">
+            {{product.colorOne}}
+          </v-btn>
+          <v-btn @click="clickSizeColor(3)">
+            {{product.colorTwo}}
+          </v-btn>
+          <v-btn @click="clickSizeColor(4)">
+            {{product.colorThree}}
+          </v-btn>
+          <v-btn @click="clickSizeColor(5)">
+            {{product.colorFour}}
+          </v-btn>
+          </span>
+          <span v-else>Standard</span>
+
+          <!-- <v-btn
             v-for="vOption in variantOptions"
             :key="vOption.name"
             outlined
@@ -46,8 +70,8 @@
             class="mr-2 mb-2 text-none"
             @click="changeVariant(vOption)"
           >
-            {{ vOption.name }}
-          </v-btn>
+            {{ vOption.name }} 
+          </v-btn> -->
         </div>
 
         <v-card flat class="pa-4 grey lighten-4 mb-6" style="border-radius: 8px;">
@@ -102,6 +126,8 @@ export default {
        variantOptions: [],
       productId:0,
       product:{},
+      tempOne:0,
+      imgPhoto:'',
     };
   },
   computed: {
@@ -120,6 +146,21 @@ export default {
    this.getProductDetail();
   },
   methods: {
+    clickSizeColor(index){//0-5
+        if(index==0){//price
+          this.product.priceOne = this.tempOne;
+        }else if(index==1){//price
+          this.product.priceOne = this.product.priceTwo;
+        }else if(index==2){
+ this.imgPhoto = this.getImageUrl(this.product.photoOne);
+        }else if(index==3){
+ this.imgPhoto = this.getImageUrl(this.product.photoTwo);
+        }else if(index==4){
+ this.imgPhoto = this.getImageUrl(this.product.photoThree);
+        }else if(index==5){
+ this.imgPhoto = this.getImageUrl(this.product.photoFour);
+        }
+    },
      getImageUrl(photo) {
       return `${axios.defaults.baseURL}/productphoto/${photo}`;
     },
@@ -129,6 +170,8 @@ export default {
         .then((response) => {
           this.product = response;
           this.setupVariants(response);
+          this.tempOne = this.product.priceOne;
+          this.imgPhoto = this.getImageUrl(this.product.photoOne);
         })
         .catch((error) => {
           // this.$swal("Fail!", error.response.data.message, "error");

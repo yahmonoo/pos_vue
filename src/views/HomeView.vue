@@ -63,7 +63,7 @@
         <button class="arrow-btn prev-btn" @click="scrollSlider('discountSlider', -300)">&#10094;</button>
       <div class="card-container" ref="discountSlider">
         <div v-for="(product, index) in discountProducts" :key="'discount-' + product.title + index" class="card" @click="openDetail(product)">
-          <span class="discount-badge">{{ product.percent }}%</span>
+          <span class="discount-badge">{{ product.percentOne }}%</span>
           <img :src="getImageUrl(product.photoOne)" :alt="product.title" />
           <h3>{{ product.title }}</h3>
           <p class="product-code">Code: #{{ product.code }}</p>

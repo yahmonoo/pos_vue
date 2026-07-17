@@ -17,12 +17,16 @@
             <th class="text-center">detail</th>
             <th class="text-center">code</th>
             <th class="text-center">colorBox</th>
-            <th class="text-center">normalPriceOne</th>
-            <th class="text-center">percent</th>
-            <th class="text-center">discountPriceOne</th>
-            <th class="text-center">percent</th>
-            <th class="text-center">discountPriceTwo</th>
+            <th class="text-center">priceOne</th>
+            <th class="text-center">priceTwo</th>
             <th class="text-center">sizeOne</th>
+            <th class="text-center">sizeTwo</th>
+            <th class="text-center">normalPriceOne</th>
+            <th class="text-center">normalPriceTwo</th>
+            <th class="text-center">percentOne</th>
+            <th class="text-center">discountPriceOne</th>
+            <th class="text-center">percentTwo</th>
+            <th class="text-center">discountPriceTwo</th>
             <th class="text-center">rating</th>
             <th class="text-center" width="150">Action</th>
           </tr>
@@ -45,12 +49,16 @@
             <td class="text-center">{{ item.code }}</td>
             <td class="text-center" v-if="item.colorBox===1">{{ item.colorOne }}</td>
             <td class="text-center" v-else>None</td>
-            <td class="text-center">{{item.normalPriceOne }}</td>
-            <td class="text-center">{{ item.percent }}%</td>
-            <td class="text-center">{{ item.discountPriceOne }}</td>
-            <td class="text-center">{{ item.percent }}%</td>
-            <td class="text-center">{{ item.discountPriceTwo }}</td>
+            <td class="text-center">{{ item.priceOne}}</td>
+            <td class="text-center">{{ item.priceTwo}}</td>
             <td class="text-center">{{ item.sizeOne}}</td>
+            <td class="text-center">{{ item.sizeTwo}}</td>
+            <td class="text-center">{{item.normalPriceOne }}</td>
+            <td class="text-center">{{item.normalPriceTwo }}</td>
+            <td class="text-center">{{ item.percentOne }}%</td>
+            <td class="text-center">{{ item.discountPriceOne }}</td>
+            <td class="text-center">{{ item.percentTwo }}%</td>
+            <td class="text-center">{{ item.discountPriceTwo }}</td>
             <td class="text-center">{{ item.rating }}</td>
           
             <td class="text-center">
@@ -132,57 +140,173 @@
                </v-radio-group>
                <v-expand-transition>
                 <div v-if="productDto.type === 'lip'" class="mt-2 pt-2" style="border-top: 1px dashed #d66182;">
-                <v-radio-group
-                v-model="productDto.colorOne"
-                label="Select Lip Color:"
-                inline
+                <div class="text-subtitle-2 mb-2" style="color:#d66182; font-weight:600;">Select Lip Colors:</div>
+                <div class="d-flex flex-wrap">
+                  <v-checkbox
+                  v-model="productDto.selectedColors"
+                  label="06"
+                  value="06"
+                  density="compact"
+                  color="#d66182"
+                  hide-details
+                  class="mr-4"
+                  />
+                  <v-checkbox
+                  v-model="productDto.selectedColors"
+                  label="07"
+                  value="07"
+                  density="compact"
+                  color="#d66182"
+                  hide-details
+                  class="mr-4"
+                  />
+                  <v-checkbox
+                  v-model="productDto.selectedColors"
+                  label="08"
+                  value="08"
+                  density="compact"
+                  color="#d66182"
+                  hide-details
+                  class="mr-4"
+                  />
+                  <v-checkbox
+                  v-model="productDto.selectedColors"
+                  label="09"
+                  value="09"
+                  density="compact"
+                  color="#d66182"
+                  hide-details
+                  class="mr-4"
+                  />
+                </div>
+                </div>
+              </v-expand-transition>
+            </div>
+          </v-input>
+           <v-row dense>
+               <v-col cols="12" sm="6">
+                <v-text-field
+                ref="priceOne"
+                v-model.number="productDto.priceOne"
+                type="number"
+                class="cinput"
+                label="Product Price One"
+                variant="outlined"
                 density="compact"
-                color="#d66182"
-                >
-          <v-radio label="06" value="06" class="mr-2"></v-radio>
-      <v-radio label="07" value="07" class="mr-2"></v-radio>
-      <v-radio label="08" value="08" class="mr-2"></v-radio>
-      <v-radio label="09" value="09"></v-radio>
-    </v-radio-group>
-    </div>
-    </v-expand-transition>
-   </div>
-   </v-input>
-              <v-text-field
-               v-model.number="productDto.normalPriceOne"
-              type="number"
-              class="cinput"
-              label="Product Normal Price One"
-              variant="outlined"
-              density="compact"
-            />
-              <v-text-field
-             v-model.number="productDto.discountPriceOne"
-             type="number"
-             class="cinput"
-             label="Product Discount Price One"
-            variant="outlined"
-            density="compact"
-            />
+                />
+               </v-col>
+               <v-col cols="12" sm="6">
+                <v-text-field
+                ref="priceTwo"
+                v-model.number="productDto.priceTwo"
+                type="number"
+                class="cinput"
+                label="Product Price Two"
+                variant="outlined"
+                density="compact"
+                />
+               </v-col>
+              </v-row>
+           <v-row dense>
+               <v-col cols="12" sm="6">
+                <v-autocomplete
+                v-model.number="productDto.sizeOne"
+                class="cinput"
+                label="Product Size One"
+                :items="[0,100]"
+                variant="outlined"
+                density="compact"
+                @update:model-value="focusPriceOne"
+                />
+               </v-col>
+               <v-col cols="12" sm="6">
+                <v-autocomplete
+                v-model.number="productDto.sizeTwo"
+                class="cinput"
+                label="Product Size Two"
+                :items="[0,250]"
+                variant="outlined"
+                density="compact"
+                @update:model-value="focusPriceTwo"
+                />
+               </v-col>
+              </v-row>
+        
+              <v-row dense>
+               <v-col cols="12" sm="6">
+                <v-text-field
+                ref="priceOne"
+                v-model.number="productDto.normalPriceOne"
+                type="number"
+                class="cinput"
+                label="Product Normal Price One"
+                variant="outlined"
+                density="compact"
+                />
+               </v-col>
+               <v-col cols="12" sm="6">
+                <v-text-field
+                ref="priceTwo"
+                v-model.number="productDto.normalPriceTwo"
+                type="number"
+                class="cinput"
+                label="Product Normal Price Two"
+                variant="outlined"
+                density="compact"
+                />
+               </v-col>
+              </v-row>
 
-           <v-text-field
-           v-model.number="productDto.percent"
-           type="number"
-           class="cinput"
-           label="Product Percent"
-           variant="outlined"
-           density="compact"
-          />
-           
-          <v-autocomplete
-          v-model.number="productDto.sizeOne"
-          class="cinput"
-          label="Product Size"
-          :items="[100,250]"
-          variant="outlined"
-          density="compact"
-         />
-         
+              <v-row dense>
+               <v-col cols="12" sm="6">
+                <v-text-field
+                ref="percentOneInput"
+                v-model.number="productDto.percentOne"
+                type="number"
+                class="cinput"
+                label="Product percent"
+                variant="outlined"
+                density="compact"
+                />
+               </v-col>
+               <v-col cols="12" sm="6">
+                <v-text-field
+                ref="percentTwoInput"
+                v-model.number="productDto.percentTwo"
+                type="number"
+                class="cinput"
+                label="Product percent"
+                variant="outlined"
+                density="compact"
+                />
+               </v-col>
+              </v-row>
+
+              <v-row dense>
+               <v-col cols="12" sm="6">
+                <v-text-field
+                ref="priceOne"
+                v-model.number="productDto.discountPriceOne"
+                type="number"
+                class="cinput"
+                label="Product Discount Price One"
+                variant="outlined"
+                density="compact"
+                />
+               </v-col>
+               <v-col cols="12" sm="6">
+                <v-text-field
+                ref="priceTwo"
+                v-model.number="productDto.discountPriceTwo"
+                type="number"
+                class="cinput"
+                label="Product Discount Price Two"
+                variant="outlined"
+                density="compact"
+                />
+               </v-col>
+              </v-row>
+              
          <v-text-field
           v-model.number="productDto.rating"
           type="number"
@@ -228,10 +352,10 @@
       </v-dialog>
     </v-col>
 <v-col cols="12" md="12">
-      <v-bottom-sheet v-model="userPhotoDialog" fullscreen scrollable>
+      <v-bottom-sheet v-model="ProductPhotoDialog" fullscreen scrollable>
         <v-sheet class="information-window-v-sheet">
-          <userPhoto
-            @closeDialog="userPhotoDialog=false"
+          <ProductPhoto
+            @closeDialog="closePhotoDialog"
             :selectedOne="selectedOne"
           />
         </v-sheet>
@@ -246,7 +370,7 @@
 import productService from '../../service/ProductService.js'
 import categoryService from '../../service/CategoryService.js'
 import UserAccountService from '../../service/UserAccountService.js';
-import userPhoto from "@/components/UserPhotoDialog.vue";
+import ProductPhoto from "@/components/ProductPhotoDialog.vue";
 export default {
   data() {
     return {
@@ -258,7 +382,7 @@ export default {
       dialogDelete: false,
       productList: [],
       categoryList:[],
-      userPhotoDialog:false,
+      ProductPhotoDialog:false,
 
     }
   },
@@ -269,8 +393,41 @@ export default {
     this.productListMethod()
   },
   methods: {
-    viewPhoto:function(item){
-      this.userPhotoDialog = true;
+    calculateDiscountOne() {
+      const price = this.productDto.normalPriceOne || 0;
+      const percentOne = this.productDto.percentOne || 0;
+      const discountAmount = (price * percentOne) / 100;
+      this.productDto.discountPriceOne = Math.round(price - discountAmount);
+    },
+    calculateDiscountTwo() {
+      const price = this.productDto.normalPriceTwo || 0;
+      const percentTwo = this.productDto.percentTwo || 0;
+      
+      const discountAmount = (price * percentTwo) / 100;
+      this.productDto.discountPriceTwo = Math.round(price - discountAmount);
+    },
+    focusPriceOne(value){
+      if(value){
+        this.$nextTick(()=>{
+          this.$refs.priceOne?.focus();
+        });
+      }
+    },
+    focusPriceTwo(value) {
+      if (value) {
+        this.$nextTick(() => {
+          this.$refs.priceTwo?.focus();
+        });
+      }
+    },
+    viewPhoto(item){
+      this.selectedOne=item;
+      this.ProductPhotoDialog = true;
+      // this.refreshIndex+=1;
+    },
+    closePhotoDialog(){
+      this.ProductPhotoDialog=false;
+      this.productListMethod();
     },
     categoryListMethod() {
     categoryService
@@ -292,10 +449,17 @@ export default {
     detail: '',
     code: '',
     colorOne: 'none',
+    selectedColors:[],
+    priceOne:0,
+    priceTwo:0,
+    sizeOne:100,
+    sizeTwo:250,
     normalPriceOne: 0,
+    normalPriceTwo:0,
     discountPriceOne: 0,
-    percent: 0,
-    sizeOne: '',
+    discountPriceTwo: 0,
+    percentOne: 0,
+    percentTwo:0,
     rating: 0,
     type:'none',
     categorydto: this.categoryList.length > 0 ? this.categoryList[0] : null
@@ -324,17 +488,19 @@ export default {
     },
     saveProduct() {
       const payload={...this.productDto};
-      // payload.colorBox=this.productDto.type;
-      // payload.type=0;
       if(this.productDto.type ==='lip'){
         payload.colorBox=1;
         payload.type=1;
-        payload.colorOne=this.productDto.colorOne || '06';
-      }else{
-        payload.colorBox=0;
-        payload.type=0;
+       if(this.productDto.selectedColors && this.productDto.selectedColors.length>0){
+        payload.colorOne = this.productDto.selectedColors.join(',');
+       }else{
         payload.colorOne='none';
       }
+    }else{
+      payload.colorBox=0;
+      payload.type=0;
+      payload.colorOne='none';
+    }
        payload.colorTwo='none';
        payload.colorThree='none';
        payload.colorFour='none';
@@ -376,12 +542,16 @@ export default {
       this.dialog = true
       this.saveOrUpdate = 'UPDATE'
 
-      const isLip=item.colorBox===1 ||['06','07','08','09'].includes(item.colorOne);
-
+      const isLip=item.colorBox===1 ||['06','07','08','09'].some(color=> item.colorOne?.includes(color));
+      let colorsArray=[];
+      if(isLip && item.colorOne && item.colorOne !== 'none'){
+        colorsArray=item.colorOne.split(',').map(s=>s.trim());
+      }
       this.productDto = { 
         ...item,
       type:isLip?'lip':'none',
-    colorOne:isLip ? item.colorOne :'06' }
+    selectedColors:colorsArray
+      }
     },
 
     deleteProduct(item) {
@@ -403,8 +573,24 @@ export default {
         })
     },
   },
-  watch: {},
-  components: {userPhoto},
+  watch: {
+    'productDto.normalPriceOne': function () {
+      this.calculateDiscountOne();
+    },
+    'productDto.percentOne': function () {
+      // ဒီနေရာမှာ percent က fields နှစ်ခုလုံးအတွက် အတူတူ သုံးထားတာမို့လို့ နှစ်ခုလုံးကို တွက်ပေးပါမယ်
+      this.calculateDiscountOne();
+    },
+
+    // Normal Price Two ပြောင်းလဲသွားရင် Discount Price Two ကို တွက်ချက်ရန်
+    'productDto.normalPriceTwo': function () {
+      this.calculateDiscountTwo();
+    },
+    'productDto.percentTwo':function(){
+      this.calculateDiscountTwo();
+    }
+  },
+  components: {ProductPhoto},
 }
 </script>
 

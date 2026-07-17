@@ -19,6 +19,7 @@ export default {
       userAccountService
         .getLogin(this.name, this.password) 
         .then((response) => {
+          console.log("Backend Response Data:", response);
           if (response.userAccountId == 0) {
             this.errorMessage = 'နာမည် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည် (သို့မဟုတ်) အကောင့်မရှိသေးပါ။'
           } else {
@@ -45,7 +46,7 @@ export default {
         })
     }
   }
-}
+  };
 </script>
 
 <template>
@@ -59,8 +60,7 @@ export default {
 
       <v-form @submit.prevent="handleLogin" >
         <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
-          >Name</span
-        >
+          >Name</span>
         <v-text-field
           v-model="name"
           prepend-inner-icon="mdi-account-outline"
@@ -77,8 +77,8 @@ export default {
           <a
             href="#"
             class="text-caption text-purple-darken-2 font-weight-bold text-decoration-none"
-            >Forgot Password?</a
-          >
+            >Forgot Password?</a>
+
         </div>
         <v-text-field
           v-model="password"

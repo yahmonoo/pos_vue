@@ -163,7 +163,7 @@ export default {
     },
     handleNext() {
       if (this.currentStep === 1) {
-        if (!this.checkoutForm.address.trim() ||  !this.checkoutForm.city ||  !this.checkoutForm.township) {
+        if (!this.checkoutForm.address.trim() ||  !this.checkoutForm.regionName ||  !this.checkoutForm.townshipName) {
           alert('ကျေးဇူးပြု၍ လိပ်စာနှင့် မြို့/မြို့နယ်များကို ပြည့်စုံအောင် ဖြည့်ပေးပါဗျာ။');
           return;
         }

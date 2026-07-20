@@ -1,171 +1,156 @@
 <template>
-  <div class="address-wrapper">
-    <v-form class="px-2">
-      <div class="input-label-hint">Phone Number</div>
-      <v-text-field
-        v-model="formData.phone"
-        type="tel"
-        outlined
-        dense
-        placeholder="09xxxxxxxx အစရှိသဖြင့် ဖြည့်သွင်းပါ"
-        class="custom-input mb-3"
-        hide-details
-        append-icon="mdi-phone-outline"
-      ></v-text-field>
+  <div class="address-fields-container">
+    <v-row dense>
+      
+      <!-- PHONE NUMBER -->
+      <v-col cols="12" class="mb-2">
+        <label class="input-label font-weight-bold">PHONE NUMBER</label>
+        <v-text-field
+          v-model="formData.phone"
+          readonly
+          append-icon="mdi-phone-outline"
+          solo
+          flat
+          hide-details
+          class="custom-input readonly-style"
+        ></v-text-field>
+      </v-col>
 
-      <div class="input-label-hint">Detailed Address</div>
-      <v-text-field
-        v-model="formData.address"
-        outlined
-        dense
-        placeholder="အိမ်အမှတ်၊ လမ်း၊ ရပ်ကွက် အပြည့်အစုံ..."
-        class="custom-input mb-3"
-        hide-details
-        append-icon="mdi-home-map-marker"
-      ></v-text-field>
+      <!-- DETAILED ADDRESS -->
+      <v-col cols="12" class="mb-2">
+        <label class="input-label font-weight-bold">DETAILED ADDRESS</label>
+        <v-textarea
+          v-model="formData.address"
+          readonly
+          append-icon="mdi-home-outline"
+          solo
+          flat
+          hide-details
+          rows="2"
+          class="custom-input readonly-style"
+        ></v-textarea>
+      </v-col>
 
-      <div class="input-label-hint">Region / State</div>
-      <v-select
-        v-model="formData.city"
-        :items="regions"
-        item-text="cityName"
-        item-value="cityName"
-        placeholder="တိုင်းဒေသကြီး / ပြည်နယ် ရွေးချယ်ပါ"
-        outlined
-        dense
-        class="custom-input mb-3"
-        hide-details
-        append-icon="mdi-map-marker-outline"
-      ></v-select>
+      <!-- REGION / STATE -->
+      <v-col cols="12" class="mb-2">
+        <label class="input-label font-weight-bold">REGION / STATE</label>
+        <v-text-field
+          v-model="formData.regionName"
+          readonly
+          append-icon="mdi-map-marker-outline"
+          solo
+          flat
+          hide-details
+          class="custom-input readonly-style"
+        ></v-text-field>
+      </v-col>
 
-      <div class="input-label-hint">Township</div>
-      <v-select
-        v-model="formData.township"
-        :items="townships"
-        item-text="townshipName"
-        item-value="townshipName"
-        :disabled="!formData.city"
-        :placeholder="formData.city ? 'မြို့နယ် ရွေးချယ်ပါ' : 'တိုင်းဒေသကြီးကို အရင်ရွေးချယ်ပေးပါ'"
-        outlined
-        dense
-        class="custom-input mb-1"
-        hide-details
-        append-icon="mdi-navigation-variant-outline"
-      ></v-select>
-    </v-form>
+      <!-- TOWNSHIP -->
+      <v-col cols="12" class="mb-3">
+        <label class="input-label font-weight-bold">TOWNSHIP</label>
+        <v-text-field
+          v-model="formData.townshipName"
+          readonly
+          append-icon="mdi-navigation-outline"
+          solo
+          flat
+          hide-details
+          class="custom-input readonly-style"
+        ></v-text-field>
+      </v-col>
+
+    </v-row>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import userAccountService from "../service/UserAccountService"; 
 
 export default {
-  props: ['formData'],
-  data() {
-    return {
-      regions: [],       
-      townships: []      
-    };
-  },
-  watch: {
-    'formData.city': {
-      async handler(newCity, oldCity) {
-        // ၁။ တန်ဖိုး တကယ်ပြောင်းမှသာ township ကို reset လုပ်မယ် (undefined ဖြစ်နေရင် ကျော်မယ်)
-        if (oldCity !== undefined && newCity !== oldCity) {
-          this.formData.township = null;
-        }
-
-        // ၂။ newCity ထဲမှာ တန်ဖိုးအမှန်တကယ် ရှိမှသာ backend ကို ခေါ်မယ်
-        if (newCity) {
-          await this.fetchTownships(newCity);
-        } else {
-          this.townships = [];
-        }
-      },
-      immediate: true // initial check အတွက် ထားပေးရပါမယ်
+  props: {
+    formData: {
+      type: Object,
+      required: true
     }
   },
+
   mounted() {
-    this.fetchRegions();
-  },
- methods: {
-  async fetchRegions() {
-    try {
-      // 💡 မိမိ Backend port အမှန်ကို ပြောင်းရန် (ဥပမာ- 3000 သို့မဟုတ် 5000)
-      const response = await axios.get('http://localhost:8088/api/useraccount');
-      
-      // backend က တိုက်ရိုက် array ပြန်ပေးရင် response.data ဖြစ်ပြီး၊ { data: [...] } နဲ့လာရင် response.data.data ပါ
-      const resData = response.data.data || response.data;
-      
-      this.regions = resData; 
-      console.log("Regions data ဝင်လာပါပြီ-", this.regions);
-    } catch (error) {
-      console.error("Regions ဆွဲရယူရာတွင် အမှားအယွင်းရှိနေပါသည်-", error);
-    }
+    this.fetchUserProfile();
   },
 
-  async fetchTownships(regionName) {
-    try {
-      // 💡 မိမိ Backend port အမှန်ကို ပြောင်းရန်
-      const response = await axios.get(`http://localhost:8088/api/townships?region=${regionName}`);
+  methods: {
+    fetchUserProfile() {
+      const loginUserJson = localStorage.getItem("loginUser"); 
+      let loggedInUserId = null;
+
+      if (loginUserJson) {
+        try {
+          const userObj = JSON.parse(loginUserJson);
+          loggedInUserId = userObj.userAccountId; 
+        } catch (e) {
+          console.error("Error parsing loginUser from localStorage:", e);
+        }
+      }
+
+      if (!loggedInUserId) {
+        console.warn("User က login ဝင်ထားခြင်း မရှိသေးပါ သို့မဟုတ် ID မရှိပါ!");
+        this.$router.push('/login'); 
+        return;
+      }
       
-      const resData = response.data.data || response.data;
-      
-      this.townships = resData;
-      console.log("Townships data ဝင်လာပါပြီ-", this.townships);
-    } catch (error) {
-      console.error("Townships ဆွဲရယူရာတွင် အမှားအယွင်းရှိနေပါသည်-", error);
+      console.log("လက်ရှိ Dynamic စနစ်ဖြင့် ခေါ်ယူနေသော User ID:", loggedInUserId);
+
+      userAccountService.getUserAccountById(loggedInUserId)
+        .then(userDto => {
+          console.log("userdata", userDto);
+          
+          if (userDto) {
+            this.formData.phone = userDto.phone || 'ဖြည့်စွက်ထားခြင်းမရှိပါ';
+            this.formData.address = userDto.address || 'ဖြည့်စွက်ထားခြင်းမရှိပါ';
+            this.formData.townshipName = userDto.townshipName || 'ဖြည့်စွက်ထားခြင်းမရှိပါ';
+            this.formData.regionName = (userDto.cityDto && userDto.cityDto.cityName) 
+              ? userDto.cityDto.cityName 
+              : 'ဖြည့်စွက်ထားခြင်းမရှိပါ';
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching user profile via service:", error);
+        });
     }
   }
-
-  }
-}
-
+};
 </script>
 
 <style scoped>
-.address-wrapper {
-  width: 100% !important;
-  max-width: 420px !important; 
-  margin: 0 auto !important;
-}
-
-.input-label-hint {
+.input-label {
+  display: block;
   font-size: 11px;
-  font-weight: 600;
-  color: #64748b;
-  margin-bottom: 4px;
-  padding-left: 2px;
-  text-align: left;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  color: #70695d;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
 }
 
-.custom-input :deep(.v-input__control >.v-input__slot) {
-  background-color: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
+.readonly-style :deep(.v-input__control) {
+  opacity: 0.9 !important;
+}
+
+.custom-input :deep(.v-input__control) {
+  background-color: #e6e2d8 !important;
   border-radius: 8px !important;
-  box-shadow: none !important;
-  min-height: 38px !important; 
 }
 
-.custom-input :deep( .v-input__slot:focus-within) {
-  border-color: #e91e63 !important;
-  box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.12) !important;
+.custom-input :deep(input), 
+.custom-input :deep(textarea) {
+  color: #4a443a !important;
+  font-size: 13px !important;
+  padding-left: 8px !important;
+    padding-top: 8px !important;
+    line-height: 1.5 imo !important;
+
+
 }
 
-.custom-input :deep(fieldset) {
-  border: none !important;
-}
-
-.custom-input :deep(input), .custom-input :deep(.v-select__selection) {
-  font-size: 13.5px !important;
-  color: #334155 !important;
-  padding: 5px 0 !important;
-}
-
-.custom-input.v-input--is-disabled :deep(.v-input__slot) {
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
+.custom-input :deep(.v-icon) {
+  color: #615a4f !important;
 }
 </style>

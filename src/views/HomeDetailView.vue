@@ -4,15 +4,15 @@
       <v-icon left>mdi-arrow-left</v-icon> Back to Home
     </v-btn> -->
 
-    <v-btn 
-  text 
-  color="pink darken-1" 
-  class="mb-4 text-none font-weight-medium back-btn" 
+  <v-btn 
+  depressed
+  color="grey lighten-4" 
+  class="mb-4 back-btn" 
+  style="border-radius: 10px; width: 40px; height: 40px; min-width: 0; padding: 0;"
   @click="goBack"
 >
-  <v-icon left class="mr-1">mdi-chevron-left</v-icon> Back
+  <v-icon color="grey darken-3">mdi-chevron-left</v-icon>
 </v-btn>
-
     <v-row >
       <v-col cols="12" md="6" class="d-flex justify-center">
         <div class="detail-image-box-container">
@@ -37,7 +37,7 @@
 
         <div class="mb-6">
           <span v-if="product.sizeOne>0">
-          <v-btn @click="clickSizeColor(0)">
+          <v-btn class="mr-2" @click="clickSizeColor(0)">
             {{product.sizeOne}}
           </v-btn>
           <v-btn v-if="product.sizeTwo>0" @click="clickSizeColor(1)">
@@ -45,20 +45,24 @@
           </v-btn>
           </span>
           <span v-else-if="product.colorOne!=undefined && product.colorOne!=''">
-          <v-btn @click="clickSizeColor(2)">
+          <v-btn class="mr-2" @click="clickSizeColor(2)">
             {{product.colorOne}}
           </v-btn>
-          <v-btn @click="clickSizeColor(3)">
+          <v-btn class="mr-2" @click="clickSizeColor(3)">
             {{product.colorTwo}}
           </v-btn>
-          <v-btn @click="clickSizeColor(4)">
+          <v-btn class="mr-2" @click="clickSizeColor(4)">
             {{product.colorThree}}
           </v-btn>
-          <v-btn @click="clickSizeColor(5)">
+          <v-btn class="mr-2" @click="clickSizeColor(5)">
             {{product.colorFour}}
           </v-btn>
           </span>
-          <span v-else>Standard</span>
+          <span v-else>
+            <v-btn depressed color="grey lighten-3" class="text-none">
+              Standard
+            </v-btn>
+          </span>
 
           <!-- <v-btn
             v-for="vOption in variantOptions"

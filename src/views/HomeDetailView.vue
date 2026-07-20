@@ -82,7 +82,7 @@
           
           <h4 class="subtitle-2 font-weight-bold grey--text text--darken-3 mb-1">detail</h4>
           <p class="body-2 grey--text text--darken-1 mb-0">
-            {{ detail || 'High-quality cosmetic product imported directly. Safe for all skin types and long-lasting.' }}
+            {{ product.detail || 'High-quality cosmetic product imported directly. Safe for all skin types and long-lasting.' }}
           </p>
         </v-card> 
 
@@ -232,26 +232,21 @@ export default {
      setupVariants(product) {
       this.variantOptions = [];
 
-      // ၁။ API ကလာတဲ့ size နှစ်ခုလုံးကို ဂဏန်းအဖြစ် ပြောင်းပြီး အရင်စစ်မယ်
       const num1 = parseInt(product.sizeOne) || 0;
       const num2 = parseInt(product.sizeTwo) || 0;
 
-      // ၂။ sizeTwo က ပိုသေးနေရင် (ဥပမာ sizeOne က 250၊ sizeTwo က 100 ဖြစ်နေရင်) ရှေ့နောက် ပြောင်းထည့်မယ်
       if (product.sizeTwo && num2 < num1) {
-        // အသေးဆုံး (100ml) ကို အရင်ထည့်မယ်
         this.variantOptions.push({
           name: product.sizeTwo,
           imageName: product.photoTwo || product.photoOne,
           price: product.priceTwo  || product.priceOne || product.price
         });
-        // အကြီး (250ml) ကို ဒုတိယ ထည့်မယ်
         this.variantOptions.push({
           name: product.sizeOne,
           imageName: product.photoOne,
           price: product.priceOne || product.price
         });
       } else {
-        // ပုံမှန်အတိုင်း sizeOne က ပိုသေးရင် သို့မဟုတ် size တစ်ခုတည်းပဲ ရှိရင်
         if (product.sizeOne) {
           this.variantOptions.push({
             name: product.sizeOne,
@@ -268,7 +263,6 @@ export default {
         }
       }
 
-      // ၃။ အကယ်၍ size လုံးဝမပါလာရင် Standard ပြပေးမယ်
       if (this.variantOptions.length === 0) {
         this.variantOptions.push({
           name: 'Standard',
@@ -277,7 +271,6 @@ export default {
         });
       }
       
-      // ၄။ စီပြီးသား Variant ထဲက ပထမဆုံး အသေးဆုံး size ကို default အနေနဲ့ ရွေးပေးထားမယ်
       this.selectedVariant = this.variantOptions[0].name;
       this.currentImageName = this.variantOptions[0].imageName;
       this.currentDisplayPrice = this.variantOptions[0].price;

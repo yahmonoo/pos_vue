@@ -49,6 +49,10 @@ class UserAccountService {
       })
       .then((request) => request.data);
   }
+  getUserAccountById(userAccountId){
+    let url=`/useraccount/${userAccountId}`;
+    return this.axios.get(url).then((request) => request.data);
+  }
 }
 
 const service = new UserAccountService();

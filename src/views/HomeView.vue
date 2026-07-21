@@ -261,12 +261,13 @@ export default {
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
       
       const targetPrice = product.priceOne || product.newPrice;
+      const variant=product.sizeOne || product.sizeTwo || 'Standard';
       cart.push({ 
         imageName: product.photoOne,
         price: targetPrice,
         buyQuantity: 1 ,
         title:product.title,
-       chosenVariant: product.sizeOne, 
+       chosenVariant: variant, 
       });
       //cart.push(product);
 

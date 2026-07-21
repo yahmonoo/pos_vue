@@ -28,12 +28,12 @@
                 class="file-input-anim" 
               /></v-card>
             </v-col>
-            <!-- <v-col cols="12">
+           <v-col cols="12">
               <v-btn color="primary" outlined class="ml-2" @click="savePicture">
                 Save
               </v-btn>
-            </v-col> -->
-            <!-- <v-col cols="12">
+            </v-col>
+            <v-col cols="12">
               <v-fade-transition mode="out-in">
                 <v-img
                   v-if="file"
@@ -45,7 +45,7 @@
                   key="product-photo-img"
                 />
               </v-fade-transition>
-            </v-col> -->
+            </v-col> 
           </v-row>
         </v-slide-y-transition>
       </v-col>

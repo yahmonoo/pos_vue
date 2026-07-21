@@ -147,18 +147,26 @@ export default {
   },
   methods: {
     clickSizeColor(index){//0-5
-        if(index==0){//price
+        if(index==0){//price & size 1
           this.product.priceOne = this.tempOne;
-        }else if(index==1){//price
+          this.selectedVariant = this.product.sizeOne;
+          this.currentDisplayPrice = this.product.priceOne;
+        }else if(index==1){//price & size2
           this.product.priceOne = this.product.priceTwo;
+          this.selectedVariant = this.product.sizeTwo;
+          this.currentDisplayPrice = this.product.priceTwo;
         }else if(index==2){
  this.imgPhoto = this.getImageUrl(this.product.photoOne);
+ if(this.product.colorOne)this.selectedVariant=this.product.colorOne;
         }else if(index==3){
  this.imgPhoto = this.getImageUrl(this.product.photoTwo);
+ if(this.product.colorTwo)this.selectedVariant=this.product.colorTwo;
         }else if(index==4){
  this.imgPhoto = this.getImageUrl(this.product.photoThree);
+ if(this.product.colorThree)this.selectedVariant=this.product.colorThree;
         }else if(index==5){
  this.imgPhoto = this.getImageUrl(this.product.photoFour);
+ if(this.product.colorFour)this.selectedVariant=this.product.colorFour;
         }
     },
      getImageUrl(photo) {

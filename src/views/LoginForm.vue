@@ -25,6 +25,7 @@ export default {
           } else {
             localStorage.setItem("loginUser", JSON.stringify(response));
             localStorage.setItem('user-token', 'true');
+            localStorage.setItem('user_role', response.userType || response.usertype);
             window.dispatchEvent(new CustomEvent('login-state-changed'));
 
            

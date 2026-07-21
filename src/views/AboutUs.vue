@@ -21,19 +21,19 @@
           class="headline mb-4 mm-stroke-bold"
           style="color: black; font-size: 1.5rem ; font-weight: 700 "
         >
-          ကျွန်ုပ်တို့၏ ရည်ရွယ်ချက်
+          Our Purpose
         </h2>
         <br />
         <p class="body-1 text-justify lineHeight-lg">
-          <strong>Glow Skin Cosmetics</strong> သည် မန္တလေးမြို့အခြေစိုက်ပြီး လူကြီးမင်းတို့၏
-          သဘာဝအလှတရားများကို ပိုမိုတောက်ပလာစေရန်အတွက် အရည်အသွေးမြင့် ကမ္ဘာကျော်
-          အလှကုန်ပစ္စည်းများကို (၁၀၀%) စစ်မှန်မှု အပြည့်အဝဖြင့် တရားဝင် ဖြန့်ချိရောင်းချပေးနေသော
-          ဆိုင်ဖြစ်ပါသည်။
+          <strong>Glow Skin Cosmetics</strong> is based in Mandalay, 
+          officially distributing 100% authentic, high-quality, world-renowned cosmetic 
+          products to enhance your natural beauty.
         </p>
         <p class="body-1 text-justify lineHeight-lg mt-3">
-          ကျွန်ုပ်တို့ဆိုင်တွင် Dior, Chanel, YSL, Medicube, Anua, CeraVe အစရှိသည့် နာမည်ကြီး Brand
-          ပေါင်းများစွာကို တစ်နေရာတည်းတွင် စုံစုံလင်လင် ဝယ်ယူရရှိနိုင်သည့်အပြင်၊ အဆင်ပြေချောမွေ့သော
-          POS စနစ်ဖြင့် လူကြီးမင်းတို့၏ အော်ဒါများကို အမြန်ဆုံး ဝန်ဆောင်မှုပေးနေပါသည်။
+          At our shop, you can conveniently find a wide variety of famous brands all in 
+          one place, including Dior, Chanel, YSL, Medicube, Anua, CeraVe, and many more. 
+          Furthermore, we provide fast and reliable service for your orders using a smooth 
+          and accurate POS system.
         </p>
       </v-col>
 
@@ -59,7 +59,7 @@
             class="headline font-weight-bold mb-6"
             style="color: black; font-size: 1.5rem ; font-weight: 600 "
           >
-            ဘာကြောင့် Glow Skin က Cosmetics တွေကို ရွေးချယ်သင့်သလဲ?
+            Why Choose Glow Skin Cosmetics?
           </h2>
         </v-col>
 
@@ -69,7 +69,8 @@
           </v-avatar>
           <h3 class="title font-weight-bold mb-2">100% Authentic</h3>
           <p class="body-2 text-muted px-4">
-            စစ်မှန်သော Quality ကောင်းမွန်သည့် ပစ္စည်းများကိုသာ တိုက်ရိုက်တင်သွင်းရောင်းချပါသည်။
+           100% Authentic
+          We directly import and sell only high-quality, genuine products.
           </p>
         </v-col>
 
@@ -79,7 +80,8 @@
           </v-avatar>
           <h3 class="title font-weight-bold mb-2">Customer First</h3>
           <p class="body-2 text-muted px-4">
-            ဝယ်ယူသူတိုင်း စိတ်တိုင်းကျစေမည့် နွေးထွေးပျူငှာသော ဝန်ဆောင်မှုဖြင့် ကြိုဆိုနေပါသည်။
+            Customer First
+          We welcome every customer with a warm, friendly service guaranteed to bring complete satisfaction.
           </p>
         </v-col>
 
@@ -89,8 +91,8 @@
           </v-avatar>
           <h3 class="title font-weight-bold mb-2">Mandalay Delivery</h3>
           <p class="body-2 text-muted px-4">
-            မန္တလေးမြို့တွင်းသာမက မြန်မာတစ်နိုင်ငံလုံးသို့ အိမ်အရောက် Delivery စနစ်ဖြင့်
-            ပို့ဆောင်ပေးပါသည်။
+            Nationwide Delivery
+          We offer home delivery services not only within Mandalay but also across the whole of Myanmar.
           </p>
         </v-col>
       </v-row>
@@ -102,20 +104,20 @@
             class="headline font-weight-bold text-center mb-6"
             style="color: black; font-size: 1.5rem ; font-weight: 600 "
           >
-            အမေးများသော မေးခွန်းများ (FAQ)
+            Frequently Asked Questions (FAQ)
           </h2>
 
           <v-expansion-panels variant="accordion">
             <v-expansion-panel
               class="pl-3"
-              title="Glow Skin Cosmetics က ပစ္စည်းတွေက တကယ်ပဲ Original စစ်စစ်တွေလား?"
-              text="ဟုတ်ပါတယ်။ ကျွန်ုပ်တို့ဆိုင်မှာ ရောင်းချတဲ့ အလှကုန်ပစ္စည်းအားလုံးကို သက်ဆိုင်ရာနိုင်ငံတွေကနေ (၁၀၀%) စစ်မှန်ကြောင်း အာမခံချက်အပြည့်နဲ့ တိုက်ရိုက်တင်သွင်းထားတာဖြစ်လို့ စိတ်ချယုံကြည်စွာ ဝယ်ယူအားပေးနိုင်ပါတယ်ခင်ဗျာ။"
+              title="Are the products from Glow Skin Cosmetics 100% authentic/original?"
+              text="Yes, absolutely! All cosmetic products sold in our shop are directly imported from their respective countries with a 100% authenticity guarantee, so you can shop with complete confidence and peace of mind."
             ></v-expansion-panel>
 
             <v-expansion-panel
               class="pl-3"
-              title="နယ်မြို့တွေကို ရန်ကုန်/မန္တလေးကနေ ဘယ်လိုပို့ဆောင်ပေးပါသလဲ?"
-              text="မန္တလေးမြို့တွင်းကို အိမ်အရောက် Delivery စနစ်နဲ့ ပို့ဆောင်ပေးသလို၊ အခြားနယ်မြို့များကိုလည်း သက်ဆိုင်ရာ အမြန်ချောပို့ (ကားဂိတ်များ) မှတစ်ဆင့် စနစ်တကျ ထုပ်ပိုးပြီး ပို့ဆောင်ပေးနေပါတယ်ဗျာ။"
+              title="How do you deliver to other towns/cities outside Yangon and Mandalay?"
+              text="We deliver straight to your doorstep within Mandalay, and for other regional towns, we properly package your orders and dispatch them via express delivery services or respective highway bus gates."
             ></v-expansion-panel>
           </v-expansion-panels>
         </v-col>

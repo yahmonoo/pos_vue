@@ -10,7 +10,7 @@
         <div class="caption grey--text font-weight-bold">CUSTOMER INFO</div>
         <div class="text-body-2 mt-1"><strong>Phone:</strong> {{ formData.phone || '-' }}</div>
         <div class="text-body-2"><strong>Address:</strong> {{ formData.address || '-' }}</div>
-        <div class="text-body-2"><strong>Location:</strong> {{ formData.city ||  '-' }}, {{ formData.township  || '-' }}</div>
+        <div class="text-body-2"><strong>Location:</strong> {{ formData.regionName ||  '-' }}, {{ formData.townshipName  || '-' }}</div>
         <div class="text-body-2"><strong>Payment Method:</strong> <v-chip small color="pink" dark class="font-weight-bold">{{ formData.paymentMethod || 'KPay' }}</v-chip></div>
       </div>
 

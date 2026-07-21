@@ -63,6 +63,7 @@ export default {
       UserAccountService.
       updateUserPhoto(formData, this.selectedOne.userAccountId)
         .then((response) => {
+          
           this.$emit("closeDialog");
           this.$swal({
             title: "Successful",

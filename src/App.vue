@@ -99,31 +99,42 @@
 
       
 
-      <v-menu v-if="loginUser.userAccountId>0" class="ma-4 pl-5">
-        <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" class="profile-btn" variant="text">
-            <v-avatar size="32" class="mr-2">
-              <v-img src="https://i.pravatar.cc/100" />
-            </v-avatar>
+      <v-menu v-if="loginUser.userAccountId > 0" class="ma-4 pl-5">
+  <template v-slot:activator="{ props }">
+    <v-btn v-bind="props" class="profile-btn" variant="text">
+      
+      <!-- Profile Avatar -->
+      <v-avatar size="32" class="mr-2">
+        <!-- ပုံရှိလျှင် backend မှ ပုံကိုပြမည် -->
+        <v-img 
+          v-if="getUserPhoto()" 
+          :src="getUserPhoto()" 
+          alt="Profile Photo"
+          cover 
+        />
+        <!-- ပုံမရှိသေးလျှင် Default Icon ပြမည် -->
+        <v-icon v-else icon="mdi-account-circle" color="grey-darken-1" size="32" />
+      </v-avatar>
 
-            <span class="username">{{ loginUser.profileName }}</span>
+      <span class="username">{{ loginUser.profileName }}</span>
 
-            <v-icon size="18" class="ml-1">mdi-chevron-down</v-icon>
-          </v-btn>
-        </template>
+      <v-icon size="18" class="ml-1">mdi-chevron-down</v-icon>
+    </v-btn>
+  </template>
 
-        <v-list width="200" class="profile-menu">
-          <v-list-item class="nav-link">
-            <v-list-item-title>Profile</v-list-item-title>
-          </v-list-item>
+  <!-- Dropdown Menu items -->
+  <v-list width="200" class="profile-menu">
+    <v-list-item class="nav-link">
+      <v-list-item-title>Profile</v-list-item-title>
+    </v-list-item>
 
-          <v-divider />
+    <v-divider />
 
-          <v-list-item class="nav-link" @click="logout">
-            <v-list-item-title class="text-red"> Logout </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+    <v-list-item class="nav-link" @click="logout">
+      <v-list-item-title class="text-red"> Logout </v-list-item-title>
+    </v-list-item>
+  </v-list>
+</v-menu>
       <v-btn icon to="/login" v-else>
         <v-icon>mdi-login</v-icon>
       </v-btn>
@@ -187,6 +198,7 @@
   </v-app>
 </template>
 <script>
+import axios from "@/config";
 export default {
   name: 'App',
   data() {
@@ -253,16 +265,26 @@ export default {
   },
 
   methods: {
-    checkLoginState(){
-      const savedUser=localStorage.getItem("loginUser");
-      if (savedUser) {
-      this.loginUser = JSON.parse(savedUser);
-      this.role = this.loginUser.userType || this.loginUser.usertype || localStorage.getItem('user_role');
-    } else {
-      this.loginUser = { userAccountId: 0 };
-      this.role = null;
-    }
-  },
+  
+ getUserPhoto() {
+  if (this.loginUser && this.loginUser.photo) {
+    const baseURL = axios?.defaults?.baseURL || "http://localhost:8088";
+    const cleanBaseURL = baseURL.replace(/\/$/, "");
+    return `${cleanBaseURL}/userphoto/${this.loginUser.photo}?t=${new Date().getTime()}`;
+  }
+  return null;
+},
+   
+  checkLoginState() {
+  const savedUser = localStorage.getItem("loginUser");
+  if (savedUser) {
+    this.loginUser = JSON.parse(savedUser);
+    this.role = this.loginUser.userType || this.loginUser.usertype || localStorage.getItem('user_role');
+  } else {
+    this.loginUser = { userAccountId: 0 };
+    this.role = null;
+  }
+},
     updateCartGlobalCount() {
       const cart = JSON.parse(localStorage.getItem('cart')) || []
       this.cartCount = cart.reduce((total, item) => {

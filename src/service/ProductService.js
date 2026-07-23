@@ -33,8 +33,15 @@ addProduct(product) {
     let url = `/product/${product.productId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
+updateProductPhoto(formData, productId) {
+    let url = `/productphoto/update/${productId}`; 
+    return this.axios.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }).then((request) => request.data);
+  }
 
 }
-
 const service = new ProductService();
 export default service;

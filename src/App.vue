@@ -100,19 +100,19 @@
       
 
       <v-menu v-if="loginUser.userAccountId > 0" class="ma-4 pl-5">
-  <template v-slot:activator="{ props }">
-    <v-btn v-bind="props" class="profile-btn" variant="text">
+      <template v-slot:activator="{ props }">
+      <v-btn v-bind="props" class="profile-btn" variant="text">
       
       <!-- Profile Avatar -->
       <v-avatar size="32" class="mr-2">
-        <!-- ပုံရှိလျှင် backend မှ ပုံကိုပြမည် -->
+       
         <v-img 
           v-if="getUserPhoto()" 
           :src="getUserPhoto()" 
           alt="Profile Photo"
           cover 
         />
-        <!-- ပုံမရှိသေးလျှင် Default Icon ပြမည် -->
+        
         <v-icon v-else icon="mdi-account-circle" color="grey-darken-1" size="32" />
       </v-avatar>
 

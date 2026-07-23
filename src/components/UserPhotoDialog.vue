@@ -58,25 +58,34 @@ export default {
        //return new URL(`../assets/images/${photo}`, import.meta.url).href;
     },
     savePicture: function () {
-      var formData = new FormData();
-      formData.append("file", this.$refs.file.files[0]);
-      UserAccountService.
-      updateUserPhoto(formData, this.selectedOne.userAccountId)
-        .then((response) => {
-          
-          this.$emit("closeDialog");
-          this.$swal({
-            title: "Successful",
-            text: "Success!",
-            type: "success",
-            timer: 500,
-          });
-        })
-        .catch((error) => {
-          const errMsg = error.response?.data?.message || error.message || "တစ်ခုခုမှားယွင်းနေပါသည်။";
-          this.$swal("မအောင်မြင်ပါ", error.response.data.message, "error");
-        });
-    },
+  var formData = new FormData();
+  formData.append("file", this.$refs.file.files[0]);
+  UserAccountService.updateUserPhoto(formData, this.selectedOne.userAccountId)
+    .then((response) => {
+     
+      let loginUser = JSON.parse(localStorage.getItem("loginUser"));
+      if (loginUser && loginUser.userAccountId === this.selectedOne.userAccountId) {
+        
+        loginUser.photo = this.selectedOne.photo; 
+        localStorage.setItem("loginUser", JSON.stringify(loginUser));
+        
+       
+        window.dispatchEvent(new Event("login-state-changed"));
+      }
+
+      this.$emit("closeDialog");
+      this.$swal({
+        title: "Successful",
+        text: "Success!",
+        type: "success",
+        timer: 500,
+      });
+    })
+    .catch((error) => {
+      const errMsg = error.response?.data?.message || error.message || "တစ်ခုခုမှားယွင်းနေပါသည်။";
+      this.$swal("မအောင်မြင်ပါ", errMsg, "error");
+    });
+},
         changeImage: function (e) {
       let image = e.target.files[0];
       let reader = new FileReader();

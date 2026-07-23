@@ -1,12 +1,25 @@
 <template>
   <v-container fluid>
     <!-- Header -->
+  <v-row density="comfortable">
+    <v-col cols="12" md="3">
+      <v-date-input
+        label="From"
+        prepend-icon=""
+        prepend-inner-icon="$calendar"
+        variant="solo"
+      ></v-date-input>
+    </v-col>
 
-    <div class="d-flex justify-end mb-4">
-      <v-btn class="add-btn" prepend-icon="mdi-plus" @click="dialog = true">
-        Add UserAccount
-      </v-btn>
-    </div>
+    <v-col cols="12" md="3">
+      <v-date-input
+        label="To"
+        prepend-icon=""
+        prepend-inner-icon="$calendar"
+        variant="solo"
+      ></v-date-input>
+    </v-col>
+  </v-row>
 
     <!-- Table Card -->
     <v-card rounded="lg" elevation="0">
@@ -14,28 +27,48 @@
         <thead>
           <tr>
             <th class="text-center">No.</th>
-            <th class="text-center">Township Name</th>
+            <th class="text-center">Customer Name</th>
+            <th class="text-center">Received Date</th>
+            <th class="text-center">Voucher Code</th>
+            <th class="text-center">Item Count</th>
+            <th class="text-center">Sale Amount</th>
+            <th class="text-center">Deli Fee</th>
+            <th class="text-center">Payment Type</th>
+            <th class="text-center">Payment Amount</th>
+            <th class="text-center">Customer Name</th>
+            <th class="text-center">Date</th>
             <th class="text-center" width="150">Action</th>
           </tr>
         </thead>
 
         <tbody>
           <tr
-            v-for="(item, index) in townshipList"
-            :key="item.townshipId"
+            v-for="(item, index) in SaleList"
+            :key="item.saleId"
             @click="selectedOne = item"
             :style="{
               backgroundColor:
-                item.townshipId == selectedOne.townshipId ? '#f5e2e5' : 'transparent',
+                item.saleId == selectedOne.saleId ? '#f5e2e5' : 'transparent',
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
 
-            <td class="text-center">{{ item.townshipName }}</td>
+            <td class="text-center">{{ item.profileName }}</td>
+            <td class="text-center">{{ item.receiveDate }}</td>
+            <td class="text-center">{{ item.voucherCode }}</td>
+            <td class="text-center">{{ item.count }}</td>
+            <td class="text-center">{{ item.receiveDate }}</td>
+            <td class="text-center">{{ item.amount }}</td>
+            <td class="text-center">{{ item.receiveDate }}</td>
+            <td class="text-center">{{ item.deliFee }}</td>
+            <td class="text-center">{{ item.paymentType }}</td>
+            <td class="text-center">{{ item.payment }}</td>
+            <td class="text-center">{{ item.Date }}</td>
+            
 
             <td class="text-center">
-              <v-btn density="compact" icon="mdi-pencil" @click="editCity(item)"></v-btn>
-              <v-btn density="compact" icon="mdi-delete" @click="deletCity(item)"></v-btn>
+              <v-btn density="compact" icon="mdi-pencil" @click="editSale(item)"></v-btn>
+              <v-btn density="compact" icon="mdi-delete" @click="deleteSale(item)"></v-btn>
             </td>
           </tr>
         </tbody>
@@ -104,83 +137,34 @@ export default {
   data() {
     return {
       dialog: false,
-      cityName: '',
-      townshipDto: {},
+      saleName: '',
+      saleDto: {},
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
-      townshipList: [
-        {
-          townshipId: 1,
-          townshipName: 'Yangon',
-        },
-        {
-          townshipId: 2,
-          townshipName: 'Mandalay',
-        },
-        {
-          townshipId: 3,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 4,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 5,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 6,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 7,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 8,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 9,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 10,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 11,
-          townshipName: 'Naypyidaw',
-        },
-        {
-          townshipId: 12,
-          townshipName: 'Naypyidaw',
-        },
-      ],
+      saleList: [],
     }
   },
   props: {},
   mounted: function () {},
   methods: {
-    cityListMethod() {
-      cityService
-        .getCity()
+    SaleListMethod() {
+      SaleListService
+        .getsaleList()
         .then((response) => {
-          this.townshipList.splice(0, this.townshipList.length)
-          this.townshipList.push(...response)
+          this.SaleList.splice(0, this.SaleList.length)
+          this.SaleList.push(...response)
         })
         .catch((error) => {
           this.$swal('Fail!', error.response.data.message, 'error')
         })
     },
-    saveCity() {
+    saveSaleList() {
       if (this.saveOrUpdate == 'SAVE') {
         console.log(this.saveOrUpdate)
 
-        cityService
-          .addCity(this.townshipDto)
+        SaleListService
+          .addSaleList(this.saleDto)
           .then((response) => {})
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
@@ -188,27 +172,27 @@ export default {
       } else {
         console.log(this.saveOrUpdate)
 
-        cityService
-          .updateCity(this.townshipDto)
+        SaleListService
+          .updateSaleList(this.saleDto)
           .then((response) => {})
           .catch((error) => {
             // this.$swal('Fail!', error.response.data.message, 'error')
           })
       }
     },
-    editCity(item) {
+    editSaleList(item) {
       console.log(item)
       this.dialog = true
       this.saveOrUpdate = 'UPDATE'
-      this.townshipDto = { ...item }
+      this.saleDto = { ...item }
     },
-    deletCity(item) {
+    deleteSlaeList(item) {
       this.dialogDelete = true
       this.selectedOne = { ...item }
       console.log(item)
     },
     clickDeleteDialog() {
-      cityService
+      SaleListService
         .deleteCity(this.selectedOne)
         .then((response) => {
           this.dialogDelete = false

@@ -6,13 +6,13 @@ class SaleService {
     this.axios = axios;
   }
 
-  getCity() {
-    let url = `/city`;
+  getSale() {
+    let url = `/sale`;
     return axios.get(url).then((request) => request.data);
   }
-  addCity(city) {
-    let url = `/city`;
-    return this.axios.post(url, city).then((request) => request.data);
+  addSale(sale) {
+    let url = `/sale`;
+    return this.axios.post(url, sale).then((request) => request.data);
   }
   updateCity(city) {
     let url = `/city/${city.cityId}`;

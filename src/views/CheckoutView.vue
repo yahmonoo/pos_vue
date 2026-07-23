@@ -114,7 +114,8 @@ import StepAddress from './StepAddress.vue';
 import StepPayment from './StepPayment.vue';
 import StepShipping from './StepShipping.vue';
 import StepSummary from './StepSummary.vue';
-
+import saleService from "../service/SaleService.js";
+import axios from "@/config";
 export default {
   name: 'CheckoutView',
   components: { StepAddress, StepPayment, StepShipping, StepSummary },
@@ -172,10 +173,26 @@ export default {
       if (this.currentStep < 4) {
         this.currentStep++;
       } else {
-        alert('🎉 မှာယူမှု အောင်မြင်ပါပြီ!');
+        //
+        let loginUser = JSON.parse(localStorage.getItem('loginUser'));
+        let obj = {transaction:{},productList:[]};
+        obj.customerId = loginUser.userAccountId;
+        obj.productList = this.cartItems;
+        obj.transaction.deliFee=this.checkoutForm.shippingFee;
+        obj.transaction.paymentType = this.checkoutForm.paymentMethod;
+        saleService
+        .addSale(obj)
+        .then((response) => {
+          alert('🎉 မှာယူမှု အောင်မြင်ပါပြီ!');
+          this.invoiceDialog = true; 
+        })
+        .catch((error) => {
+          //console.error(error);
+        });
         
         
-        this.invoiceDialog = true; 
+        
+        
       }
     },
     closeInvoice() {

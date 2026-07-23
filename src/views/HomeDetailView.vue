@@ -27,7 +27,7 @@
 
       <v-col cols="12" md="6">
         <h1 class="headline font-weight-bold grey--text text--darken-3 mb-2">{{ product.title }}</h1>
-        <p class="caption grey--text mb-4" >Ks {{ product.priceOne }}</p>
+        <p class="caption grey--text mb-4" >{{ product.priceOne }} Ks</p>
 
 
 

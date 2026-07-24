@@ -22,7 +22,14 @@ class SaleService {
     let url = `/city/${city.cityId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
-
+ getSaleList(fromDate,toDate,customerId) {
+    let url = `/salelist`;
+    return axios.get(url,{
+      params:{
+        fromDate,toDate,customerId
+      }
+    }).then((request) => request.data);
+  }
   
 }
 

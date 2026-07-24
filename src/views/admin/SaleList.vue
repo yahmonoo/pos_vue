@@ -8,6 +8,9 @@
         prepend-icon=""
         prepend-inner-icon="$calendar"
         variant="solo"
+        v-model="fromDate"
+        locale="en-GB"
+        display-format="dd-MM-yyyy"
       ></v-date-input>
     </v-col>
 
@@ -17,6 +20,8 @@
         prepend-icon=""
         prepend-inner-icon="$calendar"
         variant="solo"
+         v-model="toDate"
+         display-format="dd-MM-yyyy"
       ></v-date-input>
     </v-col>
   </v-row>
@@ -35,7 +40,6 @@
             <th class="text-center">Deli Fee</th>
             <th class="text-center">Payment Type</th>
             <th class="text-center">Payment Amount</th>
-            <th class="text-center">Customer Name</th>
             <th class="text-center">Date</th>
             <th class="text-center" width="150">Action</th>
           </tr>
@@ -44,7 +48,7 @@
         <tbody>
           <tr
             v-for="(item, index) in SaleList"
-            :key="item.saleId"
+            :key="index"
             @click="selectedOne = item"
             :style="{
               backgroundColor:
@@ -53,17 +57,15 @@
           >
             <td class="text-center">{{ index + 1 }}</td>
 
-            <td class="text-center">{{ item.profileName }}</td>
-            <td class="text-center">{{ item.receiveDate }}</td>
+            <td class="text-center">{{ item.userAccount.profileName }}</td>
+            <td class="text-center">{{ item.receivedDate }}</td>
             <td class="text-center">{{ item.voucherCode }}</td>
-            <td class="text-center">{{ item.count }}</td>
-            <td class="text-center">{{ item.receiveDate }}</td>
-            <td class="text-center">{{ item.amount }}</td>
-            <td class="text-center">{{ item.receiveDate }}</td>
-            <td class="text-center">{{ item.deliFee }}</td>
-            <td class="text-center">{{ item.paymentType }}</td>
-            <td class="text-center">{{ item.payment }}</td>
-            <td class="text-center">{{ item.Date }}</td>
+            <td class="text-center">{{ item.itemCount }}</td>
+            <td class="text-center">{{ item.transaction?.amount }}</td>
+            <td class="text-center">{{ item.transaction?.deliFee }}</td>
+            <td class="text-center">{{ item.transaction?.paymentType }}</td>
+            <td class="text-center">{{ item.transaction?.payment }}</td>
+            <td class="text-center">{{ item.date }}</td>
             
 
             <td class="text-center">
@@ -133,6 +135,7 @@
 
 <script>
 import cityService from '../../service/CityService.js'
+import saleService from '../../service/SaleService.js'
 export default {
   data() {
     return {
@@ -142,16 +145,22 @@ export default {
       selectedOne: {},
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
-      saleList: [],
+      SaleList: [],
+      fromDate:"",
+      toDate:"",
     }
   },
   props: {},
-  mounted: function () {},
+  mounted: function () {
+    this.SaleListMethod();
+  },
   methods: {
+
     SaleListMethod() {
-      SaleListService
-        .getsaleList()
+      saleService
+        .getSaleList("23-07-2026","23-07-2026",0)
         .then((response) => {
+          console.log(response);
           this.SaleList.splice(0, this.SaleList.length)
           this.SaleList.push(...response)
         })

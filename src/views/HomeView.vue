@@ -208,14 +208,6 @@ export default {
           // this.$swal("Fail!", error.response.data.message, "error");
         });
     },
-    getBestsellerProduct:function(){
-      productService
-      .getProductHome("b",0)
-      .then((response)=>{
-        this.bestsellerProducts.splice(0);
-        this.bestsellerProducts.push(...response);
-      })
-    },
     scrollSlider(containerRef, distance) {
   const container = this.$refs[containerRef];
   if (container) {

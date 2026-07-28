@@ -14,12 +14,12 @@ class SaleService {
     let url = `/sale`;
     return this.axios.post(url, sale).then((request) => request.data);
   }
-  updateCity(city) {
-    let url = `/city/${city.cityId}`;
+  updateSale(sale) {
+    let url = `/city/${sale.saIdle}`;
     return this.axios.put(url, note).then((request) => request.data);
   }
-  deleteCity(city) {
-    let url = `/city/${city.cityId}`;
+  deleteSale(sale) {
+    let url = `/sale/${sale.saleId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
  getSaleList(fromDate,toDate,customerId) {

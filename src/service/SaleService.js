@@ -22,7 +22,10 @@ class SaleService {
     let url = `/sale/${sale.saleId}`;
     return this.axios.delete(url).then((request) => request.data);
   }
-
+  getSaleList(fromDate, toDate, status) {
+    let url = `/sale?fromDate=${fromDate}&toDate=${toDate}&status=${status}`;
+    return this.axios.get(url).then((request) => request.data);
+  }
   
 }
 

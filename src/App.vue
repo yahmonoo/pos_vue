@@ -124,7 +124,7 @@
 
   <!-- Dropdown Menu items -->
   <v-list width="200" class="profile-menu">
-    <v-list-item class="nav-link">
+    <v-list-item class="nav-link" @click="profileDialog=true">
       <v-list-item-title>Profile</v-list-item-title>
     </v-list-item>
 
@@ -188,6 +188,39 @@
         </template>
       </v-list>
     </v-navigation-drawer>
+    
+<v-dialog v-model="profileDialog" max-width="450px">
+  <v-card class="rounded-xl pa-4 text-center">
+    <v-card-title class="d-flex justify-space-between align-center">
+      <span class="text-h6 font-weight-bold">User Profile</span>
+      <v-btn icon="mdi-close" variant="text" @click="profileDialog = false"></v-btn>
+    </v-card-title>
+
+    <v-card-text>
+      <!-- User Photo -->
+      <v-avatar size="100" class="mb-4 elevation-3">
+        <v-img v-if="getUserPhoto()" :src="getUserPhoto()" cover />
+        <v-icon v-else icon="mdi-account-circle" size="100" color="grey-medium" />
+      </v-avatar>
+
+      <h2 class="text-h5 font-weight-bold mb-1">{{ loginUser.profileName }}</h2>
+      <v-chip color="pink-lighten-1" size="small" class="mb-4">{{ role || 'User' }}</v-chip>
+
+      <v-divider class="my-3"></v-divider>
+
+      <!-- User Details -->
+      <v-list density="compact">
+        <v-list-item prepend-icon="mdi-account" title="Username / ID" :subtitle="loginUser.profileName || loginUser.userAccountId" />
+        <v-list-item prepend-icon="mdi-phone" title="Phone" :subtitle="loginUser.phone || loginUser.phone"/>
+        <v-list-item prepend-icon="mdi-map-marker" title="Address" :subtitle="loginUser.address" />
+      </v-list>
+    </v-card-text>
+
+    <v-card-actions class="justify-end">
+      <v-btn color="pink" variant="flat" rounded @click="profileDialog = false">Close</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 
     <!-- Main Content -->
     <v-main>
@@ -204,6 +237,7 @@ export default {
   data() {
     return {
       drawer: false,
+      profileDialog: false,
       cartCount: 0,
       role: null,
       adminMenus: [

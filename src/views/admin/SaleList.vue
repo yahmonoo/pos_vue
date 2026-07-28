@@ -158,7 +158,7 @@ export default {
 
     SaleListMethod() {
       saleService
-        .getSaleList("23-07-2026","23-07-2026",0)
+        .getSaleList("23-07-2026","27-07-2026",0)
         .then((response) => {
           console.log(response);
           this.SaleList.splice(0, this.SaleList.length)

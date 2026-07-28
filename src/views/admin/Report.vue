@@ -167,7 +167,7 @@
           <!-- X-Axis Label Below (Jan, Feb, 1, 2...) -->
           <text
             :x="pt.x"
-            y="282"
+            y="290"
             font-size="11"
             fill="#616161"
             text-anchor="middle"
@@ -183,6 +183,7 @@
 </template>
 
 <script>
+import axios from "@/config";
 export default {
   name: "SalesReport",
   data() {
@@ -201,9 +202,9 @@ export default {
       monthsLabel: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 
       mockYearlyData: {
-        2024: [1200000, 1900000, 3000000, 500000, 2000000, 3000000, 4500000, 3200000, 2100000, 1800000, 2900000, 4000000],
-        2025: [2200000, 2900000, 1500000, 2500000, 3200000, 4100000, 3800000, 4900000, 3100000, 2800000, 3900000, 5200000],
-        2026: [3500000, 4200000, 2800000, 3900000, 4500000, 5100000, 6200000, 0, 0, 0, 0, 0]
+        // 2024: [1200000, 1900000, 3000000, 500000, 2000000, 3000000, 4500000, 3200000, 2100000, 1800000, 2900000, 4000000],
+        // 2025: [2200000, 2900000, 1500000, 2500000, 3200000, 4100000, 3800000, 4900000, 3100000, 2800000, 3900000, 5200000],
+        // 2026: [3500000, 4200000, 2800000, 3900000, 4500000, 5100000, 6200000, 0, 0, 0, 0, 0]
       },
 
       currentGraphLabels: [],
@@ -261,12 +262,10 @@ export default {
     });
   },
 
-  // Line Path ၏ points များ
   graphLinePoints() {
     return this.graphPoints.map(p => `${p.x},${p.y}`).join(" ");
   },
 
-  // Line အောက်ခြေ Area Color ၏ points များ
   graphAreaPoints() {
     if (!this.graphPoints.length) return "";
     const firstX = this.graphPoints[0].x;
@@ -280,17 +279,35 @@ export default {
   },
 
   methods: {
-      
     updateAnalytics() {
-      if (this.isAllMonths) {
-        this.currentGraphLabels = this.monthsLabel;
-        this.currentGraphData = this.mockYearlyData[this.selectedYear] || Array(12).fill(0);
-      } else {
-        const monthIndex = this.monthOptions.indexOf(this.selectedMonth);
-        this.generateMonthlyDailyData(monthIndex);
-      }
-    },
+    const monthIndex = this.monthOptions.indexOf(this.selectedMonth);
+    console.log(monthIndex)
 
+    axios.get("http://localhost:8088/api/v1/sale/analytics", {
+      params: {
+        year: this.selectedYear,
+        month: monthIndex
+      }
+    })
+    .then((response) => {
+      console.log(response);
+      if (response.data) {
+        this.currentGraphData = response.data.monthlySales || [];
+
+        if (response.data.labels && response.data.labels.length > 0) {
+          this.currentGraphLabels = response.data.labels;
+        } else {
+          if (this.isAllMonths) {
+            this.currentGraphLabels = this.monthsLabel;
+          } else {
+            const count = this.currentGraphData.length;
+            this.currentGraphLabels = Array.from({ length: count }, (_, i) => `${i + 1}`);
+          }
+        }
+      }
+    })
+    .catch((error) => console.error(error));
+  },
     generateMonthlyDailyData(monthNum) {
       const daysInMonth = new Date(this.selectedYear, monthNum, 0).getDate();
       const labels = [];

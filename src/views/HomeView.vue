@@ -248,20 +248,24 @@ export default {
     },
      
     addToCart(product) {
-      console.log(" prodcut ");
+      console.log(" prodcut>>>>>>>>>>>>>>>> ");
       console.log(product);
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      
-      const targetPrice = product.priceOne || product.newPrice;
-      const variant=product.sizeOne || product.sizeTwo || 'Standard';
-      cart.push({ 
-        imageName: product.photoOne,
-        price: targetPrice,
-        buyQuantity: 1 ,
-        title:product.title,
-       chosenVariant: variant, 
-      });
-      //cart.push(product);
+
+       const targetPrice = product.priceOne || product.newPrice;
+       const variant=product.sizeOne || product.sizeTwo || 'Standard';
+       product.imageName = product.photoOne;
+       product.price = targetPrice;
+       product.buyQuantity=1;
+       product.chosenVariant = variant;
+      // cart.push({ 
+      //   imageName: product.photoOne,
+      //   price: targetPrice,
+      //   buyQuantity: 1 ,
+      //   title:product.title,
+      //  chosenVariant: variant, 
+      // });
+      cart.push(product);
 
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));

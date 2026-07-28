@@ -178,6 +178,7 @@ export default {
         let obj = {transaction:{},productList:[]};
         obj.customerId = loginUser.userAccountId;
         obj.productList = this.cartItems;
+        console.log(obj.productList);
         obj.transaction.deliFee=this.checkoutForm.shippingFee;
         obj.transaction.paymentType = this.checkoutForm.paymentMethod;
         saleService

@@ -145,11 +145,16 @@ export default {
       console.log('product')
       console.log(product)
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart.push({ 
-        imageName:product.photoOne,
-        price: product.priceOne,
-        title:product.title,
-         chosenVariant: product.sizeOne, buyQuantity: 1 });
+      product.imageName = product.photoOne;
+       product.price = product.priceOne,
+       product.buyQuantity=1;
+       product.chosenVariant = product.sizeOne;
+      // cart.push({ 
+      //   imageName:product.photoOne,
+      //   price: product.priceOne,
+      //   title:product.title,
+      //    chosenVariant: product.sizeOne, buyQuantity: 1 });
+cart.push(product);
       localStorage.setItem('cart', JSON.stringify(cart));
       window.dispatchEvent(new CustomEvent('cart-local-storage-changed'));
     },

@@ -134,8 +134,8 @@
 </template>
 
 <script>
-import cityService from '../../service/CityService.js'
 import saleService from '../../service/SaleService.js'
+
 export default {
   data() {
     return {
@@ -146,73 +146,69 @@ export default {
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
       SaleList: [],
-      fromDate:"",
-      toDate:"",
+      fromDate: "",
+      toDate: "",
     }
   },
-  props: {},
-  mounted: function () {
+  mounted() {
     this.SaleListMethod();
   },
   methods: {
-
     SaleListMethod() {
+      // Backend မှ တောင်းဆိုထားသော ရက်စွဲ format အလိုက် ပြင်ဆင်ပါ
       saleService
-        .getSaleList("23-07-2026","23-07-2026",0)
+        .getSaleList("23-07-2026", "23-07-2026", 0)
         .then((response) => {
-          console.log(response);
-          this.SaleList.splice(0, this.SaleList.length)
-          this.SaleList.push(...response)
+          console.log("Sale List Response:", response);
+          this.SaleList = response.data || response; // Response Format အပေါ်မူတည်၍ data ထည့်ပါ
         })
         .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
+          console.error(error);
+          if (this.$swal) {
+            this.$swal('Fail!', error?.response?.data?.message || 'Error loading sales', 'error')
+          }
         })
     },
     saveSaleList() {
-      if (this.saveOrUpdate == 'SAVE') {
-        console.log(this.saveOrUpdate)
-
-        SaleListService
+      if (this.saveOrUpdate === 'SAVE') {
+        saleService
           .addSaleList(this.saleDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
+          .then((response) => {
+            this.dialog = false;
+            this.SaleListMethod();
           })
+          .catch((error) => {})
       } else {
-        console.log(this.saveOrUpdate)
-
-        SaleListService
+        saleService
           .updateSaleList(this.saleDto)
-          .then((response) => {})
-          .catch((error) => {
-            // this.$swal('Fail!', error.response.data.message, 'error')
+          .then((response) => {
+            this.dialog = false;
+            this.SaleListMethod();
           })
+          .catch((error) => {})
       }
     },
-    editSaleList(item) {
-      console.log(item)
+    // Template ထဲမှ နာမည်နှင့် ကိုက်ညီအောင် ပြင်ထားသည်
+    editSale(item) {
       this.dialog = true
       this.saveOrUpdate = 'UPDATE'
       this.saleDto = { ...item }
     },
-    deleteSlaeList(item) {
+    // Template ထဲမှ နာမည်နှင့် ကိုက်ညီအောင် ပြင်ထားသည်
+    deleteSale(item) {
       this.dialogDelete = true
       this.selectedOne = { ...item }
-      console.log(item)
     },
     clickDeleteDialog() {
-      SaleListService
+      saleService
         .deleteCity(this.selectedOne)
         .then((response) => {
           this.dialogDelete = false
+          this.SaleListMethod();
         })
-        .catch((error) => {
-          // this.$swal('Fail!', error.response.data.message, 'error')
-        })
+        .catch((error) => {})
     },
   },
-  watch: {},
-  components: {},
 }
 </script>
 

@@ -97,44 +97,35 @@
         </v-badge>
       </v-btn>
 
-      
-
       <v-menu v-if="loginUser.userAccountId > 0" class="ma-4 pl-5">
-      <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" class="profile-btn" variant="text">
-      
-      <!-- Profile Avatar -->
-      <v-avatar size="32" class="mr-2">
-       
-        <v-img 
-          v-if="getUserPhoto()" 
-          :src="getUserPhoto()" 
-          alt="Profile Photo"
-          cover 
-        />
-        
-        <v-icon v-else icon="mdi-account-circle" color="grey-darken-1" size="32" />
-      </v-avatar>
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" class="profile-btn" variant="text">
+            <!-- Profile Avatar -->
+            <v-avatar size="32" class="mr-2">
+              <v-img v-if="getUserPhoto()" :src="getUserPhoto()" alt="Profile Photo" cover />
 
-      <span class="username">{{ loginUser.profileName }}</span>
+              <v-icon v-else icon="mdi-account-circle" color="grey-darken-1" size="32" />
+            </v-avatar>
 
-      <v-icon size="18" class="ml-1">mdi-chevron-down</v-icon>
-    </v-btn>
-  </template>
+            <span class="username">{{ loginUser.profileName }}</span>
 
-  <!-- Dropdown Menu items -->
-  <v-list width="200" class="profile-menu">
-    <v-list-item class="nav-link" @click="profileDialog=true">
-      <v-list-item-title>Profile</v-list-item-title>
-    </v-list-item>
+            <v-icon size="18" class="ml-1">mdi-chevron-down</v-icon>
+          </v-btn>
+        </template>
 
-    <v-divider />
+        <!-- Dropdown Menu items -->
+        <v-list width="200" class="profile-menu">
+          <v-list-item class="nav-link">
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item>
 
-    <v-list-item class="nav-link" @click="logout">
-      <v-list-item-title class="text-red"> Logout </v-list-item-title>
-    </v-list-item>
-  </v-list>
-</v-menu>
+          <v-divider />
+
+          <v-list-item class="nav-link" @click="logout">
+            <v-list-item-title class="text-red"> Logout </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-btn icon to="/login" v-else>
         <v-icon>mdi-login</v-icon>
       </v-btn>
@@ -231,7 +222,7 @@
   </v-app>
 </template>
 <script>
-import axios from "@/config";
+import axios from '@/config'
 export default {
   name: 'App',
   data() {
@@ -268,7 +259,7 @@ export default {
           to: '/admin/useraccount',
         },
       ],
-      loginUser:{},
+      loginUser: {},
       saleMenus: [
         {
           title: 'Sale',
@@ -285,55 +276,57 @@ export default {
     }
   },
   mounted() {
-    this.loginUser = JSON.parse(localStorage.getItem("loginUser"));
-    this.role = localStorage.getItem('user_role');
+    this.loginUser = JSON.parse(localStorage.getItem('loginUser'))
+    this.role = localStorage.getItem('user_role')
     this.checkLoginState()
 
     this.updateCartGlobalCount()
     window.addEventListener('cart-local-storage-changed', this.updateCartGlobalCount)
-    window.addEventListener('login-state-changed',this.checkLoginState)
+    window.addEventListener('login-state-changed', this.checkLoginState)
   },
   beforeUnmount() {
     window.removeEventListener('cart-local-storage-changed', this.updateCartCount)
-    window.removeEventListener('login-state-changed',this.checkLoginState)
+    window.removeEventListener('login-state-changed', this.checkLoginState)
   },
 
   methods: {
-  
- getUserPhoto() {
-  if (this.loginUser && this.loginUser.photo) {
-    const baseURL = axios?.defaults?.baseURL || "http://localhost:8088";
-    const cleanBaseURL = baseURL.replace(/\/$/, "");
-    return `${cleanBaseURL}/userphoto/${this.loginUser.photo}?t=${new Date().getTime()}`;
-  }
-  return null;
-},
-   
-  checkLoginState() {
-  const savedUser = localStorage.getItem("loginUser");
-  if (savedUser) {
-    this.loginUser = JSON.parse(savedUser);
-    this.role = this.loginUser.userType || this.loginUser.usertype || localStorage.getItem('user_role');
-  } else {
-    this.loginUser = { userAccountId: 0 };
-    this.role = null;
-  }
-},
+    getUserPhoto() {
+      if (this.loginUser && this.loginUser.photo) {
+        const baseURL = axios?.defaults?.baseURL || 'http://localhost:8088'
+        const cleanBaseURL = baseURL.replace(/\/$/, '')
+        return `${cleanBaseURL}/userphoto/${this.loginUser.photo}?t=${new Date().getTime()}`
+      }
+      return null
+    },
+
+    checkLoginState() {
+      const savedUser = localStorage.getItem('loginUser')
+      if (savedUser) {
+        this.loginUser = JSON.parse(savedUser)
+        this.role =
+          this.loginUser.userType || this.loginUser.usertype || localStorage.getItem('user_role')
+      } else {
+        this.loginUser = { userAccountId: 0 }
+        this.role = null
+      }
+    },
     updateCartGlobalCount() {
       const cart = JSON.parse(localStorage.getItem('cart')) || []
-      this.cartCount = cart.reduce((total, item) => {
-        return total + (item.buyQuantity || 1)
-      }, 0)
+      this.cartCount =
+        cart.length > 0 &&
+        cart.reduce((total, item) => {
+          return total + (item.buyQuantity || 1)
+        }, 0)
     },
     logout() {
-     localStorage.removeItem("loginUser");
-    localStorage.removeItem("user_role");
-    localStorage.removeItem("user-token");
-    
-    this.loginUser = { userAccountId: 0 };
-    this.role = null;
-    
-    this.$router.push('/login');
+      localStorage.removeItem('loginUser')
+      localStorage.removeItem('user_role')
+      localStorage.removeItem('user-token')
+
+      this.loginUser = { userAccountId: 0 }
+      this.role = null
+
+      this.$router.push('/login')
     },
   },
   // created(){
@@ -345,7 +338,7 @@ export default {
   //   }
   created() {
     // အကယ်၍ local storage ထဲမှာ cart ရှိရင် ကောင်တာ တန်းတွက်ဖို့
-        this.checkLoginState()
+    this.checkLoginState()
 
     this.updateCartGlobalCount()
     this.role = localStorage.getItem('user_role')

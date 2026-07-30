@@ -27,6 +27,11 @@ class SaleService {
     let url = `/sale?fromDate=${fromDate}&toDate=${toDate}&status=${status}`;
     return this.axios.get(url).then((request) => request.data);
   }
+
+  addNewSale(sale) {
+    let url = `/newsale`;
+    return this.axios.post(url, sale).then((request) => request.data);
+  }
   
 }
 

@@ -137,6 +137,7 @@
 </template>
 
 <script>
+import { format } from 'date-fns'
 import saleService from '../../service/SaleService.js'
 
 export default {

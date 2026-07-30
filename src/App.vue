@@ -115,7 +115,7 @@
 
         <!-- Dropdown Menu items -->
         <v-list width="200" class="profile-menu">
-          <v-list-item class="nav-link">
+          <v-list-item class="nav-link" @click="profileDialog=true">
             <v-list-item-title>Profile</v-list-item-title>
           </v-list-item>
 
@@ -201,7 +201,7 @@
 
       <!-- User Details -->
       <v-list density="compact">
-        <v-list-item prepend-icon="mdi-account" title="Username / ID" :subtitle="loginUser.profileName || loginUser.userAccountId" />
+        <v-list-item prepend-icon="mdi-account" title="Username" :subtitle="loginUser.profileName || loginUser.userAccountId" />
         <v-list-item prepend-icon="mdi-phone" title="Phone" :subtitle="loginUser.phone || loginUser.phone"/>
         <v-list-item prepend-icon="mdi-map-marker" title="Address" :subtitle="loginUser.address" />
       </v-list>

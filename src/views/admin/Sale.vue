@@ -243,7 +243,8 @@ export default {
     },
   },
   mounted: function () {
-    this.saleDto.receivedDate = format(this.receivedPicker, 'dd-MM-yyyy')
+    this.saleDto.receivedDate = 
+    (this.receivedPicker, 'dd-MM-yyyy')
     this.customerListMethod()
     this.productListMethod()
   },

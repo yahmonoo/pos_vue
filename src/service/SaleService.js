@@ -1,5 +1,6 @@
 import axios from "../config";
 
+
 class SaleService {
   axios;
   constructor() {

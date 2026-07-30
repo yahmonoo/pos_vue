@@ -10,7 +10,8 @@
         variant="solo"
         v-model="fromDate"
         locale="en-GB"
-        display-format="dd-MM-yyyy"
+        :display-value="displayFromDate"
+        hide-details
       ></v-date-input>
     </v-col>
 
@@ -20,8 +21,10 @@
         prepend-icon=""
         prepend-inner-icon="$calendar"
         variant="solo"
-         v-model="toDate"
-         display-format="dd-MM-yyyy"
+        v-model="toDate"
+        locale="en-GB"
+        :display-value="displayToDate"
+        hide-details
       ></v-date-input>
     </v-col>
   </v-row>
@@ -146,21 +149,62 @@ export default {
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
       SaleList: [],
-      fromDate: "",
-      toDate: "",
+      fromDate: null,
+      toDate: null,
     }
   },
   mounted() {
     this.SaleListMethod();
   },
+  computed: {
+    // From Date Input တွင် ပေါ်စေရန်
+    displayFromDate() {
+      return this.formatDate(this.fromDate)
+    },
+    // To Date Input တွင် ပေါ်စေရန်
+    displayToDate() {
+      return this.formatDate(this.toDate)
+    }
+  },
+  watch: {
+    // ရက်စွဲ ရွေးလိုက်သည်နှင့် API ကို Data သွားဆွဲပေးမည်
+    fromDate(val) {
+      if (val) this.filterByDate()
+    },
+    toDate(val) {
+      if (val) this.filterByDate()
+    }
+  },
   methods: {
+
+  
+  formatDate(date) {
+      if (!date) return ''
+      const d = new Date(date)
+      if (isNaN(d.getTime())) return date
+      
+      const day = String(d.getDate()).padStart(2, '0')
+      const month = String(d.getMonth() + 1).padStart(2, '0')
+      const year = d.getFullYear()
+      
+      return `${day}-${month}-${year}`
+    },
+
+    filterByDate() {
+      const from = this.fromDate ? this.formatDate(this.fromDate) : "23-07-2026"
+      const to = this.toDate ? this.formatDate(this.toDate) : "23-07-2026"
+      this.SaleListMethod(from, to)
+    },
+
+  
+
     SaleListMethod() {
-      // Backend မှ တောင်းဆိုထားသော ရက်စွဲ format အလိုက် ပြင်ဆင်ပါ
+      
       saleService
         .getSaleList("23-07-2026", "23-07-2026", 0)
         .then((response) => {
           console.log("Sale List Response:", response);
-          this.SaleList = response.data || response; // Response Format အပေါ်မူတည်၍ data ထည့်ပါ
+          this.SaleList = response.data || response; 
         })
         .catch((error) => {
           console.error(error);
@@ -188,13 +232,13 @@ export default {
           .catch((error) => {})
       }
     },
-    // Template ထဲမှ နာမည်နှင့် ကိုက်ညီအောင် ပြင်ထားသည်
+    
     editSale(item) {
       this.dialog = true
       this.saveOrUpdate = 'UPDATE'
       this.saleDto = { ...item }
     },
-    // Template ထဲမှ နာမည်နှင့် ကိုက်ညီအောင် ပြင်ထားသည်
+    
     deleteSale(item) {
       this.dialogDelete = true
       this.selectedOne = { ...item }

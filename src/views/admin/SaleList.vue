@@ -2,32 +2,80 @@
   <v-container fluid>
     <!-- Header -->
   <v-row density="comfortable">
-    <v-col cols="12" md="3">
-      <v-date-input
-        label="From"
-        prepend-icon=""
-        prepend-inner-icon="$calendar"
-        variant="solo"
+  <!-- From Date -->
+  <v-col cols="12" md="3">
+    <v-menu
+      v-model="fromMenu"
+      :close-on-content-click="false"
+      max-width="290px"
+      min-width="290px"
+    >
+      <template v-slot:activator="{ props }">
+        <v-text-field
+          class="cinput"
+          v-model="fromDateStr"
+          label="From Date"
+          prepend-inner-icon="mdi-calendar"
+          variant="outlined"
+          readonly
+          v-bind="props"
+          hide-details
+          density="compact"
+        ></v-text-field>
+      </template>
+      <v-date-picker
         v-model="fromDate"
-        locale="en-GB"
-        :display-value="displayFromDate"
-        hide-details
-      ></v-date-input>
-    </v-col>
+        color="primary"
+        hide-header
+        @update:model-value="onFromDateSelect"
+      ></v-date-picker>
+    </v-menu>
+  </v-col>
 
-    <v-col cols="12" md="3">
-      <v-date-input
-        label="To"
-        prepend-icon=""
-        prepend-inner-icon="$calendar"
-        variant="solo"
+  <!-- To Date -->
+  <v-col cols="12" md="3">
+    <v-menu
+      v-model="toMenu"
+      :close-on-content-click="false"
+      max-width="290px"
+      min-width="290px"
+    >
+      <template v-slot:activator="{ props }">
+        <v-text-field 
+          class="cinput"
+          v-model="toDateStr"
+          label="To Date"
+          prepend-inner-icon="mdi-calendar"
+          variant="outlined"
+          readonly
+          v-bind="props"
+          hide-details
+          density="compact"
+        ></v-text-field>
+      </template>
+      <v-date-picker
         v-model="toDate"
-        locale="en-GB"
-        :display-value="displayToDate"
-        hide-details
-      ></v-date-input>
-    </v-col>
-  </v-row>
+        color="primary"
+        hide-header
+        @update:model-value="onToDateSelect"
+      ></v-date-picker>
+    </v-menu>
+  </v-col>
+  <v-col cols="12" md="2">
+    <v-btn
+      color="#d66182"
+      theme="dark"
+      height="44"
+      rounded="lg"
+      prepend-icon="mdi-magnify"
+      @click="filterByDate"
+      block
+    >
+      Search
+    </v-btn>
+  </v-col>
+
+</v-row>
 
     <!-- Table Card -->
     <v-card rounded="lg" elevation="0">
@@ -72,7 +120,7 @@
             
 
             <td class="text-center">
-              <v-btn density="compact" icon="mdi-pencil" @click="editSale(item)"></v-btn>
+              <!-- <v-btn density="compact" icon="mdi-pencil" @click="editSale(item)"></v-btn> -->
               <v-btn density="compact" icon="mdi-delete" @click="deleteSale(item)"></v-btn>
             </td>
           </tr>
@@ -81,9 +129,9 @@
     </v-card>
 
     <!-- Add Dialog -->
-    <v-dialog v-model="dialog" max-width="500" persistent>
+    <!-- <v-dialog v-model="dialog" max-width="500" persistent>
       <v-card rounded="xl" class="cdialog">
-        <!-- Header -->
+        
         <div class="dialog-header">
           <div class="d-flex align-center">
             <div>
@@ -114,7 +162,7 @@
           <v-btn rounded="pill" class="add-btn" @click="saveCity"> {{ saveOrUpdate }}</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
 
     <!-- Delete Dialog  -->
     <v-col>
@@ -137,12 +185,22 @@
 </template>
 
 <script>
-import { format } from 'date-fns'
+
+import { format, parse, subDays } from 'date-fns'
+
 import saleService from '../../service/SaleService.js'
 
 export default {
   data() {
+    const initialFromDate = subDays(new Date(), 60)
     return {
+      fromMenu: false,
+      toMenu: false,
+      fromDate: initialFromDate, 
+      toDate: new Date(),
+      fromDateStr: '',
+      toDateStr: '',
+
       dialog: false,
       saleName: '',
       saleDto: {},
@@ -150,113 +208,131 @@ export default {
       saveOrUpdate: 'SAVE',
       dialogDelete: false,
       SaleList: [],
-      fromDate: null,
-      toDate: null,
     }
   },
   mounted() {
-    this.SaleListMethod();
+    this.fromDateStr = format(this.fromDate, 'dd-MM-yyyy')
+    this.toDateStr = format(this.toDate, 'dd-MM-yyyy')
+    
+    this.SaleListMethod(this.fromDateStr, this.toDateStr)
   },
-  computed: {
-    // From Date Input တွင် ပေါ်စေရန်
-    displayFromDate() {
-      return this.formatDate(this.fromDate)
-    },
-    // To Date Input တွင် ပေါ်စေရန်
-    displayToDate() {
-      return this.formatDate(this.toDate)
-    }
-  },
-  watch: {
-    // ရက်စွဲ ရွေးလိုက်သည်နှင့် API ကို Data သွားဆွဲပေးမည်
-    fromDate(val) {
-      if (val) this.filterByDate()
-    },
-    toDate(val) {
-      if (val) this.filterByDate()
-    }
-  },
-  methods: {
 
-  
-  formatDate(date) {
-      if (!date) return ''
-      const d = new Date(date)
-      if (isNaN(d.getTime())) return date
-      
-      const day = String(d.getDate()).padStart(2, '0')
-      const month = String(d.getMonth() + 1).padStart(2, '0')
-      const year = d.getFullYear()
-      
-      return `${day}-${month}-${year}`
+  methods: {
+    onFromDateSelect(val) {
+      if (val) {
+        const dateObj = new Date(val)
+        this.fromDate = dateObj
+        this.fromDateStr = format(dateObj, 'dd-MM-yyyy')
+      }
+      this.fromMenu = false
+    },
+
+    onToDateSelect(val) {
+      if (val) {
+        const dateObj = new Date(val)
+        this.toDate = dateObj
+        this.toDateStr = format(dateObj, 'dd-MM-yyyy')
+      }
+      this.toMenu = false
     },
 
     filterByDate() {
-      const from = this.fromDate ? this.formatDate(this.fromDate) : "23-07-2026"
-      const to = this.toDate ? this.formatDate(this.toDate) : "23-07-2026"
-      this.SaleListMethod(from, to)
-    },
-
-  
-
-    SaleListMethod() {
-      
-      saleService
-        .getSaleList("23-07-2026", "23-07-2026", 0)
-        .then((response) => {
-          console.log("Sale List Response:", response);
-          this.SaleList = response.data || response; 
-        })
-        .catch((error) => {
-          console.error(error);
-          if (this.$swal) {
-            this.$swal('Fail!', error?.response?.data?.message || 'Error loading sales', 'error')
-          }
-        })
-    },
-    saveSaleList() {
-      if (this.saveOrUpdate === 'SAVE') {
-        saleService
-          .addSaleList(this.saleDto)
-          .then((response) => {
-            this.dialog = false;
-            this.SaleListMethod();
-          })
-          .catch((error) => {})
-      } else {
-        saleService
-          .updateSaleList(this.saleDto)
-          .then((response) => {
-            this.dialog = false;
-            this.SaleListMethod();
-          })
-          .catch((error) => {})
+      console.log("Searching with:", this.fromDateStr, this.toDateStr)
+      if (this.fromDateStr && this.toDateStr) {
+        this.SaleListMethod(this.fromDateStr, this.toDateStr)
       }
     },
+
+SaleListMethod(from = this.fromDateStr, to = this.toDateStr) {
+  saleService
+    .getSaleList(from, to, 0)
+    .then((response) => {
+      console.log("Raw Sale List Response:", response)
+      const rawData = response.data?.data || response.data || response
+
     
-    editSale(item) {
-      this.dialog = true
-      this.saveOrUpdate = 'UPDATE'
-      this.saleDto = { ...item }
-    },
-    
+      const toYYYYMMDD = (dateStr) => {
+        if (!dateStr) return null
+
+        const str = String(dateStr).trim()
+        const pureDateStr = str.split(' ')[0] 
+
+        
+        if (/^\d{2}-\d{2}-\d{4}$/.test(pureDateStr)) {
+          const [d, m, y] = pureDateStr.split('-')
+          return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
+        }
+
+        
+        if (/^\d{4}-\d{2}-\d{2}$/.test(pureDateStr)) {
+          return pureDateStr
+        }
+
+        
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(pureDateStr)) {
+          const [d, m, y] = pureDateStr.split('/')
+          return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
+        }
+
+        const dObj = new Date(str)
+        if (!isNaN(dObj.getTime())) {
+          const y = dObj.getFullYear()
+          const m = String(dObj.getMonth() + 1).padStart(2, '0')
+          const d = String(dObj.getDate()).padStart(2, '0')
+          return `${y}-${m}-${d}`
+        }
+
+        return null
+      }
+
+      
+      const fromFormatted = toYYYYMMDD(from)
+      const toFormatted = toYYYYMMDD(to)
+
+      if (Array.isArray(rawData)) {
+        const filtered = rawData.filter((item) => {
+          
+          const targetDateStr = item.date || item.receivedDate
+          const itemFormatted = toYYYYMMDD(targetDateStr)
+
+          if (!itemFormatted) {
+            console.warn("Date Parse မရပါ:", item)
+            return false
+          }
+
+         
+          return itemFormatted >= fromFormatted && itemFormatted <= toFormatted
+        })
+
+        this.SaleList = [...filtered]
+      } else {
+        this.SaleList = []
+      }
+
+      console.log("Filtered Count:", this.SaleList.length)
+    })
+    .catch((error) => {
+      console.error("API Error:", error)
+    })
+},
+
     deleteSale(item) {
       this.dialogDelete = true
       this.selectedOne = { ...item }
     },
+
     clickDeleteDialog() {
       saleService
-        .deleteCity(this.selectedOne)
+        .deleteSale(this.selectedOne)
         .then((response) => {
           this.dialogDelete = false
-          this.SaleListMethod();
+          this.SaleListMethod()
         })
         .catch((error) => {})
     },
   },
 }
 </script>
-
 <style scoped>
 .v-table {
   background: transparent;
@@ -329,15 +405,20 @@ td {
 }
 
 .cinput :deep(.v-field) {
-  box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
-  padding-left: 12px;
+  box-shadow: 0 0 0 2px rgba(35, 32, 33, 0.15);
+  padding-left: 8px;
+  background-color: white;
+  border-radius: 8px;
 }
 
 .cinput :deep(.v-field--focused) {
   box-shadow: 0 0 0 3px rgba(35, 32, 33, 0.15);
   padding-left: 12px;
 }
-
+.cinput :deep(.v-label.v-field-label) {
+  background: white;
+  padding: 0 4px;
+}
 .cinput :deep(.v-label.v-field-label) {
   background: white;
   padding: 0 3px;

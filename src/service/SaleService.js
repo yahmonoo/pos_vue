@@ -11,6 +11,10 @@ class SaleService {
     let url = `/sale`;
     return axios.get(url).then((request) => request.data);
   }
+  getSaleListByUserId(userId) {
+    let url = `/sale/user/${userId}`; 
+    return this.axios.get(url).then((request) => request.data);
+  }
   addSale(sale) {
     let url = `/sale`;
     return this.axios.post(url, sale).then((request) => request.data);
@@ -27,13 +31,9 @@ class SaleService {
     let url = `/sale?fromDate=${fromDate}&toDate=${toDate}&status=${status}`;
     return this.axios.get(url).then((request) => request.data);
   }
-
-  addNewSale(sale) {
-    let url = `/newsale`;
-    return this.axios.post(url, sale).then((request) => request.data);
-  }
   
 }
 
 const service = new SaleService();
 export default service;
+

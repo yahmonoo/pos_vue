@@ -41,7 +41,7 @@ export default {
         { id: 1, key: 'totalPrice', name: 'Total Price', value: '0 MMK', icon: '💰', color: '#10b981' },
         { id: 2, key: 'newOrder', name: 'New Order', value: '0 Orders', icon: '🛍', color: '#3b82f6' },
         { id: 3, key: 'newMember', name: 'New Member', value: '0 Members', icon: '👥', color: '#8b5cf6' },
-        { id: 4, key: 'lowStock', name: 'Low Stock', value: '0 Items', icon: '⚠️', color: '#ef4444' },
+        { id: 4, key: 'AvailableStock', name: 'Available Stock', value: '0 Items', icon: '⚠️', color: '#ef4444' },
       ],
     };
   },
@@ -70,7 +70,7 @@ export default {
               if (stat.key === 'newMember') {
                 return { ...stat, value: `${data.memberCount || 0} Members `};
               }
-              if (stat.key === 'lowStock') {
+              if (stat.key === 'AvailableStock') {
                return { ...stat, value: `${data.itemCount || 0} Items `};
               }
               return stat;

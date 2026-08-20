@@ -78,7 +78,7 @@
 </v-row>
 
     <!-- Table Card -->
-    <v-card rounded="lg" elevation="0">
+    <v-card rounded="lg" elevation="0" class="mt-4">
       <v-table fixed-header height="400px" density="compact" class="c-table">
         <thead>
           <tr>

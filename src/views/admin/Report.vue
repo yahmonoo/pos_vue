@@ -8,7 +8,7 @@
           Sales Analytics
         </h2>
         <p class="text-subtitle-1 grey--text text--darken-1 mb-0">
-          လအလိုက် နှင့် တစ်နှစ်စာ ရောင်းအားမှတ်တမ်းများ
+          Months and yearly report
         </p>
       </v-col>
 
@@ -189,11 +189,11 @@ export default {
   data() {
     return {
       selectedYear: 2026,
-      selectedMonth: "All Months (၁နှစ်လုံး)",
+      selectedMonth: "All Months",
       years: [2024, 2025, 2026],
 
       monthOptions: [
-        "All Months (၁နှစ်လုံး)",
+        "All Months ",
         "January", "February", "March", "April",
         "May", "June", "July", "August",
         "September", "October", "November", "December"
@@ -214,7 +214,7 @@ export default {
 
   computed: {
     isAllMonths() {
-      return this.selectedMonth === "All Months (၁နှစ်လုံး)";
+      return this.selectedMonth === "All Months";
     },
 
     displayTotalSales() {

@@ -200,6 +200,7 @@
 
 <script>
 import { format } from 'date-fns'
+
 import UserAccountService from '../../service/UserAccountService.js'
 import ProductService from '../../service/ProductService.js'
 import SaleService from '../../service/SaleService.js'
@@ -244,7 +245,7 @@ export default {
   },
   mounted: function () {
     this.saleDto.receivedDate = 
-    (this.receivedPicker, 'dd-MM-yyyy')
+    format(this.receivedPicker, 'dd-MM-yyyy')
     this.customerListMethod()
     this.productListMethod()
   },
@@ -320,38 +321,34 @@ export default {
       }
     },
 
-    saveSale() {
-      const request = {
-        receivedDate: this.saleDto.receivedDate,
-        userAccount: this.saleDto.customerDto,
-
-        transaction: {
-          payment: this.totalBalance,
-        },
-
-        itemList: this.itemList.map((item) => {
-          return {
-            productId: item.itemtransactionDto.productDto.productId,
-            qty: item.itemtransactionDto.qty,
-            unitPrice: item.itemtransactionDto.unitPrice,
-            amount: item.itemtransactionDto.amount,
-            discount: item.itemtransactionDto.discount,
-            balance: item.itemtransactionDto.balance,
-          }
-        }),
-      }
-
-      SaleService.addNewSale(request)
-        .then((response) => {
-          // this.$swal('Success!', 'Sale saved successfully', 'success')
-
-          this.clearSale()
-        })
-        .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
-        })
+   saveSale() {
+  const request = {
+    receivedDate: this.receivedPicker ? new Date(this.receivedPicker) : new Date(),
+    userAccount: {
+      userAccountId: this.saleDto?.customerDto?.userAccountId || 1
     },
+    transaction: {
+      payment: Number(this.totalBalance) || 0
+    },
+    itemList: this.itemList.map((item) => ({
+      productId: item.itemtransactionDto?.productDto?.productId || '',
+      qty: Number(item.itemtransactionDto?.qty) || 1,
+      unitPrice: Number(item.itemtransactionDto?.unitPrice) || 0,
+      amount: Number(item.itemtransactionDto?.amount) || 0,
+      discount: Number(item.itemtransactionDto?.discount) || 0,
+      balance: Number(item.itemtransactionDto?.balance) || 0
+    }))
+  };
 
+  SaleService.addNewSale(request)
+    .then((response) => {
+      alert('Sale saved successfully!');
+      this.clearSale();
+    })
+    .catch((error) => {
+      console.error('Error Response:', error.response?.data);
+    });
+},
     clearSale() {
       this.itemList = []
 

@@ -3,44 +3,54 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router' 
 import userAccountService from '../service/UserAccountService.js'
+
 const router = useRouter() 
-const name = ref('')
-const email = ref('')
+const profilename = ref('')
+const userName = ref('')
+const phone = ref('')
+const address = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
-
 const handleRegister = () => {
-  if (password.value !== confirmPassword.value) {
-    alert('Password များ တူညီမှု မရှိပါရှင်။ ပြန်လည်စစ်ဆေးပေးပါ။')
-    return ;
+ 
+  const phoneRegex = /^09\d{7,9}$/
+  if (!phoneRegex.test(phone.value)) {
+    alert('Phone Number Format is incorrect(eg- 09123456789 start 09 and at least 9/10 numbers)')
+    return
   }
-  let obj = {};
-  obj.profileName = name.value;
-  obj.townshipId = 1;
-  obj.userName = email.value;
-  obj.password = password.value;
-  obj.userType = "CUSTOMER";
-  obj.phone = "";
-  obj.address = "";
+
+  if (password.value.length < 8) {
+    alert('Password at least 8 letters')
+    return
+  }
+
+  if (password.value !== confirmPassword.value) {
+    alert('Password are not the same. Please check ')
+    return
+  }
+
+  let obj = {
+    profileName: profilename.value,
+    townshipId: 1,
+    userName: userName.value,
+    password: password.value,
+    userType: "CUSTOMER",
+    phone: phone.value,
+    address: address.value
+  }
+
   userAccountService
-        .addUseraccount(obj)
-        .then(() => {
-          router.push('/login')
-        })
-        .catch((error) => {
-          this.$swal('Fail!', error.response.data.message, 'error')
-        })
-
-  
-  // localStorage.setItem('user_name', name.value)
-  // localStorage.setItem('user_password', password.value)
-  // localStorage.setItem('user_role', 'CUSTOMER')
-
-  
-  
+    .addUseraccount(obj)
+    .then(() => {
+      alert('Account ဖန်တီးခြင်း အောင်မြင်ပါသည်။')
+      router.push('/login')
+    })
+    .catch((error) => {
+      alert(error.response?.data?.message || 'Register ပြုလုပ်၍ မရပါရှင်။')
+    })
 }
 </script>
 <template>
@@ -54,8 +64,7 @@ const handleRegister = () => {
 
       <v-form @submit.prevent="handleRegister">
         <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
-          >Full Name</span
-        >
+          >Profile Name</span>
         <v-text-field
           v-model="name"
           prepend-inner-icon="mdi-account-outline"
@@ -68,13 +77,24 @@ const handleRegister = () => {
         ></v-text-field>
 
         <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
-          >Email Address</span
-        >
+          >User Name</span>
         <v-text-field
-          v-model="email"
+          v-model="userName"
           prepend-inner-icon="mdi-email-outline"
-          placeholder="example@gmail.com"
-          type="email"
+          placeholder="user name"
+          variant="outlined"
+          density="comfortable"
+          color="#4a154b"
+          class="mb-3 rounded-lg"
+          required
+        ></v-text-field>
+        <!-- Phone Number -->
+        <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1">Phone Number</span>
+        <v-text-field
+          v-model="phone"
+          prepend-inner-icon="mdi-phone-outline"
+          placeholder="09xxxxxxxxx"
+          type="tel"
           variant="outlined"
           density="comfortable"
           color="#4a154b"
@@ -82,9 +102,21 @@ const handleRegister = () => {
           required
         ></v-text-field>
 
+       <!-- Address -->
+<span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1">Address</span>
+<v-text-field
+  v-model="address"
+  prepend-inner-icon="mdi-map-marker-outline"
+  placeholder="Enter your address"
+  variant="outlined"
+  density="comfortable"
+  color="#4a154b"
+  class="mb-3 rounded-lg"
+  required
+></v-text-field>
+
         <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
-          >Password</span
-        >
+          >Password</span>
         <v-text-field
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
@@ -100,8 +132,7 @@ const handleRegister = () => {
         ></v-text-field>
 
         <span class="text-caption font-weight-medium text-grey-darken-1 d-block mb-1"
-          >Confirm Password</span
-        >
+          >Confirm Password</span>
         <v-text-field
           v-model="confirmPassword"
           :type="showConfirmPassword ? 'text' : 'password'"

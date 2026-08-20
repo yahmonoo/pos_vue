@@ -15,8 +15,8 @@ class SaleService {
     let url = `/sale/user/${userId}`; 
     return this.axios.get(url).then((request) => request.data);
   }
-  addSale(sale) {
-    let url = `/sale`;
+  addNewSale(sale) {
+    let url = `/newsale`;
     return this.axios.post(url, sale).then((request) => request.data);
   }
   updateSale(sale) {

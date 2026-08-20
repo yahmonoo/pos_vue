@@ -1,126 +1,105 @@
 <template>
   <v-container class="py-6">
-    <div class="text-h5 font-weight-bold mb-4" style="color: #d66182;">
-      📋 Order History
-    </div>
-
-    <!-- Data Loading State -->
-    <v-progress-linear v-if="loading" indeterminate color="#e48494"></v-progress-linear>
-
-    <!-- Order မရှိသေးပါက -->
-    <v-alert v-else-if="orders.length === 0" type="info" variant="tonal" class="mt-4">
-      ဝယ်ယူထားသော Order မရှိသေးပါ။
-    </v-alert>
-
-    <!-- Order List Card များ -->
-    <v-row v-else>
-      <v-col cols="12" md="8" class="mx-auto" v-for="(order, index) in orders" :key="order.saleId || index">
-        <v-card class="pa-5 mb-4" rounded="xl" elevation="2" style="border: 1px solid #f4d7de;">
-          
-          <!-- Card Header (Voucher Code & Date) -->
-          <div class="d-flex justify-space-between align-center mb-3">
-            <div>
-              <span class="text-subtitle-1 font-weight-bold">Voucher: #{{ order.voucherCode || order.saleId }}</span>
-              <div class="text-caption text-grey">{{ order.receivedDate || order.date }}</div>
-            </div>
-            <v-chip color="pink-lighten-4" class="text-pink-darken-2 font-weight-bold" size="small" variant="flat">
-              {{ order.transaction?.paymentType || 'kpay' }}
-            </v-chip>
-          </div>
-
-          <v-divider class="my-3" style="border-style: dashed;"></v-divider>
-
-          <!-- 1. PURCHASED ITEMS (မှာယူထားသော ပစ္စည်းများ) -->
-          <div class="font-weight-bold text-caption text-grey-darken-2 mb-2">
-            PURCHASED ITEMS
-          </div>
-
-          <div class="my-2">
-            <div 
-              v-for="(item, i) in (order.itemList || order.items)" 
-              :key="i" 
-              class="d-flex justify-space-between align-center py-1 text-body-2"
-            >
-              <span>• {{ item.title || item.productName }} <strong class="text-grey-darken-1">x{{ item.qty || item.quantity || 1 }}</strong></span>
-              <span class="font-weight-bold">{{ (item.Price || item.priceOne || 0).toLocaleString() }} MMK</span>
-            </div>
-          </div>
-
-          <v-divider class="my-3"></v-divider>
-
-          <!-- 2. PAYMENT SUMMARY (ကျသင့်ငွေ စာရင်း) -->
-          <div class="d-flex justify-space-between text-body-2 text-grey-darken-2 py-1">
-            <span>Subtotal (ပစ္စည်းဖိုးစုစုပေါင်း):</span>
-            <span class="font-weight-medium">{{ (order.transaction?.amount || getSubtotal(order)).toLocaleString() }} MMK</span>
-          </div>
-
-          <div class="d-flex justify-space-between text-body-2 text-grey-darken-2 py-1">
-            <span>Shipping Fee (ပို့ဆောင်ခ):</span>
-            <span class="font-weight-medium">+ {{ (order.transaction?.deliFee || 3000).toLocaleString() }} MMK</span>
-          </div>
-
-          <v-divider class="my-2" style="border-style: dashed;"></v-divider>
-
-          <!-- Total Amount -->
-          <div class="d-flex justify-space-between font-weight-bold text-subtitle-1 mt-2">
-            <span>Total Amount:</span>
-            <span style="color: #d66182;">{{ (order.transaction?.payment || (getSubtotal(order)+3000)).toLocaleString() }} MMK</span>
-          </div>
-
-        </v-card>
+    <v-row class="mb-4">
+      <v-col cols="12">
+        <h2 class="text-h5 font-weight-bold grey--text text--darken-3">
+          ဝယ်ယူခဲ့သော ပစ္စည်းများ စာရင်း
+        </h2>
       </v-col>
     </v-row>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-10">
+      <v-progress-circular indeterminate color="primary" size="50"></v-progress-circular>
+      <p class="mt-3 grey--text">ခဏစောင့်ပါ...</p>
+    </div>
+
+    <!-- Empty State -->
+    <v-card v-else-if="!orders || orders.length === 0" class="text-center py-10 elevation-1 rounded-lg">
+      <v-icon size="64" color="grey lighten-1">mdi-cart-off</v-icon>
+      <h3 class="mt-3 grey--text text--darken-1">ဝယ်ယူထားသော ပစ္စည်းစာရင်း မရှိသေးပါ။</h3>
+    </v-card>
+
+    <!-- Order Items List Table (Vuetify 3 Ready) -->
+    <v-card v-else class="elevation-1 rounded-lg style-card">
+      <v-table class="w-100">
+        <thead>
+          <tr>
+            <th class="text-left font-weight-bold">Order ID</th>
+            <th class="text-left font-weight-bold">ပစ္စည်းအမည်</th>
+            <th class="text-center font-weight-bold">အရေအတွက်</th>
+            <th class="text-right font-weight-bold">တစ်လုံးဈေး</th>
+            <th class="text-right font-weight-bold">လျှော့ဈေး</th>
+            <th class="text-right font-weight-bold">စုစုပေါင်း ကျသင့်ငွေ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in orders" :key="item.itemTransactionId || item.productId">
+            <td>#{{ item.saleId || item.id }}</td>
+            <td class="font-weight-medium">
+              <div class="d-flex align-center py-2">
+                <v-avatar size="40" class="mr-3 grey lighten-3">
+                  <v-img 
+                    v-if="item.productImage" 
+                    :src="getImageUrl(item.productImage)" 
+                    :alt="item.productName"
+                    cover
+                  ></v-img>
+                  <v-icon v-else color="grey">mdi-package-variant</v-icon>
+                </v-avatar>
+                <span>{{ item.productName || 'Product #' + item.productId }}</span>
+              </div>
+            </td>
+            <td class="text-center">{{ item.qty }}</td>
+            <td class="text-right">{{ formatPrice(item.unitPrice) }} Ks</td>
+            <td class="text-right red--text text--accent-4">
+              {{ item.discount > 0 ? '-' + formatPrice(item.discount) + ' Ks' : '-' }}
+            </td>
+            <td class="text-right primary--text font-weight-bold">
+              {{ formatPrice(item.amount) }} Ks
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-card>
   </v-container>
 </template>
 
 <script>
-import saleService from '../service/SaleService.js'
+import axios from 'axios'
 
 export default {
-  name: 'OrderHistory',
-  
-  // 1. Data State
+  name: "CustomerOrderHistory",
   data() {
     return {
-      loading: false,
       orders: [],
-      userId: null
+      loading: false,
+      baseUrl: "http://localhost:8088/api/v1/productphoto/"
     }
   },
-
-  
   mounted() {
-    
-    this.userId = localStorage.getItem('userId') || 1 
     this.fetchOrderHistory()
   },
-
- 
   methods: {
-   
-    getSubtotal(order) {
-    const list = order.itemList || order.items || order.productList || []
-    return list.reduce((sum, item) => {
-      const price = item.price || item.priceOne || item.unitPrice || 0
-      const qty = item.buyQuantity || item.qty || item.count || 1
-      return sum + (price * qty)
-    }, 0)
-  },
-  
-    
     fetchOrderHistory() {
       this.loading = true
-      
-      
-      saleService.getSaleListByUserId(this.userId)
+      const userId = localStorage.getItem("userId") || 1 
+
+      // Backend API URL ကို အပြည့်အစုံ ရေးပေးထားပါသည်
+      axios
+        .get(`http://localhost:8088/api/user-orders/${userId}`)
         .then((response) => {
-          console.log("Backend Response:", response)
-          this.orders = response || []
+          console.log("Response Data:", response.data)
+          this.orders = response.data || []
         })
         .catch((error) => {
           console.error("Error fetching order history:", error)
           if (this.$swal) {
-            this.$swal('Error!', 'Order history ဆွဲယူရာတွင် အမှားအယွင်းရှိနေပါသည်။', 'error')
+            this.$swal({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Order history ဆွဲယူရာတွင် အမှားအယွင်းရှိနေပါသည်။',
+            })
           }
         })
         .finally(() => {
@@ -128,29 +107,24 @@ export default {
         })
     },
 
-   
-    getStatusColor(status) {
-      if (!status) return 'success'
-      
-      switch (status.toLowerCase()) {
-        case 'delivered':
-        case 'completed':
-        case 'success':
-          return 'green'
-        case 'pending':
-          return 'warning'
-        case 'cancelled':
-          return 'red'
-        default:
-          return 'grey'
+    getImageUrl(imageName) {
+      if (!imageName) return ''
+      if (imageName.startsWith('http://') || imageName.startsWith('https://')) {
+        return imageName
       }
+      return `${this.baseUrl}${imageName}`
+    },
+
+    formatPrice(value) {
+      if (value === null || value === undefined) return '0'
+      return Number(value).toLocaleString()
     }
   }
 }
 </script>
 
 <style scoped>
-.v-card {
+.style-card {
   border: 1px solid #f4d7de;
 }
 </style>

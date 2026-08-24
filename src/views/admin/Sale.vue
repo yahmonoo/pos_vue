@@ -244,8 +244,7 @@ export default {
     },
   },
   mounted: function () {
-    this.saleDto.receivedDate = 
-    format(this.receivedPicker, 'dd-MM-yyyy')
+    this.saleDto.receivedDate = format(this.receivedPicker, 'dd-MM-yyyy')
     this.customerListMethod()
     this.productListMethod()
   },
@@ -321,34 +320,34 @@ export default {
       }
     },
 
-   saveSale() {
-  const request = {
-    receivedDate: this.receivedPicker ? new Date(this.receivedPicker) : new Date(),
-    userAccount: {
-      userAccountId: this.saleDto?.customerDto?.userAccountId || 1
-    },
-    transaction: {
-      payment: Number(this.totalBalance) || 0
-    },
-    itemList: this.itemList.map((item) => ({
-      productId: item.itemtransactionDto?.productDto?.productId || '',
-      qty: Number(item.itemtransactionDto?.qty) || 1,
-      unitPrice: Number(item.itemtransactionDto?.unitPrice) || 0,
-      amount: Number(item.itemtransactionDto?.amount) || 0,
-      discount: Number(item.itemtransactionDto?.discount) || 0,
-      balance: Number(item.itemtransactionDto?.balance) || 0
-    }))
-  };
+    saveSale() {
+      const request = {
+        receivedDate: this.receivedPicker ? new Date(this.receivedPicker) : new Date(),
+        userAccount: {
+          userAccountId: this.saleDto?.customerDto?.userAccountId || 1,
+        },
+        transaction: {
+          payment: Number(this.totalBalance) || 0,
+        },
+        itemList: this.itemList.map((item) => ({
+          productId: item.itemtransactionDto?.productDto?.productId || 0,
+          qty: Number(item.itemtransactionDto?.qty) || 1,
+          unitPrice: Number(item.itemtransactionDto?.unitPrice) || 0,
+          amount: Number(item.itemtransactionDto?.amount) || 0,
+          discount: Number(item.itemtransactionDto?.discount) || 0,
+          balance: Number(item.itemtransactionDto?.balance) || 0,
+        })),
+      }
 
-  SaleService.addNewSale(request)
-    .then((response) => {
-      alert('Sale saved successfully!');
-      this.clearSale();
-    })
-    .catch((error) => {
-      console.error('Error Response:', error.response?.data);
-    });
-},
+      SaleService.addNewSale(request)
+        .then((response) => {
+          alert('Sale saved successfully!')
+          this.clearSale()
+        })
+        .catch((error) => {
+          console.error('Error Response:', error.response?.data)
+        })
+    },
     clearSale() {
       this.itemList = []
 

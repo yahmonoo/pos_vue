@@ -1,81 +1,80 @@
 <template>
   <v-container fluid>
     <!-- Header -->
-  <v-row density="comfortable">
-  <!-- From Date -->
-  <v-col cols="12" md="3">
-    <v-menu
-      v-model="fromMenu"
-      :close-on-content-click="false"
-      max-width="290px"
-      min-width="290px"
-    >
-      <template v-slot:activator="{ props }">
-        <v-text-field
-          class="cinput"
-          v-model="fromDateStr"
-          label="From Date"
-          prepend-inner-icon="mdi-calendar"
-          variant="outlined"
-          readonly
-          v-bind="props"
-          hide-details
-          density="compact"
-        ></v-text-field>
-      </template>
-      <v-date-picker
-        v-model="fromDate"
-        color="primary"
-        hide-header
-        @update:model-value="onFromDateSelect"
-      ></v-date-picker>
-    </v-menu>
-  </v-col>
+    <v-row density="comfortable">
+      <!-- From Date -->
+      <v-col cols="12" md="3">
+        <v-menu
+          v-model="fromMenu"
+          :close-on-content-click="false"
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ props }">
+            <v-text-field
+              class="cinput"
+              v-model="fromDateStr"
+              label="From Date"
+              prepend-inner-icon="mdi-calendar"
+              variant="outlined"
+              readonly
+              v-bind="props"
+              hide-details
+              density="compact"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="fromDate"
+            color="primary"
+            hide-header
+            @update:model-value="onFromDateSelect"
+          ></v-date-picker>
+        </v-menu>
+      </v-col>
 
-  <!-- To Date -->
-  <v-col cols="12" md="3">
-    <v-menu
-      v-model="toMenu"
-      :close-on-content-click="false"
-      max-width="290px"
-      min-width="290px"
-    >
-      <template v-slot:activator="{ props }">
-        <v-text-field 
-          class="cinput"
-          v-model="toDateStr"
-          label="To Date"
-          prepend-inner-icon="mdi-calendar"
-          variant="outlined"
-          readonly
-          v-bind="props"
-          hide-details
-          density="compact"
-        ></v-text-field>
-      </template>
-      <v-date-picker
-        v-model="toDate"
-        color="primary"
-        hide-header
-        @update:model-value="onToDateSelect"
-      ></v-date-picker>
-    </v-menu>
-  </v-col>
-  <v-col cols="12" md="2">
-    <v-btn
-      color="#d66182"
-      theme="dark"
-      height="44"
-      rounded="lg"
-      prepend-icon="mdi-magnify"
-      @click="filterByDate"
-      block
-    >
-      Search
-    </v-btn>
-  </v-col>
-
-</v-row>
+      <!-- To Date -->
+      <v-col cols="12" md="3">
+        <v-menu
+          v-model="toMenu"
+          :close-on-content-click="false"
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ props }">
+            <v-text-field
+              class="cinput"
+              v-model="toDateStr"
+              label="To Date"
+              prepend-inner-icon="mdi-calendar"
+              variant="outlined"
+              readonly
+              v-bind="props"
+              hide-details
+              density="compact"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="toDate"
+            color="primary"
+            hide-header
+            @update:model-value="onToDateSelect"
+          ></v-date-picker>
+        </v-menu>
+      </v-col>
+      <v-col cols="12" md="2">
+        <v-btn
+          color="#d66182"
+          theme="dark"
+          height="44"
+          rounded="lg"
+          prepend-icon="mdi-magnify"
+          @click="filterByDate"
+          block
+        >
+          Search
+        </v-btn>
+      </v-col>
+    </v-row>
 
     <!-- Table Card -->
     <v-card rounded="lg" elevation="0" class="mt-4">
@@ -102,8 +101,7 @@
             :key="index"
             @click="selectedOne = item"
             :style="{
-              backgroundColor:
-                item.saleId == selectedOne.saleId ? '#f5e2e5' : 'transparent',
+              backgroundColor: item.saleId == selectedOne.saleId ? '#f5e2e5' : 'transparent',
             }"
           >
             <td class="text-center">{{ index + 1 }}</td>
@@ -117,7 +115,6 @@
             <td class="text-center">{{ item.transaction?.paymentType }}</td>
             <td class="text-center">{{ item.transaction?.payment }}</td>
             <td class="text-center">{{ item.date }}</td>
-            
 
             <td class="text-center">
               <!-- <v-btn density="compact" icon="mdi-pencil" @click="editSale(item)"></v-btn> -->
@@ -185,7 +182,6 @@
 </template>
 
 <script>
-
 import { format, parse, subDays } from 'date-fns'
 
 import saleService from '../../service/SaleService.js'
@@ -196,7 +192,7 @@ export default {
     return {
       fromMenu: false,
       toMenu: false,
-      fromDate: initialFromDate, 
+      fromDate: initialFromDate,
       toDate: new Date(),
       fromDateStr: '',
       toDateStr: '',
@@ -213,7 +209,7 @@ export default {
   mounted() {
     this.fromDateStr = format(this.fromDate, 'dd-MM-yyyy')
     this.toDateStr = format(this.toDate, 'dd-MM-yyyy')
-    
+
     this.SaleListMethod(this.fromDateStr, this.toDateStr)
   },
 
@@ -237,84 +233,77 @@ export default {
     },
 
     filterByDate() {
-      console.log("Searching with:", this.fromDateStr, this.toDateStr)
+      console.log('Searching with:', this.fromDateStr, this.toDateStr)
       if (this.fromDateStr && this.toDateStr) {
         this.SaleListMethod(this.fromDateStr, this.toDateStr)
       }
     },
 
-SaleListMethod(from = this.fromDateStr, to = this.toDateStr) {
-  saleService
-    .getSaleList(from, to, 0)
-    .then((response) => {
-      console.log("Raw Sale List Response:", response)
-      const rawData = response.data?.data || response.data || response
+    SaleListMethod(from = this.fromDateStr, to = this.toDateStr) {
+      saleService
+        .getSaleList(from, to, 0)
+        .then((response) => {
+          console.log('Raw Sale List Response:', response)
+          const rawData = response.data?.data || response.data || response
 
-    
-      const toYYYYMMDD = (dateStr) => {
-        if (!dateStr) return null
+          const toYYYYMMDD = (dateStr) => {
+            if (!dateStr) return null
 
-        const str = String(dateStr).trim()
-        const pureDateStr = str.split(' ')[0] 
+            const str = String(dateStr).trim()
+            const pureDateStr = str.split(' ')[0]
 
-        
-        if (/^\d{2}-\d{2}-\d{4}$/.test(pureDateStr)) {
-          const [d, m, y] = pureDateStr.split('-')
-          return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
-        }
+            if (/^\d{2}-\d{2}-\d{4}$/.test(pureDateStr)) {
+              const [d, m, y] = pureDateStr.split('-')
+              return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
+            }
 
-        
-        if (/^\d{4}-\d{2}-\d{2}$/.test(pureDateStr)) {
-          return pureDateStr
-        }
+            if (/^\d{4}-\d{2}-\d{2}$/.test(pureDateStr)) {
+              return pureDateStr
+            }
 
-        
-        if (/^\d{2}\/\d{2}\/\d{4}$/.test(pureDateStr)) {
-          const [d, m, y] = pureDateStr.split('/')
-          return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
-        }
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(pureDateStr)) {
+              const [d, m, y] = pureDateStr.split('/')
+              return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
+            }
 
-        const dObj = new Date(str)
-        if (!isNaN(dObj.getTime())) {
-          const y = dObj.getFullYear()
-          const m = String(dObj.getMonth() + 1).padStart(2, '0')
-          const d = String(dObj.getDate()).padStart(2, '0')
-          return `${y}-${m}-${d}`
-        }
+            const dObj = new Date(str)
+            if (!isNaN(dObj.getTime())) {
+              const y = dObj.getFullYear()
+              const m = String(dObj.getMonth() + 1).padStart(2, '0')
+              const d = String(dObj.getDate()).padStart(2, '0')
+              return `${y}-${m}-${d}`
+            }
 
-        return null
-      }
-
-      
-      const fromFormatted = toYYYYMMDD(from)
-      const toFormatted = toYYYYMMDD(to)
-
-      if (Array.isArray(rawData)) {
-        const filtered = rawData.filter((item) => {
-          
-          const targetDateStr = item.date || item.receivedDate
-          const itemFormatted = toYYYYMMDD(targetDateStr)
-
-          if (!itemFormatted) {
-            console.warn("Date Parse မရပါ:", item)
-            return false
+            return null
           }
 
-         
-          return itemFormatted >= fromFormatted && itemFormatted <= toFormatted
+          const fromFormatted = toYYYYMMDD(from)
+          const toFormatted = toYYYYMMDD(to)
+
+          if (Array.isArray(rawData)) {
+            const filtered = rawData.filter((item) => {
+              const targetDateStr = item.date || item.receivedDate
+              const itemFormatted = toYYYYMMDD(targetDateStr)
+
+              if (!itemFormatted) {
+                console.warn('Date Parse မရပါ:', item)
+                return false
+              }
+
+              return itemFormatted >= fromFormatted && itemFormatted <= toFormatted
+            })
+
+            this.SaleList = [...filtered]
+          } else {
+            this.SaleList = []
+          }
+
+          console.log('Filtered Count:', this.SaleList.length)
         })
-
-        this.SaleList = [...filtered]
-      } else {
-        this.SaleList = []
-      }
-
-      console.log("Filtered Count:", this.SaleList.length)
-    })
-    .catch((error) => {
-      console.error("API Error:", error)
-    })
-},
+        .catch((error) => {
+          console.error('API Error:', error)
+        })
+    },
 
     deleteSale(item) {
       this.dialogDelete = true

@@ -322,7 +322,7 @@ export default {
 
     saveSale() {
       const request = {
-        receivedDate: this.receivedPicker ? new Date(this.receivedPicker) : new Date(),
+        receivedDate: this.saleDto.receivedDate,
         userAccount: {
           userAccountId: this.saleDto?.customerDto?.userAccountId || 1,
         },
@@ -338,6 +338,7 @@ export default {
           balance: Number(item.itemtransactionDto?.balance) || 0,
         })),
       }
+      console.log(request)
 
       SaleService.addNewSale(request)
         .then((response) => {
